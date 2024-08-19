@@ -36,7 +36,7 @@ npm create vite {{name}} --template vue
 如果是要ts编写项目，则要把默认生成的js文件改成ts，同时在`setup`加上`lang="ts"`。
 ### ts报错
 但是在这个地方，我的项目一直报错，显示`某某vue文件找不到`，后面配置了以下命令就正常了
-``` shell
+``` bash
 pnpm install typescript -g
 
 tsc --init
