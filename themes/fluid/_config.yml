@@ -1073,6 +1073,25 @@ links:
       link: "https://zhul.in/",
       avatar: "https://cdn.zhullyb.top/avatar.webp"
     }
+    - {
+      title: "浅浅",
+      intro: "浅浅的博客",
+      link: "https://qianqianzyk.top/",
+      avatar: "https://i.postimg.cc/y8fJXVKw/1697338983240962900.jpg"
+    }
+    - {
+      title: "黑白",
+      intro: "黑白的博客",
+      link: "https://blog.zerohzzzz.top/",
+      avatar: "https://blog.zerohzzzz.top/img/ZeroHzzzz.jpg"
+    }
+    - {
+      title: "喵喵",
+      intro: "喵喵的博客",
+      link: "https://blog.f1nley.xyz/post/",
+      avatar: "https://avatars.githubusercontent.com/u/32237950?v=4"
+    }
+
 
   # 当成员头像加载失败时，替换为指定图片
   # When the member avatar fails to load, replace the specified image
