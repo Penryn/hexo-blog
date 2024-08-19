@@ -1,12 +1,9 @@
 ---
 title: 后端环境配置
 date: 2024-07-19 19:53:02
-img: ../picture/createblog/bg.jpg
-summary: vscode、go、mysql安装
 categories: 运维
 tags:
   - golang
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 

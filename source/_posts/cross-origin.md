@@ -1,13 +1,10 @@
 ---
 title: 跨域的原因和处理
 date: 2024-08-03 02:47:19
-img: ../picture/createblog/bg.jpg
-summary: 跨域是什么，怎么解决
 categories: 开发
 tags:
   - golang
   - vue
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 ## 认识跨域

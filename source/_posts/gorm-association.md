@@ -1,13 +1,10 @@
 ---
 title: gorm的多种关联方式
 date: 2023-11-23 11:56:12
-img: ../picture/createblog/bg.jpg
-summary: gorm关联方法
 categories: 后端
 tags:
-  - go
+  - golang
   - 数据库
-coverImg: ../picture/createblog/bg.jpg
 ---
 [Gorm官网](https://gorm.io/zh_CN/docs/belongs_to.html)上将这个分成了belongs to，has one，has many，many to many这些关系，今天笔者就简单分成这三种关系（一对一，一对多和多对多）来逐一讲解。
 

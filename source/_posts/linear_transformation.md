@@ -1,14 +1,10 @@
 ---
 title: 矩阵与线性变换
 date: 2024-01-24 11:44:12
-summary: 矩阵的理解和矩阵向量乘法的几何理解
 categories: 数学
 tags: 
  - 线性代数
  - 人工智能
-
-img: ../picture/createblog/bg.jpg
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 明明线代已经考完了，笔者现在才重新在几何理解线代，属实有点奇怪。

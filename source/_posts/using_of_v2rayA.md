@@ -1,12 +1,9 @@
 ---
 title: v2rayA的使用
 date: 2024-07-13 23:45:14
-img: ../picture/createblog/bg.jpg
-summary: v2rayA的安装和使用
 categories: 运维
 tags:
-  - Ubuntu
-coverImg: ../picture/createblog/bg.jpg
+  - ubuntu
 ---
 
 由于这两天在捣鼓某些环境的安装，等待下载可以等半年，因此决定在云服务器上搞一下加速。

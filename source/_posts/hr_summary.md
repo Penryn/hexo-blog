@@ -1,12 +1,9 @@
 ---
 title: 寒软项目总结
 date: 2024-03-05 15:55:23
-img: ../picture/createblog/bg.jpg
-summary: 寒软总结
 categories: 总结
 tags:
-  - go
-coverImg: ../picture/createblog/bg.jpg
+  - golang
 ---
 
 今天中午进行了浙江工业大学的寒假软件大赛的验收答辩，整个过程给人感觉还是比较草率的，但至少在构建的过程中还是学到了不少东西。本次比赛分成三个题目，前两个是奖励综测分，最后一个是奖励米，但最终我们选择了奖励综测分的德育导师双向选择系统。

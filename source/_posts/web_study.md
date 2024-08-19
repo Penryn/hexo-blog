@@ -1,12 +1,9 @@
 ---
-title: web入门
+title: web后端入门解释
 date: 2024-07-21 19:46:26
-img: ../picture/createblog/bg.jpg
-summary: 后端入门介绍
 categories: 开发
 tags:
-  - 入门
-coverImg: ../picture/createblog/bg.jpg
+  - web
 ---
 
 ### 学习前置

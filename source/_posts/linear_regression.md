@@ -1,13 +1,10 @@
 ---
 title: 线性回归
 date: 2024-01-28 14:27:10
-img: ../picture/createblog/bg.jpg
-summary: 线性回归原理及实现
 categories: ai
 tags:
   - 神经网络
   - pytorch
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 在学习神经网络之前，我们先了解一些简单的基础知识，我们以线性回归（预测）和softmax回归（分类）为例，了解简单的神经网络架构，数据处理，制定损失函数和如何训练模型。

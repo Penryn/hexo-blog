@@ -2,11 +2,8 @@
 title: 手把手教你搭建属于你自己的hexo博客，并布置在github page上
 date: 2023-11-11 11:35:32
 author: phlin
-img: ../picture/createblog/bg.jpg
-summary: Hexo 是一个快速、简洁且高效的博客框架。
 categories: 博客搭建
 tags: hexo
-coverImg: ../picture/createblog/bg.jpg
 ---
 Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。
 

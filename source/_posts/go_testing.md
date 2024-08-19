@@ -1,14 +1,11 @@
 ---
 title: go测试（基于testing基本库）
 date: 2024-05-02 12:38:15
-img: ../picture/createblog/bg.jpg
-summary: go的testing基本库的使用
 categories: 后端
 tags:
-  - go
+  - golang
   - testing
   - 测试
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 老登让我研究一下后端测试，看看MongoDB读写操作的性能，遂开始研究go的testing基本库

@@ -1,14 +1,10 @@
 ---
 title: mongodb安装
 date: 2024-04-26 17:24:13
-summary: Ubuntu安装mongoDB
 categories: 运维
 tags: 
  - ubuntu
  - MongoDB
-
-img: ../picture/createblog/bg.jpg
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 问卷系统要求用MongoDB存放答卷数据，因此我在我云服务器上安装了MongoDB

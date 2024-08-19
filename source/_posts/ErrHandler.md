@@ -1,14 +1,11 @@
 ---
 title: 全局错误处理和日志的简单使用
 date: 2024-05-15 15:48:34
-img: ../picture/createblog/bg.jpg
-summary: go的全局错误处理中间件和zap第三方日志库的使用
 categories: 后端
 tags:
-  - go
+  - golang
   - 中间件
   - 日志
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 

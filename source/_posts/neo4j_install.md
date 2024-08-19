@@ -1,14 +1,10 @@
 ---
 title: neo4j安装
 date: 2024-04-26 17:55:55
-summary: Ubuntu安装neo4j
 categories: 运维
 tags: 
  - ubuntu
  - neo4j
-
-img: ../picture/createblog/bg.jpg
-coverImg: ../picture/createblog/bg.jpg
 ---
 
 首先更新apt

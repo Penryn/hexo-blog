@@ -1,12 +1,9 @@
 ---
 title: go的标准项目布局
 date: 2024-05-12 22:31:30
-img: ../picture/createblog/bg.jpg
-summary: go的目录结构介绍
 categories: 后端
 tags:
-  - go
-coverImg: ../picture/createblog/bg.jpg
+  - golang
 ---
 
 因为笔者一开始是在精弘暑期课入门的go，因此主要学习的还是部门项目微精弘的代码目录结构，所以对go的标准目录结构不是很了解，特此出一篇文章来捋一下go现在比较规范的目录结构，以此来学习。
