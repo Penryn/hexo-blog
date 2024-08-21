@@ -1,7 +1,7 @@
 ---
 title: go的标准项目布局
 date: 2024-05-12 22:31:30
-categories: 后端
+categories: 开发
 tags:
   - golang
 ---

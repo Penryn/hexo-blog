@@ -1,7 +1,7 @@
 ---
 title: go测试（基于testing基本库）
 date: 2024-05-02 12:38:15
-categories: 后端
+categories: 开发
 tags:
   - golang
   - testing

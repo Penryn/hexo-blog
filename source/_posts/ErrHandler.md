@@ -1,7 +1,7 @@
 ---
 title: 全局错误处理和日志的简单使用
 date: 2024-05-15 15:48:34
-categories: 后端
+categories: 开发
 tags:
   - golang
   - 中间件

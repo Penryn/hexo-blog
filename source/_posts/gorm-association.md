@@ -1,7 +1,7 @@
 ---
 title: gorm的多种关联方式
 date: 2023-11-23 11:56:12
-categories: 后端
+categories: 开发
 tags:
   - golang
   - 数据库
