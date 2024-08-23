@@ -12,7 +12,6 @@ tags:
 
 [后端仓库地址](https://github.com/Penryn/SelectionSystem-Back)
 [前端仓库地址](https://github.com/xixiIBN5100/Mutual_Mentor_Selection_front)
-[项目服务地址](https://phlin.love)
 
 在本项目中我和浅浅＆勿念两个人负责该项目后端，他主要负责学生端和教师端的接口完成，我这边也主要写了用户端、管理端和系统的一些自动操作。
 
