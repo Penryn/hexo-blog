@@ -1,5 +1,5 @@
 ---
-title: ubuntu-web
+title: Ubuntu系统部署Golang-Vue前后端分离项目
 date: 2024-08-25 22:25:46
 categories: 运维
 tags: 
