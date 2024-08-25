@@ -31,9 +31,9 @@ tags:
 * 因为一开始的没写数据加密，导致写完加密的方法上云后出现报错，导致我两三个小时都在debug，没研究出为什么，主要也是都是不知道为什么在阿里云那里看到数据库是全空的，反正清空了数据库就成了，让ximo含泪收下20.
 * 还有跨域问题，之前试用期和hv是相同方法配置的，结果在这里却失败了，最后东试西试，在ximo的建议下，重新设置了cors的配置就成功了，但在这之前还搜到了nginx可以设置跨域，但在基本了解nginx后，发现运维还是实现不了跨域处理的，要处理还是得在后端方面。
 * 也小小当了一把产品（资本家），稍微提了点可以完善的bug。
-![图片](https://github.com/Penryn/picture/blob/main/101.png?raw=true)
-![图片](https://github.com/Penryn/picture/blob/main/102.png?raw=true)
-![图片](https://github.com/Penryn/picture/blob/main/103.png?raw=true)
-![图片](https://github.com/Penryn/picture/blob/main/104.png?raw=true)
+![](https://qiuniu.phlin.top/bucket/202408252337647.png)
+![](https://qiuniu.phlin.top/bucket/202408252338816.png)
+![](https://qiuniu.phlin.top/bucket/202408252339618.png)
+![](https://qiuniu.phlin.top/bucket/202408252339949.png)
 
 总而言之，这一次还是组队寒软还是很愉快的！！！

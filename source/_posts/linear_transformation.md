@@ -19,14 +19,14 @@ tags:
 事实上，我们想要知道变换后的向量的坐标，我们只需要变换后的基向量的坐标和他们之间的几何关系就可以求得。
 
 而变化后的基向量的坐标（3，-2）（2，1）组成一个矩阵，而原线性关系为（5，7），具体可看下面的图片
-![图片](https://github.com/Penryn/picture/blob/main/1.png?raw=true)
-![图片](https://github.com/Penryn/picture/blob/main/3.png?raw=true)
+![](https://qiuniu.phlin.top/bucket/202408252343293.png)
+![](https://qiuniu.phlin.top/bucket/202408252343377.png)
 
 将其抽象出来，我们可以得到矩阵乘于向量的几何含义，就是通过这样的运算得到所构成向量的新坐标。
-![图片](https://github.com/Penryn/picture/blob/main/4.png?raw=true)
+![](https://qiuniu.phlin.top/bucket/202408252344979.png)
 
 ### 矩阵矩阵相乘
 在了解过上面矩阵与向量相乘的几何意义后，我们可以进一步理解矩阵与矩阵相乘的几何意义
 在矩阵与矩阵相乘时，我们是要从右边的矩阵看到左边的矩阵，右边的矩阵可以看作若干个向量所构成的矩阵，然后这个向量以左边矩阵的变化。即相当于原来最初的基向量先变成右边矩阵的形式，在分别每列进行左边矩阵的变换。
-![图片](https://github.com/Penryn/picture/blob/main/5.png?raw=true)
-![图片](https://github.com/Penryn/picture/blob/main/6.png?raw=true)  
+![](https://qiuniu.phlin.top/bucket/202408252344237.png)
+![](https://qiuniu.phlin.top/bucket/202408252344024.png)
