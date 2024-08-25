@@ -48,7 +48,7 @@ tags:
 8. 此时请点击 `Visit` ，即可跳转到部署好的网站地址，此地址即为你的`服务端地址`。
 
 
-## fluid配置文件设置
+### fluid配置文件设置
 在主题的_config.yml下
 1. 设置主题配置文件 `comments -> type` 值为 `waline`
 ```
