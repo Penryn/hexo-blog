@@ -1,7 +1,7 @@
 ---
 title: 线性回归
 date: 2024-01-28 14:27:10
-categories: ai
+categories: 人工智能
 tags:
   - 神经网络
   - pytorch

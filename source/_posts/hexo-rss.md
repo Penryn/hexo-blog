@@ -1,7 +1,7 @@
 ---
 title: hexo框架添加rss订阅
 date: 2024-08-19 16:11:14
-categories: 博客搭建
+categories: 博客
 tags:
   - hexo
   - rss
