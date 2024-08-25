@@ -26,6 +26,9 @@ importers:
       hexo-generator-tag:
         specifier: ^2.0.0
         version: 2.0.0
+      hexo-oh-my-live2d:
+        specifier: ^0.1.4
+        version: 0.1.4
       hexo-renderer-ejs:
         specifier: ^2.0.0
         version: 2.0.0
@@ -415,6 +418,9 @@ packages:
     resolution: {integrity: sha512-i2Sgxk8Cgx5viSjq5qW5N/rBFfwoCKQcH8qnnW1fawCapcdEAhIsq+Y3vbrs9bssyDlyU6Vqm4oQmosREaNI7Q==}
     engines: {node: '>=14'}
 
+  hexo-oh-my-live2d@0.1.4:
+    resolution: {integrity: sha512-k+fvMZgiwEefWcsV0JavXk0WqyMsmCGuOwCDY5lhez2MpFYdLsDujxu3PLQkK6xumxYRhmz2GwFI9fYfAUIrew==}
+
   hexo-pagination@3.0.0:
     resolution: {integrity: sha512-8oo1iozloZo7TojPVYg4IxL3SJKCBdSJ908fTlIxIK7TWJIKdYnQlW31+12DBJ0NhVZA/lZisPObGF08wT8fKw==}
     engines: {node: '>=14'}
@@ -655,6 +661,9 @@ packages:
 
   nwsapi@2.2.12:
     resolution: {integrity: sha512-qXDmcVlZV4XRtKFzddidpfVP4oMSGhga+xdMc25mv8kaLUHtgzCDhUxkrN8exkGdTlLNaXj7CV3GtON7zuGZ+w==}
+
+  oh-my-live2d@0.19.3:
+    resolution: {integrity: sha512-EWva8OUmcExIFIhqGkeiVPQt44RvYYFg+nmpkrZgQVQ+xofVFq4SDYAg5NcdK40HxyV4vORBJEg4OHIHP96MrA==}
 
   on-finished@2.3.0:
     resolution: {integrity: sha512-ikqdkGAAyf/X/gPhXGvfgAytDZtDbr+bkNUJ0N9h5MI/dmdgCs3l6hoHrcUv41sRKew3jIwrp4qQDXiK99Utww==}
@@ -1299,6 +1308,10 @@ snapshots:
     dependencies:
       picocolors: 1.0.1
 
+  hexo-oh-my-live2d@0.1.4:
+    dependencies:
+      oh-my-live2d: 0.19.3
+
   hexo-pagination@3.0.0: {}
 
   hexo-renderer-ejs@2.0.0:
@@ -1608,6 +1621,8 @@ snapshots:
       chokidar: 3.6.0
 
   nwsapi@2.2.12: {}
+
+  oh-my-live2d@0.19.3: {}
 
   on-finished@2.3.0:
     dependencies:

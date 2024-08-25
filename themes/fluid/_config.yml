@@ -252,7 +252,7 @@ custom_css:
   - https://registry.npmmirror.com/lxgw-wenkai-screen-web/latest/files/style.min.css #调用字体
   - /css/scrollAnimation.css
   - /css/code.css
-  - /css/links.css
+  - /css/link.css
 
 
 # 网页访问统计
