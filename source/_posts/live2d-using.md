@@ -1,5 +1,5 @@
 ---
-title: live2d-using
+title: hexo博客使用live2d看板娘
 date: 2024-08-25 21:38:40
 categories: 博客
 tags: 
