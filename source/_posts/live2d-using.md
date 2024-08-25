@@ -24,7 +24,7 @@ pnpm install hexo-oh-my-live2d
 ### 使用
 
 在hexo根目录下的_config.yml增加以下代码，其中models.path是存放模型的路径，其位置是在source文件夹下的，而不是基于hexo根目录。
-
+如果是最新版的live2d模型，则将path指向模型文件夹内`model3.json`后缀的文件
 ``` yml
 # _config.yml
 OhMyLive2d:
@@ -132,3 +132,6 @@ OhMyLive2d:
   #   }, 8000);
   #   }
 ```
+
+### 最终效果
+![](https://qiuniu.phlin.top/bucket/202408252215159.png)
