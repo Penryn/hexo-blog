@@ -6,6 +6,7 @@ tags:
  - waline
  - hexo
 ---
+一开始搞的是[discuss](https://discuss.js.org/),但是不知道为什么全都部署好了，配置文件也更新了，但博客就还是用不了评论，于是又重新换成了waline。
 
 ## 介绍
 

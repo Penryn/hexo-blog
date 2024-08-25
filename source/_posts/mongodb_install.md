@@ -4,7 +4,7 @@ date: 2024-04-26 17:24:13
 categories: 运维
 tags: 
  - ubuntu
- - MongoDB
+ - mongoDB
 ---
 
 问卷系统要求用MongoDB存放答卷数据，因此我在我云服务器上安装了MongoDB
