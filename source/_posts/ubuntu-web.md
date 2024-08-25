@@ -8,7 +8,7 @@ tags:
  - vue
  - nginx
 ---
-本文来源于惜寞学长所写的[部署文章](https://www.lonesome.cn/posts/ubuntu-deploy-gin-and-vue-project/),只是为了部署时贪图方便，特在此转载一下。
+本文来源于惜寞学长所写的[部署文章](https://www.lonesome.cn/posts/ubuntu-deploy-gin-and-vue-project),只是为了部署时贪图方便，特在此转载一下，以下内容因贪图方便，没有图片，如果有图片需要，可以到[原文章](https://www.lonesome.cn/posts/ubuntu-deploy-gin-and-vue-project)阅读。
 
 
 ## 后端
