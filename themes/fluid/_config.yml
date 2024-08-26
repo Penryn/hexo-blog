@@ -241,6 +241,7 @@ custom_js:
   - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/containsWord.min.js # 鼠标点击出字
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/love.min.js #鼠标点击出爱心
   - /js/scrollAnimation.js
+  - https://qiuniu.phlin.top/static/waline.js #评论系统
 
 
 # 指定自定义 .css 文件路径，用法和 custom_js 相同
@@ -249,10 +250,11 @@ custom_css:
   - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/shubiao.css #鼠标指针
   - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/scroll.css # 滚动条颜色
   - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/gradient.css # 头部打字机颜色效果渐变
-  - https://registry.npmmirror.com/lxgw-wenkai-screen-web/latest/files/style.min.css #调用字体
+  - https://qiuniu.phlin.top/static/style.min.css #调用字体
   - /css/scrollAnimation.css
   - /css/code.css
   - /css/link.css
+  - https://qiuniu.phlin.top/static/waline.css #评论样式
 
 
 # 网页访问统计
