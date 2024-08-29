@@ -566,6 +566,30 @@ func GetUserSession(c *gin.Context) (*models.User, error) {
 如果服务器设置的 Cookie 是持久化的，即将 Cookie 保存在硬盘上，或者通过某些方式修改浏览器的 HTTP 请求头，以便在浏览器重新打开时仍然发送原来的 Cookie，那么即使关闭并重新打开浏览器，服务器仍然能够识别之前的 SessionID，从而保持用户的登录状态。
 
 由于关闭浏览器不会自动删除服务器端的 Session，服务器通常会为每个 Session 设置一个失效时间。如果在设定的时间内，客户端没有进行任何活动，服务器会认为用户已经停止使用该 Session，并会将其删除，以节省存储空间。
+## 如何在Web应用中实现Session的持久化？
+Session通常与用户会话的生命周期绑定，当浏览器关闭或会话超时后会被销毁。要实现Session的持久化，可以采用以下方法：
+
+1. 延长Session过期时间：通过设置Session的过期时间，使其在长时间内保持有效。这适合一些用户频繁访问的场景。
+
+2. 使用持久化存储：将Session数据存储在数据库、Redis等持久化存储中，而不是仅仅保存在服务器的内存中。即使服务器重启或出现故障，Session数据仍然可用。
+
+3. 设置持久化的Session ID Cookie：通过设置Cookie的expires或max-age属性，将Session ID保存在客户端的Cookie中，以实现持久化。客户端再次访问时，通过持久化的Cookie找回对应的Session。
+
+4. Session备份与恢复：在分布式系统中，可以对Session数据进行备份，当某一服务器宕机时，从备份服务器恢复Session数据，确保Session的持续可用。
+
+## 在高并发环境下，如何优化Session管理？
+在高并发环境下，Session管理可能成为系统的瓶颈。优化Session管理可以采取以下措施：
+
+1. Session集中管理：使用Session存储方案，如Redis、Memcached，集中管理Session数据，避免单个应用服务器成为瓶颈。
+
+2. 无状态Session：使用JWT等无状态认证方式，将用户状态存储在客户端，而不是依赖服务器端Session，从而减少服务器的压力。
+
+3. Session分布式存储：在分布式系统中，将Session数据分布式存储，以负载均衡的方式处理高并发请求。
+
+4. Session数据压缩：对于大型Session数据，采用压缩技术减少存储和传输的开销。
+
+5. 缓存策略：使用缓存技术，将频繁访问的Session数据缓存在内存中，减少对持久化存储的依赖，加快访问速度。
+
 # 参考资料
 [Session是怎么实现的？存储在哪里？](https://juejin.cn/post/6942852054847062053#heading-12)
 [深入理解COOKIE&SESSION的原理和区别](https://cloud.tencent.com/developer/article/2002609)
