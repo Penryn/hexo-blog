@@ -490,7 +490,9 @@ func GetUserSession(c *gin.Context) (*models.User, error) {
     return user, nil
 }
 ```
-# 高级应用
+# 内容补充
+## 怎么处理跨域
+具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.top/2024/08/03/cross-origin/)
 
 ## 实现单点同域名的登录
 ### 单点登录定义
