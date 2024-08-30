@@ -492,7 +492,7 @@ func GetUserSession(c *gin.Context) (*models.User, error) {
 ```
 # 内容补充
 ## 怎么处理跨域
-具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.top/2024/08/03/cross-origin/)
+如果session ID通过cookie携带，则需要设置`Access-Control-Allow-Credentials`，具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.top/2024/08/03/cross-origin/)
 
 ## 实现单点同域名的登录
 ### 单点登录定义
@@ -535,7 +535,7 @@ func GetUserSession(c *gin.Context) (*models.User, error) {
 #### 针对跨域、跨系统的限制
 
 对于跨域或跨系统的情况，即多个系统不共享 Session，或者系统部署在不同的顶级域名（如 `example.com` 和 `example.net`）下时，基于 `cookie-session` 的 SSO 方案将无法直接应用。此时，通常需要引入更复杂的单点登录机制，如基于 OAuth、SAML 或者 OpenID Connect 等协议来实现跨域、跨系统的身份认证和授权。
-# 常见面试题
+# 补充面试题
 
 ## Session与Cookie的区别
 **Cookie**和**Session**是Web开发中常用的两种保持用户状态的机制，它们的主要区别如下：
