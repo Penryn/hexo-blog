@@ -16,7 +16,35 @@ tags:
 然后开始跟着去年tiancy学长的[前端课程](https://www.bilibili.com/video/BV1dm4y1W7z1/?spm_id_from=333.788&vd_source=092e077c0b01da14fa19effa14a36a19)开始学习，发现是vue+ts的，于是开始速通ts,然后跟着视频学习vue-router、pinia、axios、element-ui
 
 ## 前端初始化(~~踩坑指南~~)
+配置前提,安装[node.js](https://nodejs.org/zh-cn),安装完就有npm了
+注：npm (Node Package Manager) 是 JavaScript 的包管理工具和软件包管理器，主要用于管理和分享 JavaScript 代码包。它是 Node.js 的默认包管理器，并且是全球最大的开源库之一。
+输入以下代码看一下安装好了吗
+```
+node -v
+
+npm -v
+```
+切换npm镜像源
+```
+  临时改变镜像源 
+  npm --registry=https://registry.npmmirror.com
+
+  永久设置为淘宝镜像源
+  npm config set registry https://registry.npmmirror.com
+```
+如果速度太慢，可以换一个包管理器（cnpm/pnpm）,选一个就行
+```
+  npm install -g cnpm 
+  cnpm -v
+
+  npm install -g pnpm
+  pnpm -v
+```
+
+
 去年我好像也配了前端环境来着，不知道为什么，刚开始报错了，于是吧`pnpm`重新安装了一遍。
+
+以下是[vite](https://cn.vitejs.dev/guide/)的项目初始化，如果安装了其他包管理器，可以把npm换掉
 ```
 npm create vite {{name}} --template vue
 
