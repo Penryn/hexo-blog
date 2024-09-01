@@ -24,7 +24,7 @@ node -v
 
 npm -v
 ```
-切换npm镜像源
+切换npm镜像源，正常官方镜像源太慢，换成淘宝源
 ```
   临时改变镜像源 
   npm --registry=https://registry.npmmirror.com
