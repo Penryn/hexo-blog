@@ -19,6 +19,11 @@ tags:
 去年我好像也配了前端环境来着，不知道为什么，刚开始报错了，于是吧`pnpm`重新安装了一遍。
 ```
 npm create vite {{name}} --template vue
+
+###安装依赖
+npm i
+##启动项目
+npm run dev
 ```
 
 ### 初始化项目目录介绍
