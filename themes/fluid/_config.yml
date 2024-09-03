@@ -1004,7 +1004,7 @@ about:
   banner_img: https://qiuniu.phlin.top/bucket/bg.jpeg
   banner_img_height: 60
   banner_mask_alpha: 0.3
-  avatar: https://qiuniu.phlin.top/bucket/3.jpeg
+  avatar: https://qiuniu.phlin.top/bucket/icon.png
   name: "望舒"
   intro: "技术宅拯救世界"
   # 更多图标可从 https://hexo.fluid-dev.com/docs/icon/ 查找，`class` 代表图标的 css class，添加 `qrcode` 后，图标不再是链接而是悬浮二维码
