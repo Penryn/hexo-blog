@@ -19,13 +19,13 @@ tags:
 配置前提,安装[node.js](https://nodejs.org/zh-cn),安装完就有npm了
 注：npm (Node Package Manager) 是 JavaScript 的包管理工具和软件包管理器，主要用于管理和分享 JavaScript 代码包。它是 Node.js 的默认包管理器，并且是全球最大的开源库之一。
 输入以下代码看一下安装好了吗
-```
+```sh
 node -v
 
 npm -v
 ```
 切换npm镜像源，正常官方镜像源太慢，换成淘宝源
-```
+```sh
   临时改变镜像源 
   npm --registry=https://registry.npmmirror.com
 
@@ -33,7 +33,7 @@ npm -v
   npm config set registry https://registry.npmmirror.com
 ```
 如果速度太慢，可以换一个包管理器（cnpm/pnpm）,选一个就行
-```
+```sh
   npm install -g cnpm 
   cnpm -v
 
@@ -41,10 +41,11 @@ npm -v
   pnpm -v
 ```
 
+由于笔者使用的是pnpm，所以下面用pnpm为例
 
 去年我好像也配了前端环境来着，不知道为什么，刚开始报错了，于是把`pnpm`重新安装了一遍。
-
-以下是[vite](https://cn.vitejs.dev/guide/)的项目初始化，如果安装了其他包管理器，可以把npm换掉
+由于我们前端项目使用的技术栈是`vue`+`ts`+`vite`+`pinia`+`elementUI`+`axios`。
+以下是vue+[vite](https://cn.vitejs.dev/guide/)的项目初始化，如果安装了其他包管理器，可以把npm换掉
 ```
 npm create vite {{name}} --template vue
 
@@ -102,11 +103,15 @@ module.exports = {
 }
 ```
 
+### `pinia`+`elementUI`+`axios`学习
+这部分内容直接看[去年精弘前端网课](https://www.bilibili.com/video/BV1Qj411z75n/?spm_id_from=333.788)就行，讲的挺好。
+
 ### 处理跨域
-后面基本就很正常了，一路到了发起请求给后端处理跨域时，本来要尝试我的博客里的东西，结果发现我博客的方法是webpack打包的好像，后面学会了用vite挂代理处理，具体可看[这篇文章](https://blog.phlin.top/2024/08/03/cross-origin/)。
+后面基本就很正常了，一路到了发起请求给后端处理跨域时，本来要尝试我的博客里的东西，结果发现我博客的方法是webpack打包的好像，后面学会了用vite挂代理处理，具体可看[这篇文章](https://blog.phlin.top/2024/08/03/cross-origin/)的前端处理办法。
 
 ### ui心得
 这次用的是element-plus，ui调整主要靠的是gpt,真·面向gpt编程，个人感觉效果还算不错。
+
 
 ### 路由守卫报错
 最后这个地方也有报错，具体是pinia和router先后引入的问题，好像系统是先引入router再pinia，因此要调用pinia的全局信息时，要么先提前引入pinia，要么全局信息等声明后再获取。
