@@ -1096,6 +1096,12 @@ links:
       link: "https://blog.f1nley.xyz/post/",
       avatar: "https://avatars.githubusercontent.com/u/32237950?v=4"
     }
+    - {
+      title: "离谱",
+      intro: "离谱的博客",
+      link: "https://blog.liip.fun/",
+      avatar: "https://blog.liip.fun/avatar.jpg"
+    }
 
 
   # 当成员头像加载失败时，替换为指定图片
