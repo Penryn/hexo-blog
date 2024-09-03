@@ -76,7 +76,31 @@ pnpm install typescript -g
 tsc --init
 ```
 ### eslint报错
-在后面又在给项目创建eslint的时候，显示学长的配置文件有误，后面发现是eslint的版本有问题，最终调成8.6就正常了。
+在后面又在给项目创建eslint的时候，显示学长的配置文件有误，后面发现是eslint的最新版本有问题，最终调成8.6就正常了。
+可以使用下面这个这个配置文件`.eslintrc.cjs`，也可以使用网课tiancy学长讲的配置文件。
+```cjs
+require('@rushstack/eslint-patch/modern-module-resolution')
+
+module.exports = {
+  root: true,
+  env: {
+    node: true
+  },
+  'extends': [
+    'plugin:vue/vue3-essential',
+    'eslint:recommended',
+    '@vue/eslint-config-typescript',
+    '@vue/eslint-config-prettier/skip-formatting'
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest'
+  },
+  rules: {
+    "vue/multi-word-component-names": 0,
+    "vue/require-v-for-key": 0
+  }
+}
+```
 
 ### 处理跨域
 后面基本就很正常了，一路到了发起请求给后端处理跨域时，本来要尝试我的博客里的东西，结果发现我博客的方法是webpack打包的好像，后面学会了用vite挂代理处理，具体可看[这篇文章](https://blog.phlin.top/2024/08/03/cross-origin/)。
@@ -86,7 +110,4 @@ tsc --init
 
 ### 路由守卫报错
 最后这个地方也有报错，具体是pinia和router先后引入的问题，好像系统是先引入router再pinia，因此要调用pinia的全局信息时，要么先提前引入pinia，要么全局信息等声明后再获取。
-
-最后附上[大作业完成地址](https://github.com/Penryn/forum)
-
 
