@@ -19,7 +19,7 @@ tags:
 ```
 cat /etc/lsb-release
 ```
-
+# 本地安装
 ### 导入包管理系统使用的公钥
 从终端安装，gnupg如果curl它们尚不可用：
 ```
@@ -81,6 +81,7 @@ sudo systemctl enable mongod
 sudo systemctl stop mongod
 sudo systemctl restart mongod
 ```
+
 
 ### 新增用户
 MongoDB好像是可以直接免用户登录的，我们先设置一个用户供我们外部数据库连接
@@ -162,4 +163,41 @@ mongosh -u new_root -p
 注意设置账号密码后，登录需要密码，同时也要设置对应数据库，默认是admin的数据库，操作如下：
 ```
 mongosh --username yourUsername --password yourPassword --authenticationDatabase yourDatabaseName
+```
+
+# docker安装
+先拉取docker镜像
+```
+docker pull mongo:latest
+```
+启动运行镜像，并新建管理员账号
+```
+docker run --name mongodb -d -p 28017:27017 -v /home/data/mongo:/data/db -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=abc123 mongo
+```
+进入容器
+```
+docker exec -it mongodb /bin/bash
+```
+进入mongo,并输入密码
+```
+mongosh -u root -p
+```
+进入默认test，我们可以取admin看我们刚创建的管理账号
+```
+use admin
+db.getUsers()
+```
+QA表新建用户给程序使用
+```
+use qa
+db.createUser(
+  {
+    user: "new_root",
+    pwd: "abc123",
+    roles: [
+      { role: "readWrite", db: "QA" }
+    ]
+  }
+)
+db.getUsers()
 ```
