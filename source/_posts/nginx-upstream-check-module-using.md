@@ -60,7 +60,7 @@ git clone https://github.com/yaoweibin/nginx_upstream_check_module.git
 
 ### 4. 配置和编译 NGINX
 
-在编译时添加 `nginx_upstream_check_module` 模块：
+打个补丁并在编译时添加 `nginx_upstream_check_module` 模块：
 
 ```bash
 patch -p1 < nginx_upstream_check_module/check_1.20.1+.patch
