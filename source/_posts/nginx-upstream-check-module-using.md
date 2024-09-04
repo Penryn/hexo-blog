@@ -76,8 +76,25 @@ sudo make install
 
 ### 6. 添加环境变量
 你可能执行第七步时显示找不到nginx，可能是你已经将 Nginx 安装到了 `/usr/local/nginx` 目录下，而不是默认的 `/usr/sbin` 目录。
-```
+
+#### 仅当前会话有效
+更新 Unix 系统中的 PATH 环境变量
+```sh
 export PATH=$PATH:/usr/local/nginx/sbin
+```
+
+#### 永久更改
+打开shell启动文件
+```sh
+vim ~/.bashrc
+```
+在文件的末尾添加以下行
+```vim
+export PATH=$PATH:/usr/local/nginx/sbin
+```
+保存退出后，运行一下命令使生效
+```sh
+source ~/.bashrc
 ```
 ### 7. 验证安装
 
