@@ -106,7 +106,8 @@ nginx -V
 ![](https://qiuniu.phlin.top/bucket/202409050335941.png)
 在输出的配置选项中，应该能看到 `--add-module=.../nginx_upstream_check_module`。
 
-其他命令
+### 8. nginx命令和设置systemd进程守护
+#### nginx简单命令
 ```bash
 //启动
 nginx 
@@ -116,8 +117,8 @@ nginx -s quit
  ps aux | grep nginx
 ```
 
-这样，你就能成功地为已安装的 NGINX 添加 `nginx_upstream_check_module` 模块了。
-如果要设置为system，则在/etc/systemd/system/nginx.service添加
+#### systemd进程守护 
+如果要设置为systemd，则在/etc/systemd/system/nginx.service添加
 ```vim
 [Unit]
 Description=A high-performance web server and reverse proxy server
@@ -140,7 +141,7 @@ sudo systemctl start nginx.service
 sudo systemctl status nginx.service
 ```
 
-### 8. 配置文件说明  
+### 9. 配置文件说明  
 以下是对应的nginx的配置文件
 ```vim
 worker_processes auto;  # 根据CPU核心数量动态调整工作进程数，优化资源使用
