@@ -103,7 +103,7 @@ source ~/.bashrc
 ```bash
 nginx -V
 ```
-
+![](https://qiuniu.phlin.top/bucket/202409050335941.png)
 在输出的配置选项中，应该能看到 `--add-module=.../nginx_upstream_check_module`。
 
 其他命令
@@ -140,6 +140,7 @@ sudo systemctl start nginx.service
 sudo systemctl status nginx.service
 ```
 
+### 8. 配置文件说明  
 以下是对应的nginx的配置文件
 ```vim
 worker_processes auto;  # 根据CPU核心数量动态调整工作进程数，优化资源使用
