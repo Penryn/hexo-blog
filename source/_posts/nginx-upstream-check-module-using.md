@@ -7,7 +7,8 @@ tags:
 ---
 
 # 前情提要
-要考虑内外网正方和统一的流量切换，笔者首先想到的是nginx好像也有健康检查功能，但原生的nginx,只有被动的健康检查能力，即仅在有请求时才会检测后端节点的健康状态。后面在黑白的建议下，发现有nginx_upstream_check_module这个不错的第三方模块，可以实现主动的健康检查。
+要考虑内外网正方和统一的流量切换，笔者首先想到的是nginx好像也有健康检查功能，但原生的nginx,只有被动的健康检查能力，即仅在有请求时才会检测后端节点的健康状态。后面在黑白的建议下，发现第三方模块[nginx_upstream_check_module](https://github.com/yaoweibin/nginx_upstream_check_module)效果还不错，可以实现主动的健康检查。
+
 ## 主动健康检查的概念
 
 主动健康检查指的是 Nginx 定期主动地向后端服务发送探测请求，检查其健康状态。当发现某个服务出现异常时，Nginx 会将其从健康列表中移除；当服务恢复正常时，Nginx 会将其重新加入健康列表。与 Nginx 自带的被动健康检查不同，`nginx_upstream_check_module` 提供了更加平滑的业务切换功能。
@@ -387,8 +388,10 @@ docker compose down
 ```
 ## 运行效果
 访问`localhost/status`就可以查看上流服务的结果
+都成功的效果
 ![](https://qiuniu.phlin.top/bucket/202409050238100.png)
-
+当其中一个服务突然停掉
+![](https://qiuniu.phlin.top/bucket/202409050318491.png)
 
 ### 字段解释
 
