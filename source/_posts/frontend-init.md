@@ -48,7 +48,8 @@ npm -v
 由于我们前端项目使用的技术栈是`vue`+`ts`+`vite`+`pinia`+`elementUI`+`axios`。
 以下是vue+[vite](https://cn.vitejs.dev/guide/)的项目初始化，如果安装了其他包管理器，可以把npm换掉
 ```
-npm create vite {{name}} --template vue
+## name是项目名
+npm create vite name --template vue
 
 ###安装依赖
 npm i
