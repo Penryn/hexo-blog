@@ -6,7 +6,7 @@ tags:
   - vue
 ---
 
-## 学习体会
+## 学习体会和路线分享
 这个暑假想简单学一下前端，想简单成为一个~~全栈~~工程师，于是打算把大作业写完。
 
 由于是有一点点去年仅剩的三件套的认识，于是自己先前几天简单速通了一下`js`和`html`的语法，然后先试着用简单的三件套写了一下登录和新建并查看帖子，大概熟悉了一下简单的页面编写。
@@ -16,7 +16,8 @@ tags:
 然后开始跟着去年tiancy学长的[前端课程](https://www.bilibili.com/video/BV1dm4y1W7z1/?spm_id_from=333.788&vd_source=092e077c0b01da14fa19effa14a36a19)开始学习，发现是vue+ts的，于是开始速通ts,然后跟着视频学习vue-router、pinia、axios、element-ui
 
 ## 前端初始化(~~踩坑指南~~)
-配置前提,安装[node.js](https://nodejs.org/zh-cn),安装完就有npm了
+### 配置前提
+安装[node.js](https://nodejs.org/zh-cn),安装完就有npm了
 注：npm (Node Package Manager) 是 JavaScript 的包管理工具和软件包管理器，主要用于管理和分享 JavaScript 代码包。它是 Node.js 的默认包管理器，并且是全球最大的开源库之一。
 输入以下代码看一下安装好了吗
 ```sh
