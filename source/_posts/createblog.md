@@ -19,7 +19,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 2. 安装完毕后可以通过cmd命令行输入node -v,npm -v和git --version来验证，如果出现下图则安装成功。
   ![图片](https://qiuniu.phlin.top/bucket/1.png)
 3. 修改npm的镜像源为在国内更为稳定的淘宝镜像源（建议永久设置）
-```git
+```sh
   临时改变镜像源 
   npm --registry=https://registry.npmmirror.com
 
@@ -38,7 +38,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
  ![图片](https://qiuniu.phlin.top/bucket/3.png)
 
 3. 创建成功后在桌面点击右键，Git Bash Here，打开Git的命令行输入这两行代码
-```
+```sh
   git config --global user.name "此处填写你注册github时的用户名"
   git config --global user.email "此处填写你注册github时的邮箱"
 ```
@@ -49,7 +49,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 
 ## 3.安装Hexo
 1. 首先新建一个文件夹👀作为你的博客文件的存放位置，点进去打开Git命令行分别输入
-```
+```sh
   # hexo框架的安装
   npm install -g hexo-cli
   
@@ -60,7 +60,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
   npm install
 ```
 2. 等待运行完成，你会发现此时文件夹内多了好多文件。此时本地搭建完成，我们来运行一下试试看，输入以下命令.
-```
+```sh
   hexo g           
   hexo s                                          
 ```
@@ -70,16 +70,19 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 ## 4.发布到github
 我们已经完成了Hexo下载安装和本地运行，接下来将本地博客发布到Github让别人也能通过网址访问你的博客。
 1. 在博客所在文件夹下打开Git命令行，分别输入以下命令(如果上面安装了cnpm则可以把下面的npm换成cnpm)
-```
+```sh
   # 安装用来发布的插件
   npm install hexo-deployer-git --save
- ​
+ 
+```
+
+2. 在 C:/Users/[电脑登录的用户名] 目录下找到名为.ssh 的文件夹，在当前目录输入以下代码
+```sh
   # 将本地目录与Github关联起来
   # 这步输入后一直回车即可
   ssh-keygen -t rsa -C "你的邮箱地址"
 ```
-
-2. 在 C:/Users/[电脑登录的用户名] 目录下找到名为.ssh 的文件夹，打开其中的 id_rsa.pub，复制里面的的内容。 然后打开 Github，点击右上角的头像 Settings 选择 SSH and GPG keys。
+然后再打开其中的 id_rsa.pub，复制里面的的内容。 然后打开 Github，点击右上角的头像 Settings 选择 SSH and GPG keys。
 ![图片](https://qiuniu.phlin.top/bucket/6.png)
 ![图片](https://qiuniu.phlin.top/bucket/7.png)
 
@@ -92,14 +95,14 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 ![图片](https://qiuniu.phlin.top/bucket/9.png)
 
 6. 然后滑到文件最底部deploy处添加如下代码：
-```
+```vim
   type: git
   repo: git@github.com:github用户名/github用户名.github.io.git          
-  branch: master     (或者是main)
+  branch: main
 ```
 
 7.最后一步，生成页面并发布，我们执行如下命令
-```
+```sh
   # generate, Hexo会根据配置文件渲染出一套静态页面
   hexo g
  ​
