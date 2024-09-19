@@ -1102,6 +1102,12 @@ links:
       link: "https://blog.liip.fun/",
       avatar: "https://blog.liip.fun/avatar.jpg"
     }
+    - {
+      title: "Tiancy",
+      intro: "Tiancy的博客",
+      link: "https://blog.tiancy.cn/",
+      avatar: "https://blog.tiancy.cn/medias/avatar.jpg"
+    }
 
 
   # 当成员头像加载失败时，替换为指定图片
