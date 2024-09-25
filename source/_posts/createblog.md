@@ -76,32 +76,33 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
  
 ```
 
-2. 在 C:/Users/[电脑登录的用户名] 目录下找到名为.ssh 的文件夹，在当前目录输入以下代码
+2. 先生成.ssh文件夹
 ```sh
   # 将本地目录与Github关联起来
   # 这步输入后一直回车即可
   ssh-keygen -t rsa -C "你的邮箱地址"
 ```
+3. 在 C:/Users/[电脑登录的用户名] 目录下找到名为.ssh 的文件夹，在当前目录输入以下代码
 然后再打开其中的 id_rsa.pub，复制里面的的内容。 然后打开 Github，点击右上角的头像 Settings 选择 SSH and GPG keys。
 ![图片](https://qiuniu.phlin.top/bucket/6.png)
 ![图片](https://qiuniu.phlin.top/bucket/7.png)
 
-3. 点击 New SSH key 将之前复制的内容粘帖到 Key 的框中，Title 可以随意，点击 Add SSH key 完成添加
+4. 点击 New SSH key 将之前复制的内容粘帖到 Key 的框中，Title 可以随意，点击 Add SSH key 完成添加
 ![图片](https://qiuniu.phlin.top/bucket/8.png)
 
-4. 回到命令行界面测试是否与Github连接成功，输入ssh -T git@github.com，出现一个询问内容输入yes，出现You’ve successfully …说明连接成功。
+5. 回到命令行界面测试是否与Github连接成功，输入ssh -T git@github.com，出现一个询问内容输入yes，出现You’ve successfully …说明连接成功。
 
-5. 进入博客站点目录，用文本编辑器打开_config.yml，这个_config.yml 是博客的配置文件，在以后会经常使用到，修改如下图的几个地方：
+6. 进入博客站点目录，用文本编辑器打开_config.yml，这个_config.yml 是博客的配置文件，在以后会经常使用到，修改如下图的几个地方：
 ![图片](https://qiuniu.phlin.top/bucket/9.png)
 
-6. 然后滑到文件最底部deploy处添加如下代码：
+7. 然后滑到文件最底部deploy处添加如下代码：
 ```vim
   type: git
   repo: git@github.com:github用户名/github用户名.github.io.git          
   branch: main
 ```
 
-7.最后一步，生成页面并发布，我们执行如下命令
+8.最后一步，生成页面并发布，我们执行如下命令
 ```sh
   # generate, Hexo会根据配置文件渲染出一套静态页面
   hexo g
