@@ -1108,6 +1108,24 @@ links:
       link: "https://blog.tiancy.cn/",
       avatar: "https://blog.tiancy.cn/medias/avatar.jpg"
     }
+    - {
+      title: "mgogo",
+      intro: "勾勾的博客",
+      link: "https://blog.mggo.xyz",
+      avatar: "https://blog.mggo.xyz/img/avatar.png"
+    }
+    - {
+      title: "SugarMGP",
+      intro: "白糖的记事本",
+      link: "https://blog.sugarmgp.icu/",
+      avatar: "https://blog.sugarmgp.icu/img/avatar.png"
+    }
+    - {
+      title: "前端萌中萌",
+      intro: "前端萌中萌的博客",
+      link: "https://imjh.xyz",
+      avatar: "https://www.imjh.xyz/img/my_avator.jpg"
+    }
 
 
   # 当成员头像加载失败时，替换为指定图片
