@@ -82,7 +82,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
   # 这步输入后一直回车即可
   ssh-keygen -t rsa -C "你的邮箱地址"
 ```
-3. 在 C:/Users/[电脑登录的用户名] 目录下找到名为.ssh 的文件夹，在当前目录输入以下代码
+3. 在 C:/Users/[电脑登录的用户名] 目录下找到名为.ssh 的文件夹
 然后再打开其中的 id_rsa.pub，复制里面的的内容。 然后打开 Github，点击右上角的头像 Settings 选择 SSH and GPG keys。
 ![图片](https://qiuniu.phlin.top/bucket/6.png)
 ![图片](https://qiuniu.phlin.top/bucket/7.png)
