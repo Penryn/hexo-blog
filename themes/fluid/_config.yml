@@ -310,7 +310,7 @@ web_analytics:
 
     # umami 的 website id，需要在 umami 后台创建站点后获取
     # umami website id, get after create website in umami
-    website_id:
+    website_id: 4a130619-b468-45f4-9b4c-3eaf0ec723c9
 
     # 如果你只想统计特定的域名可以填入此字段，多个域名通过逗号分隔，这可以避免统计 localhost。
     # If you only want to tracker to specific domains you can fill in this field, multiple domain names are separated by commas, which can avoid tracker localhost
@@ -326,13 +326,13 @@ web_analytics:
 
     # 填写 umami 部署的服务器地址，如 "https://umami.example.com"
     # server url of umami deployment, such as "https://umami.example.com"
-    api_server:
+    api_server: https://umami.phlin.top
 
 # Canonical 用于向 Google 搜索指定规范网址，开启前确保 hexo _config.yml 中配置 `url: http://yourdomain.com`
 # Canonical, to specify a canonical URL for Google Search, need to set up `url: http://yourdomain.com` in hexo _config.yml
 # See: https://support.google.com/webmasters/answer/139066
 canonical:
-  enable: false
+  enable: true
 
 # 对页面中的图片和评论插件进行懒加载处理，可见范围外的元素不会提前加载
 # Lazy loading of images and comment plugin on the page
