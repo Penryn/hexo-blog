@@ -1126,6 +1126,12 @@ links:
       link: "https://imjh.xyz",
       avatar: "https://www.imjh.xyz/img/my_avator.jpg"
     }
+    - {
+      title: "fufffh",
+      intro: "小付同学的博客",
+      link: "https://fufffh.github.io/archives/",
+      avatar: "https://img.picui.cn/free/2024/10/23/67191c08cae0f.png"
+    }
 
 
   # 当成员头像加载失败时，替换为指定图片
