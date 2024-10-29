@@ -110,7 +110,7 @@ feed:
   limit: 
   hub:
   content:
-  content_limit: 140
+  content_limit: 
   content_limit_delim: ' '
   order_by: -date
 
