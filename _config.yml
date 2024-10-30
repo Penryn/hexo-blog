@@ -104,6 +104,7 @@ theme: fluid
 deploy:
   type: ''
 
+
 feed:
   type: rss2
   path: rss2.xml
