@@ -397,7 +397,7 @@ navbar:
       key: '菜单',
       icon: 'iconfont icon-codeforces',
       submenu: [
-        { key: "留言", link: "/comments", icon: "iconfont icon-pen" },
+        { key: "留言", link: "/comments/", icon: "iconfont icon-pen" },
         { key: "rss", link: "/rss2.xml", icon: "iconfont icon-rss-fill" },
       ]
   }
