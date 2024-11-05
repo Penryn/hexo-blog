@@ -1215,3 +1215,11 @@ static_prefix:
   hint: https://lib.baomitu.com/hint.css/2.7.0/
 
   moment: https://lib.baomitu.com/moment.js/2.29.4/
+
+
+
+# 加载动画
+loading:
+  enable: true
+  play_time: 500
+  avatar_url: "https://qiuniu.phlin.top/bucket/icon.png"  # 在这里存放头像的 URL
