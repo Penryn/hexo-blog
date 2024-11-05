@@ -242,6 +242,8 @@ custom_js:
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/love.min.js #鼠标点击出爱心
   - /js/scrollAnimation.js
   - https://qiuniu.phlin.top/static/waline.js #评论系统
+  - /js/comment.js
+  - /js/comments.js
 
 
 # 指定自定义 .css 文件路径，用法和 custom_js 相同
@@ -391,7 +393,14 @@ navbar:
     - { key: "tag", link: "/tags/", icon: "iconfont icon-tags-fill" }
     - { key: "about", link: "/about/", icon: "iconfont icon-user-fill" }
     - { key: "links", link: "/links/", icon: "iconfont icon-link-fill" }
-    - { key: "rss", link: "/rss2.xml", icon: "iconfont icon-rss-fill" }
+    - {
+      key: '菜单',
+      icon: 'iconfont icon-codeforces',
+      submenu: [
+        { key: "留言", link: "/comments", icon: "iconfont icon-pen" },
+        { key: "rss", link: "/rss2.xml", icon: "iconfont icon-rss-fill" },
+      ]
+  }
 
 
 # 搜索功能，基于 hexo-generator-search 插件，若已安装其他搜索插件请关闭此功能，以避免生成多余的索引文件
@@ -1223,3 +1232,11 @@ loading:
   enable: true
   play_time: 500
   avatar_url: "https://qiuniu.phlin.top/bucket/icon.png"  # 在这里存放头像的 URL
+
+
+danmaku:
+  enabled: true
+  page: '/comments/' # 激活弹幕的页面
+  line: 10 # 弹幕行数
+  speed: 20 # 弹幕速度
+  loop: true # 启用循环播放

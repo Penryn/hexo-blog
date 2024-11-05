@@ -26,6 +26,21 @@
   <%- js(theme.custom_js) %>
 <% } %>
 
+<!-- 注入 danmakuConfig 配置到页面中 -->
+<script>
+  // 从 Hexo 配置中注入 danmaku 配置到前端使用
+  const danmakuConfig = {
+    page: '<%= theme.danmaku.page %>' || '/comments/',    // 弹幕页面，字符串类型
+    line: <%- theme.danmaku.line %> || 10,                // 弹幕行数，数值类型
+    speed: <%- theme.danmaku.speed %> || 20,              // 弹幕播放速度，数值类型
+    hover: <%= theme.danmaku.hover ? true : false %>,     // 悬停效果，布尔值
+    loop: <%= theme.danmaku.loop ? true : false %>        // 循环播放，布尔值
+  };
+</script>
+
+<!-- 在注入 danmakuConfig 后再加载 comments.js 文件 -->
+<%- js_ex(theme.static_prefix.internal_js, 'comments.js') %>
+
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
 <%- js_ex(theme.static_prefix.internal_js, 'boot.js') %>
