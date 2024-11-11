@@ -8,7 +8,7 @@ tags:
 ---
 
 
-由于笔者想要给博客设置看板娘，但现在网上搜到的基本都是hexo-helper-live2d，同时因为它所引用的[love2d模型](https://github.com/xiazeyu/live2d-widget-models)版本过于老旧，不能够使用自己的模型，最后在我几经搜索，终于找到这两个不错的库。（笔者使用的是第二个，所以就写第二个的使用指南了）
+由于笔者想要给博客设置看板娘，但现在网上搜到的基本都是hexo-helper-live2d，同时因为它所引用的[live2d模型](https://github.com/xiazeyu/live2d-widget-models)版本过于老旧，不能够使用自己的模型，最后在我几经搜索，终于找到这两个不错的库。（笔者使用的是第二个，所以就写第二个的使用指南了）
 
 1. [live2d-widget](https://github.com/stevenjoezhang/live2d-widget)
 
