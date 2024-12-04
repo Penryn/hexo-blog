@@ -129,18 +129,18 @@ OhMyLive2d:
 
     mobileDisplay: false # 是否在移动端显示
     models:
-      - path: /live2d/简/简.model3.json
-        mobilePosition: [-10, 23] # 移动端时模型在舞台中的位置。 默认值: [0,0] [横坐标, 纵坐标]
-        mobileScale: 0.1 # 移动端时模型的缩放比例 默认值: 0.1
-        mobileStageStyle: # 移动端时舞台的样式
-          width: 180
-          height: 166
-        motionPreloadStrategy: IDLE # 动作预加载策略 默认值: IDLE 可选值: ALL | IDLE | NONE
-        position: [-60, -50] # 模型在舞台中的位置。 默认值: [0,0] [横坐标, 纵坐标]
-        scale: 0.1 # 模型的缩放比例 默认值: 0.1
-        stageStyle:
-          width: 250
-          height: 250
+      # - path: /live2d/简/简.model3.json
+      #   mobilePosition: [-10, 23] # 移动端时模型在舞台中的位置。 默认值: [0,0] [横坐标, 纵坐标]
+      #   mobileScale: 0.1 # 移动端时模型的缩放比例 默认值: 0.1
+      #   mobileStageStyle: # 移动端时舞台的样式
+      #     width: 180
+      #     height: 166
+      #   motionPreloadStrategy: IDLE # 动作预加载策略 默认值: IDLE 可选值: ALL | IDLE | NONE
+      #   position: [-60, -50] # 模型在舞台中的位置。 默认值: [0,0] [横坐标, 纵坐标]
+      #   scale: 0.1 # 模型的缩放比例 默认值: 0.1
+      #   stageStyle:
+      #     width: 250
+      #     height: 250
       - path: /live2d/focalors/Focalors.model3.json
         mobilePosition: [-10, 23] # 移动端时模型在舞台中的位置。 默认值: [0,0] [横坐标, 纵坐标]
         mobileScale: 0.1 # 移动端时模型的缩放比例 默认值: 0.1
