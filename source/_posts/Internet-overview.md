@@ -96,7 +96,7 @@ tags:
    - 引起了转发时延。
    - 需要传输额外的信息量，每个数据块要加上源地址，目的地址等控制信息，从而构成分组。
 ### 总结
-![](https://qiuniu.phlin.top/bucket/202409201524429.png)
+![](https://qiuniu.phlin.cn/bucket/202409201524429.png)
 
 
 ## 计算机网络分类
@@ -126,7 +126,7 @@ tags:
 ## 性能指标
 ### 速率
 连接在计算机网络上的主机在数字信道上传送比特速率，也称为比特率或数据率。
-![](https://qiuniu.phlin.top/bucket/202409201553747.png)
+![](https://qiuniu.phlin.cn/bucket/202409201553747.png)
 下面补充数据量的单位转换
 ![[Pasted image 20240920155338.png]]
 ### 带宽
@@ -143,7 +143,7 @@ tags:
    **定义**：
    - 发送时延是指主机将数据从发送端的网络接口传输到网络中的时间。它取决于要发送的数据量和网络链路的带宽。
    ![[Pasted image 20240920160921.png]
-![](https://qiuniu.phlin.top/bucket/202409201606814.png)
+![](https://qiuniu.phlin.cn/bucket/202409201606814.png)
    
    **影响因素**：
    - 数据包大小：数据包越大，发送时延越长。
@@ -157,7 +157,7 @@ tags:
    **定义**：
    - 传播时延是指数据在物理介质（如光纤、电缆）上传播的时间，它取决于信号传播的距离和传播速度（通常是光速的一部分）。
    
-![](https://qiuniu.phlin.top/bucket/202409201607613.png)
+![](https://qiuniu.phlin.cn/bucket/202409201607613.png)
    
    **影响因素**：
    - 传输距离：距离越远，传播时延越长。
@@ -168,7 +168,7 @@ tags:
    - 对于长距离传输（如卫星通信或跨大洲通信），传播时延较显著。
 
    **举例**：
-![](https://qiuniu.phlin.top/bucket/202409201608627.png)
+![](https://qiuniu.phlin.cn/bucket/202409201608627.png)
 #### 3. **处理时延 (Processing Delay)**
    **定义**：
    - 处理时延是指路由器或交换机在接收数据包时，解析包头信息、决定转发路径，以及执行其他相关处理所花费的时间。（可包含排队时延）
@@ -208,12 +208,12 @@ tags:
 
 ## 常见体系结构
 
-![](https://qiuniu.phlin.top/bucket/202409201635098.png)
+![](https://qiuniu.phlin.cn/bucket/202409201635098.png)
 
 
-![](https://qiuniu.phlin.top/bucket/202409201634663.png)
+![](https://qiuniu.phlin.cn/bucket/202409201634663.png)
 
 ### 分层必要性
-![](https://qiuniu.phlin.top/bucket/202409201642458.png)
+![](https://qiuniu.phlin.cn/bucket/202409201642458.png)
 ### 各层数据单元
-![](https://qiuniu.phlin.top/bucket/202409201740230.png)
+![](https://qiuniu.phlin.cn/bucket/202409201740230.png)

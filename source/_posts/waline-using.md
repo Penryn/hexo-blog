@@ -78,4 +78,4 @@ waline:
   pageSize: 10
 ```
 3. 最终效果
-![](https://qiuniu.phlin.top/bucket/202408252209585.png)
+![](https://qiuniu.phlin.cn/bucket/202408252209585.png)

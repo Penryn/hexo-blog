@@ -205,7 +205,7 @@ vim /etc/nginx/conf.d/xxx.conf
 server {  
     listen 80;  
     ## 服务端绑定的域名  
-    server_name phlin.top;  
+    server_name phlin.cn;  
   
     location / {  
         ## 需要映射到的后端服务端口  
@@ -213,11 +213,11 @@ server {
     }  
 }
 ```
-- 在`server_name`填入你要绑定的域名，比如我这边就是`phlin.top`
+- 在`server_name`填入你要绑定的域名，比如我这边就是`phlin.cn`
 - 在`proxy_pass`填入你需要映射到的端口，比如我需要的是 8080 端口
 - `listen 80`表示的是监听的端口，因为 http 请求默认访问的是 80 端口，举例来说当我们在访问`www.baidu.com`的时候其实访问的是`www.baidu.com:80`，不过 80 可以省略
 
-将上面的代码理解一下就是当我直接访问`phlin.top`时，Nginx 会监听到 80 端口有请求，然后做一个反向代理将这个请求发送到 8080 端口，实现将对域名的请求映射到 ip:port  
+将上面的代码理解一下就是当我直接访问`phlin.cn`时，Nginx 会监听到 80 端口有请求，然后做一个反向代理将这个请求发送到 8080 端口，实现将对域名的请求映射到 ip:port  
 将修改完的代码粘贴进配置文件  
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=)  
 按`Esc`退出编辑模式，输入`:wq`（包括`:`，在英文输入法下）后回车即保存退出
@@ -266,7 +266,7 @@ vim /etc/nginx/conf.d/xxx.conf
 server {  
     listen 80;  
     ## 服务端绑定的域名  
-    server_name phlin.top;  
+    server_name phlin.cn;  
     ## 强制跳转https  
     rewrite ^/(.*) https://$server_name$request_uri? permanent;  
 }  
@@ -275,7 +275,7 @@ server {
     ## SSL 默认访问端口号为 443  
     listen 443 ssl;  
     ## 请填写绑定证书的域名  
-    server_name phlin.top;  
+    server_name phlin.cn;  
     ## 请填写证书文件的相对路径或绝对路径  
     ssl_certificate /etc/nginx/cert/xxx.crt;  
     ## 请填写私钥文件的相对路径或绝对路径  
@@ -452,7 +452,7 @@ vim /etc/nginx/conf.d/xxx.conf
 server {  
     listen 80;  
     ## 前端绑定的域名  
-    server_name phlin.top;  
+    server_name phlin.cn;  
   
     location / {  
         ## 打包文件的路径  
@@ -478,7 +478,7 @@ server {
 在原先的基础上修改
 
 - `listen`修改为 80，表示的是监听的端口，因为 http 请求默认访问的是 80 端口，举例来说当我们在访问`www.baidu.com`的时候其实访问的是`www.baidu.com:80`，不过 80 可以省略
-- 在`server_name`填入你要绑定的域名，比如我这边就是phlin.top`
+- 在`server_name`填入你要绑定的域名，比如我这边就是phlin.cn`
 
 修改完后按`Esc`退出编辑模式，输入`:wq`（包括`:`，在英文输入法下）后回车即保存退出
 
@@ -486,7 +486,7 @@ server {
 
 `sudo nginx -s reload`重启 Nginx 以应用修改  
 **注：需要确保云服务器 80 端口放开**  
-在浏览器输入`http://phlin.top`（对应你自己的域名）  
+在浏览器输入`http://phlin.cn`（对应你自己的域名）  
 可以看到能正常访问
 
 #### 配置 SSL 证书（可选）
@@ -519,7 +519,7 @@ vim /etc/nginx/conf.d/xxx.conf
 server {  
     listen 80;  
     ## 前端绑定的域名  
-    server_name phlin.top;  
+    server_name phlin.cn;  
     ## 强制跳转https  
     rewrite ^/(.*) https://$server_name$request_uri? permanent;  
 }  
@@ -528,7 +528,7 @@ server {
     ## SSL 默认访问端口号为 443  
     listen 443 ssl;  
     ## 请填写绑定证书的域名  
-    server_name phlin.top;  
+    server_name phlin.cn;  
     ## 请填写证书文件的相对路径或绝对路径  
     ssl_certificate /etc/nginx/cert/xxx.crt;  
     ## 请填写私钥文件的相对路径或绝对路径  
@@ -568,7 +568,7 @@ server {
 
 `sudo nginx -s reload`重启 Nginx 以应用修改  
 **注：需要确保云服务器 80 和 443 端口放开**  
-在浏览器输入`https://phlin.top`（对应你自己的域名）  
+在浏览器输入`https://phlin.cn`（对应你自己的域名）  
 可以看到能正常访问  
 实际在访问 http 时也会强制跳转到 https，这里就不做演示了
 

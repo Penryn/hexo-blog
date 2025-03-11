@@ -35,7 +35,7 @@ Header的主要作用是用来标识。通常是两部分组成：
 
 - `typ`：type 的简写，令牌类型，也就是JWT。
 - `alg`：Algorithm 的简写，加密签名算法。一般使用HS256，jwt官网提供了12种的加密算法，截图如下：
-![](https://qiuniu.phlin.top/bucket/202408301549178.png)
+![](https://qiuniu.phlin.cn/bucket/202408301549178.png)
 Header的明文示例：
 
 ```json
@@ -172,7 +172,7 @@ JWT的工作流程可概括为三个阶段：认证、签发和验证。
 4. 用户在后续请求中将JWT作为凭证，通常放在请求头的Authorization字段中（格式为`Authorization: Bearer <JWT>`），发送至服务器。
 5. 服务器收到请求后，解析JWT并验证其签名与有效期，验证通过则根据JWT信息判断用户身份和权限，返回资源或执行操作。
 流程图如下：
-![](https://qiuniu.phlin.top/bucket/202408301713373.png)
+![](https://qiuniu.phlin.cn/bucket/202408301713373.png)
 
 # 代码实现
 ## Golang实现
@@ -300,7 +300,7 @@ func JWTAuthMiddleware()func(c *gin.Context){
 ```
 # 内容补充
 ## 跨域处理
-通常情况下，前端会将后端返回的`token`前加上Bearer令牌（即在前面加上`Bearer `,含一个空格），并放在请求头的`Authorization`字段里返回给后端，因此后端处理跨域是要设置`Access-Control-Allow-Headers`为`Authorization`,具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.top/2024/08/03/cross-origin/)
+通常情况下，前端会将后端返回的`token`前加上Bearer令牌（即在前面加上`Bearer `,含一个空格），并放在请求头的`Authorization`字段里返回给后端，因此后端处理跨域是要设置`Access-Control-Allow-Headers`为`Authorization`,具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.cn/2024/08/03/cross-origin/)
 ## 单点登录
 由于jwt鉴权的无状态性，使得其实现单点登录很容易，因此这里就不过多赘述，后面有空再补充完善吧。
 ## 注销问题

@@ -16,7 +16,7 @@ function danmu() {
 
     // 定义一个函数获取并更新弹幕数据
     function fetchAndUpdateDanmu() {
-        fetch(`https://waline.phlin.top/api/comment?path=/comments/&page=1&pageSize=100&sortBy=insertedAt_asc`, {
+        fetch(`https://waline.phlin.cn/api/comment?path=/comments/&page=1&pageSize=100&sortBy=insertedAt_asc`, {
             method: "GET",
             headers: { 'Content-Type': 'application/json' }
         })

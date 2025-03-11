@@ -103,7 +103,7 @@ source ~/.bashrc
 ```bash
 nginx -V
 ```
-![](https://qiuniu.phlin.top/bucket/202409050335941.png)
+![](https://qiuniu.phlin.cn/bucket/202409050335941.png)
 在输出的配置选项中，应该能看到 `--add-module=.../nginx_upstream_check_module`。
 
 ### 8. nginx命令和设置systemd进程守护
@@ -408,9 +408,9 @@ docker compose down
 ## 运行效果
 访问`localhost/status`就可以查看上流服务的结果
 都成功的效果
-![](https://qiuniu.phlin.top/bucket/202409050238100.png)
+![](https://qiuniu.phlin.cn/bucket/202409050238100.png)
 当其中一个服务突然停掉
-![](https://qiuniu.phlin.top/bucket/202409050318491.png)
+![](https://qiuniu.phlin.cn/bucket/202409050318491.png)
 
 ### 字段解释
 

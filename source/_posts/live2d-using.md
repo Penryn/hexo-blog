@@ -134,4 +134,4 @@ OhMyLive2d:
 ```
 
 ### 最终效果
-![](https://qiuniu.phlin.top/bucket/202408252215159.png)
+![](https://qiuniu.phlin.cn/bucket/202408252215159.png)

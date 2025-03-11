@@ -95,7 +95,7 @@ HTTP协议定义Web客户端如何从Web服务器请求Web页面，以及服务�
 
 ### 1、客户端连接到Web服务器
 
-一个HTTP客户端，通常是浏览器，与Web服务器的HTTP端口（默认为80）建立一个TCP套接字连接。例如，http://blog.phlin.top/，当浏览器访问这个 _URL_ 时，它根据 _URL_ 格式解析出服务器主机部分 `blog.phlin.top` 。这是一个域名，必须先通过 [DNS](https://baike.baidu.com/item/%E5%9F%9F%E5%90%8D%E7%B3%BB%E7%BB%9F?fromModule=lemma_search-box) 解析为 _IP_ 地址后，方能连接。
+一个HTTP客户端，通常是浏览器，与Web服务器的HTTP端口（默认为80）建立一个TCP套接字连接。例如，http://blog.phlin.cn/，当浏览器访问这个 _URL_ 时，它根据 _URL_ 格式解析出服务器主机部分 `blog.phlin.cn` 。这是一个域名，必须先通过 [DNS](https://baike.baidu.com/item/%E5%9F%9F%E5%90%8D%E7%B3%BB%E7%BB%9F?fromModule=lemma_search-box) 解析为 _IP_ 地址后，方能连接。
 
 ### 2、发送HTTP请求
 
@@ -776,9 +776,9 @@ HTTP 传输是基于 **请求-应答** 的模式进行的，报文必须是一
 
 一个域名不是可以并发 6 个长连接吗？那我就多分几个域名。
 
-比如 content1.phlin.top 、content2.phlin.top。
+比如 content1.phlin.cn 、content2.phlin.cn。
 
-这样一个 phlin.top 域名下可以分出非常多的二级域名，而它们都指向同样的一台服务器，能够并发的长连接数更多了，事实上也更好地解决了队头阻塞的问题。
+这样一个 phlin.cn 域名下可以分出非常多的二级域名，而它们都指向同样的一台服务器，能够并发的长连接数更多了，事实上也更好地解决了队头阻塞的问题。
 
 ## TCP/IP 与 HTTP 有什么关系吗？
 TCP/IP（Transmission Control Protocol/Internet Protocol，传输控制协议/网际协议）是指能够在多个不同网络间实现信息传输的协议簇。TCP/IP 协议不仅仅指的是 TCP 和 IP 两个协议，而是指一个由 FTP、SMTP、TCP、UDP、IP 等协议构成的协议簇， 只是因为在 TCP/IP 协议中 TCP 协议和 IP 协议最具代表性，所以被称为 TCP/IP 协议。

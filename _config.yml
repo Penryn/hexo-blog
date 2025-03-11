@@ -14,7 +14,7 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://blog.phlin.top
+url: https://blog.phlin.cn
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -119,7 +119,7 @@ feed:
 OhMyLive2d:
   enable: true
   # CDN: https://registry.npmmirror.com/oh-my-live2d/latest/files
-  CDN: https://qiuniu.phlin.top/static/index.min.js
+  CDN: https://qiuniu.phlin.cn/static/index.min.js
   option:
     # importType: 'cubism2' # 导入类型, 默认使用全量导入: complete , 可选值: complete, cubism2, cubism5
     libraryUrls: # 自定义 Cubism SDK 外部资源地址
