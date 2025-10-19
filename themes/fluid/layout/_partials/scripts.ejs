@@ -94,23 +94,68 @@
             return;
           }
           var opt = cfg.option || {};
+          // merge helper for tips styles
+          function mergeTips(base, extra) {
+            var out = {};
+            base = base || {};
+            for (var k in base) if (Object.prototype.hasOwnProperty.call(base, k)) out[k] = base[k];
+            for (var k2 in extra) if (Object.prototype.hasOwnProperty.call(extra, k2)) out[k2] = extra[k2];
+            return out;
+          }
+
           var options = {
             mobileDisplay: !!opt.mobileDisplay,
             models: Array.isArray(opt.models) ? opt.models : [],
             parentElement: resolveParentElement(opt.parentElement),
             primaryColor: opt.primaryColor,
             sayHello: !!opt.sayHello,
+            // place stage on the right by default
+            dockedPosition: 'right',
             libraryUrls: opt.libraryUrls || undefined,
             // Ensure stage is visible even if defaults keep it translated or size 0
             stageStyle: Object.assign({
               position: 'fixed',
-              right: '12px',
+              right: '32px',
               bottom: '0px',
               width: '280px',
               height: '280px',
               zIndex: '2147483646',
-              transform: 'none'
-            }, opt.stageStyle || {})
+              transform: 'none',
+              left: 'auto'
+            }, opt.stageStyle || {}),
+            // Fix tips (speech bubble) position: anchor to stage right-top area
+            tips: (function(){
+              var t = opt.tips || {};
+              // place bubble centered above stage
+              var style = mergeTips(t.style, {
+                right: 'auto',
+                left: '50%',
+                top: 'auto',
+                bottom: 'calc(100% + 8px)',
+                transform: 'translateX(-50%)',
+                width: (t.style && t.style.width) || '240px'
+              });
+              var mstyle = mergeTips(t.mobileStyle, {
+                right: 'auto',
+                left: '50%',
+                top: 'auto',
+                bottom: 'calc(100% + 8px)',
+                transform: 'translateX(-50%)',
+                width: (t.mobileStyle && t.mobileStyle.width) || '180px'
+              });
+              return Object.assign({}, t, { style: style, mobileStyle: mstyle });
+            })(),
+            // Move vertical menus a bit further left
+            menus: (function(){
+              var m = opt.menus || {};
+              var style = mergeTips(m.style, {
+                left: (m.style && m.style.left) || '-28px'
+              });
+              var mstyle = mergeTips(m.mobileStyle, {
+                left: (m.mobileStyle && m.mobileStyle.left) || '-24px'
+              });
+              return Object.assign({}, m, { style: style, mobileStyle: mstyle });
+            })()
           };
           try {
             if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; console && console.log && console.log('[OhMyLive2D] stage exists, skip init'); return; }
