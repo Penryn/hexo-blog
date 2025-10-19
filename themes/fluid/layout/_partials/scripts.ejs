@@ -73,6 +73,9 @@
       }
       function loadOML() {
         if (!shouldLoad()) return;
+        if (window.__oml2d_loading || window.__oml2d_loaded) { return; }
+        if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; return; }
+        window.__oml2d_loading = true;
         console && console.log && console.log('[OhMyLive2D] start loading');
         var s = document.createElement('script');
         var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/latest/files/index.min.js';
@@ -80,6 +83,7 @@
         s.src = primary;
         s.defer = true;
         s.onload = function () {
+          window.__oml2d_sdk_loaded = true;
           // oh-my-live2d exposes either `OML2D.loadOml2d` (modern) or `OhMyLive2D.load` (legacy/packaged)
           var api = null;
           var apiType = '';
@@ -96,13 +100,22 @@
             parentElement: resolveParentElement(opt.parentElement),
             primaryColor: opt.primaryColor,
             sayHello: !!opt.sayHello,
-            libraryUrls: opt.libraryUrls || undefined
+            libraryUrls: opt.libraryUrls || undefined,
+            // Ensure stage is visible even if defaults keep it translated or size 0
+            stageStyle: Object.assign({
+              position: 'fixed',
+              right: '12px',
+              bottom: '0px',
+              width: '280px',
+              height: '280px',
+              zIndex: '2147483646',
+              transform: 'none'
+            }, opt.stageStyle || {})
           };
           try {
+            if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; console && console.log && console.log('[OhMyLive2D] stage exists, skip init'); return; }
             var oml2d = api(options);
-            if (oml2d && typeof oml2d.stageSlideIn === 'function') {
-              try { oml2d.stageSlideIn(); } catch(_) {}
-            }
+            // Let library control stage animation; avoid forcing double slide-in
             var hookStr = <%- JSON.stringify(config.OhMyLive2d.then || '') %>;
             if (hookStr) {
               try {
@@ -111,6 +124,7 @@
                 else try { eval(hookStr); } catch(_) {}
               } catch (e) { /* ignore hook error */ }
             }
+            window.__oml2d_loaded = true;
             console && console.log && console.log('[OhMyLive2D] loaded via', apiType);
           } catch (e) { console && console.error && console.error('[OhMyLive2D] load error', e); }
         };
