@@ -1,3 +1,31 @@
+function escapeHTML(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function sanitizeURL(url) {
+  try {
+    const u = new URL(url, window.location.origin);
+    if (u.protocol === 'http:' || u.protocol === 'https:') {
+      return u.href;
+    }
+  } catch (_) {}
+  return '';
+}
+
 class EasyDanmaku {
     constructor(t) {
         this.container = this.checkParams(t);
@@ -105,7 +133,7 @@ class EasyDanmaku {
         placeDanmu(); // 开始放置弹幕
     }
 
-    // 批量发送弹幕
+    // 批量发送弹幕（对内容进行转义，头像 URL 校验）
     batchSend(contentList, hasAvatar = false, style = null) {
         const intervalTime = this.runtime || 1.23 * contentList.length;
         this.originList = contentList;
@@ -123,13 +151,17 @@ class EasyDanmaku {
             }
 
             if (hasAvatar) {
-                this.send(
-                    { content: `<img src="${contentList[this.originIndex].avatar}" style="height: 30px; width: 30px; border-radius: 50%; margin-right: 5px;">
-                                <p style="margin: 0;">${contentList[this.originIndex].content}</p>` },
-                    style || this.wrapperStyle
+                const raw = contentList[this.originIndex] || {};
+                const safeAvatar = escapeAttr(
+                  sanitizeURL(raw.avatar) || 'https://cravatar.cn/avatar/d615d5793929e8c7d70eab5f00f7f5f1?d=mp'
                 );
+                const safeText = escapeHTML(raw.content || '');
+                const html = `<img src="${safeAvatar}" style="height: 30px; width: 30px; border-radius: 50%; margin-right: 5px;">` +
+                             `<p style="margin: 0;">${safeText}</p>`;
+                this.send({ content: html }, style || this.wrapperStyle);
             } else {
-                this.send({ content: contentList[this.originIndex].content }, style || this.wrapperStyle);
+                const safeText = escapeHTML((contentList[this.originIndex] || {}).content || '');
+                this.send({ content: safeText }, style || this.wrapperStyle);
             }
 
             this.originIndex++;
