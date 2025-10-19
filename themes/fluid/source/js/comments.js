@@ -1,4 +1,7 @@
 function danmu() {
+    if (typeof window === 'undefined' || typeof window.danmakuConfig === 'undefined') {
+        return;
+    }
     // 如果当前页面不是指定的弹幕页面或屏幕宽度小于 768，则不初始化弹幕
     if (location.pathname !== danmakuConfig.page || document.body.clientWidth < 768) return;
 
@@ -85,8 +88,9 @@ function formatDanmaku(str) {
     return str;
 }
 
-// 初始化弹幕
-danmu();
-
-// 使用 PJAX 导航时重新初始化弹幕
-document.addEventListener("pjax:complete", danmu);
+// 初始化弹幕（仅当配置存在时）
+if (typeof window !== 'undefined' && typeof window.danmakuConfig !== 'undefined') {
+    danmu();
+    // 使用 PJAX 导航时重新初始化弹幕
+    document.addEventListener("pjax:complete", danmu);
+}
