@@ -142,7 +142,7 @@ OhMyLive2d:
       #   stageStyle:
       #     width: 250
       #     height: 250
-      - path: /live2d/focalors/Focalors.model3.json
+      - path: https://qiuniu.phlin.cn/blog/Focalors.model3.json
         mobilePosition: [-10, 23] # 移动端时模型在舞台中的位置。 默认值: [0,0] [横坐标, 纵坐标]
         mobileScale: 0.1 # 移动端时模型的缩放比例 默认值: 0.1
         mobileStageStyle: # 移动端时舞台的样式
