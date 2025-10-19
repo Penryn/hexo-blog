@@ -11,14 +11,14 @@ comment: 'waline'
     position: fixed;
     left: 0;
     top: 60px;
-    z-index: 1;
+    z-index: 999;
     pointer-events: none;
     opacity: 0.9; /* 添加轻微透明效果 */
     transition: opacity 0.3s ease-in-out; /* 平滑的过渡效果 */
   }
 
-  .hidedanmu {
-    opacity: 0;
+  #danmu.hidedanmu {
+    opacity: 0 !important;
     pointer-events: none !important;
   }
 
@@ -26,6 +26,8 @@ comment: 'waline'
     display: flex;
     justify-content: center;
     margin-top: 20px; /* 为了更好的可见性，增加一些边距 */
+    position: relative;
+    z-index: 1001; /* 放在弹幕层之上 */
   }
 
   #danmuBtn button {
@@ -81,27 +83,8 @@ comment: 'waline'
 欢迎在此留言或发送弹幕！😊你可以直接发表评论，评论内容将以弹幕形式显示在页面上。
 {% endnote %}
 
-{% note pink 'fa-solid fa-link' flat %}
-若想 **添加友链** 请前往 [友情链接](/link/) 页面进行友链申请 😄
-{% endnote %}
 
-
-<!-- <div id="danmuBtn"></div> -->
+<div id="danmuBtn"></div>
 <div id="danmu"></div>
 
-<script>
-  // 获取按钮和弹幕容器元素
-  const danmuElement = document.getElementById('danmu');
-  const showDanmuBtn = document.getElementById('showDanmuBtn');
-  const hideDanmuBtn = document.getElementById('hideDanmuBtn');
-
-  // 显示弹幕的功能
-  showDanmuBtn.addEventListener('click', function() {
-    danmuElement.classList.remove('hidedanmu');
-  });
-
-  // 隐藏弹幕的功能
-  hideDanmuBtn.addEventListener('click', function() {
-    danmuElement.classList.add('hidedanmu');
-  });
-</script>
+<!-- 弹幕开关按钮由主题的 comments.js 自动注入到 #danmuBtn 中 -->

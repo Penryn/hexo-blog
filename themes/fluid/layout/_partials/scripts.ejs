@@ -35,7 +35,8 @@
 <% if (shouldLoadDanmaku) { %>
   <!-- 注入 danmakuConfig 配置到页面中（仅弹幕页加载） -->
   <script>
-    const danmakuConfig = {
+    // 使用 window 挂载，确保其他脚本可访问
+    window.danmakuConfig = {
       page: '<%= theme.danmaku.page %>' || '/comments/',
       line: <%- theme.danmaku.line %> || 10,
       speed: <%- theme.danmaku.speed %> || 20,
@@ -161,14 +162,26 @@
             if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; console && console.log && console.log('[OhMyLive2D] stage exists, skip init'); return; }
             var oml2d = api(options);
             // Let library control stage animation; avoid forcing double slide-in
-            var hookStr = <%- JSON.stringify(config.OhMyLive2d.then || '') %>;
-            if (hookStr) {
+            // 安全地解析回调函数名，避免使用 eval
+            (function(){
+              var hookName = <%- JSON.stringify((config.OhMyLive2d && config.OhMyLive2d.then) || '') %>;
+              if (!hookName || typeof hookName !== 'string') return;
+              function resolve(path) {
+                try {
+                  var parts = path.split('.');
+                  var ctx = window;
+                  for (var i = 0; i < parts.length; i++) {
+                    if (!ctx) return null;
+                    ctx = ctx[parts[i]];
+                  }
+                  return typeof ctx === 'function' ? ctx : null;
+                } catch(_) { return null; }
+              }
               try {
-                var hook = eval(hookStr);
-                if (typeof hook === 'function') hook(oml2d);
-                else try { eval(hookStr); } catch(_) {}
-              } catch (e) { /* ignore hook error */ }
-            }
+                var fn = resolve(hookName);
+                if (fn) { fn(oml2d); }
+              } catch(_) { /* ignore hook error */ }
+            })();
             window.__oml2d_loaded = true;
             console && console.log && console.log('[OhMyLive2D] loaded via', apiType);
           } catch (e) { console && console.error && console.error('[OhMyLive2D] load error', e); }

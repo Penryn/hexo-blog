@@ -19,11 +19,18 @@ function escapeAttr(str) {
 function sanitizeURL(url) {
   try {
     const u = new URL(url, window.location.origin);
-    if (u.protocol === 'http:' || u.protocol === 'https:') {
+    // 仅允许 https，避免混合内容与降级攻击
+    if (u.protocol === 'https:') {
       return u.href;
     }
   } catch (_) {}
   return '';
+}
+
+function truncateText(text, maxLen) {
+  const s = String(text || '');
+  if (!maxLen || s.length <= maxLen) return s;
+  return s.slice(0, maxLen) + '…';
 }
 
 class EasyDanmaku {
@@ -44,6 +51,8 @@ class EasyDanmaku {
         this.overflowArr = []; // 用于存储溢出的弹幕
         this.sentComments = new Set(); // 存储已经发送过的弹幕评论
         this.clearIng = false; // 标记是否正在清理弹幕
+        this._hoverBound = false;
+        this._batchTimer = null;
         this.init();
         this.handleEvents(t);
     }
@@ -57,7 +66,7 @@ class EasyDanmaku {
     init() {
         this.runstatus = 1;
         this.container.style.overflow = "hidden";
-        if (this.hover) this.handleMouseHover();
+        if (this.hover && !this._hoverBound) this.handleMouseHover();
         if (Utils.getStyle(this.container, "position") !== "relative" &&
             Utils.getStyle(this.container, "position") !== "fixed") {
             this.container.style.position = "relative";
@@ -135,6 +144,11 @@ class EasyDanmaku {
 
     // 批量发送弹幕（对内容进行转义，头像 URL 校验）
     batchSend(contentList, hasAvatar = false, style = null) {
+        // 清理上一次批量发送的计划
+        if (this._batchTimer) {
+            try { clearTimeout(this._batchTimer); } catch(_) {}
+            this._batchTimer = null;
+        }
         const intervalTime = this.runtime || 1.23 * contentList.length;
         this.originList = contentList;
         this.originIndex = 0;
@@ -155,17 +169,17 @@ class EasyDanmaku {
                 const safeAvatar = escapeAttr(
                   sanitizeURL(raw.avatar) || 'https://cravatar.cn/avatar/d615d5793929e8c7d70eab5f00f7f5f1?d=mp'
                 );
-                const safeText = escapeHTML(raw.content || '');
-                const html = `<img src="${safeAvatar}" style="height: 30px; width: 30px; border-radius: 50%; margin-right: 5px;">` +
+                const safeText = escapeHTML(truncateText(raw.content || '', 120));
+                const html = `<img src="${safeAvatar}" referrerpolicy="no-referrer" style="height: 30px; width: 30px; border-radius: 50%; margin-right: 5px;">` +
                              `<p style="margin: 0;">${safeText}</p>`;
                 this.send({ content: html }, style || this.wrapperStyle);
             } else {
-                const safeText = escapeHTML((contentList[this.originIndex] || {}).content || '');
+                const safeText = escapeHTML(truncateText((contentList[this.originIndex] || {}).content || '', 120));
                 this.send({ content: safeText }, style || this.wrapperStyle);
             }
 
             this.originIndex++;
-            setTimeout(sendNextDanmu, intervalTime / contentList.length * 1000);
+            this._batchTimer = setTimeout(sendNextDanmu, intervalTime / contentList.length * 1000);
         };
 
         sendNextDanmu();
@@ -209,6 +223,20 @@ class EasyDanmaku {
             danmu.style.transition = `transform ${remainingTime}s linear`;
             danmu.style.transform = `translateX(-${danmu.parentNode.offsetWidth + danmu.offsetWidth + 130}px)`; // 继续滚动
         });
+        this._hoverBound = true;
+    }
+
+    // 释放资源，便于 PJAX 或重复初始化时清理
+    dispose() {
+        try { clearInterval(this.cleartimer); } catch(_) {}
+        try { clearTimeout(this._batchTimer); } catch(_) {}
+        this.cleartimer = null;
+        this._batchTimer = null;
+        this.sentComments && this.sentComments.clear && this.sentComments.clear();
+        this.overflowArr = [];
+        if (this.container) {
+            try { this.container.innerHTML = ''; } catch(_) {}
+        }
     }
 }
 
