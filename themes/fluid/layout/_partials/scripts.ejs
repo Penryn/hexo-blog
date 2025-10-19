@@ -64,18 +64,31 @@
       }
       function shouldLoad() {
         var mobileDisplay = cfg.option && typeof cfg.option.mobileDisplay === 'boolean' ? cfg.option.mobileDisplay : false;
-        if (!mobileDisplay && (window.innerWidth < 768 || /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry/i.test(navigator.userAgent))) {
+        var isNarrow = window.matchMedia ? window.matchMedia('(max-width: 767px)').matches : (window.innerWidth < 768);
+        if (!mobileDisplay && isNarrow) {
+          console && console.log && console.log('[OhMyLive2D] skip by width: mobileDisplay=false', { width: window.innerWidth });
           return false;
         }
         return true;
       }
       function loadOML() {
         if (!shouldLoad()) return;
+        console && console.log && console.log('[OhMyLive2D] start loading');
         var s = document.createElement('script');
-        s.src = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/latest/files/index.min.js';
+        var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/latest/files/index.min.js';
+        var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@latest/dist/index.min.js';
+        s.src = primary;
         s.defer = true;
         s.onload = function () {
-          if (!window.OhMyLive2D || !window.OhMyLive2D.load) return;
+          // oh-my-live2d exposes either `OML2D.loadOml2d` (modern) or `OhMyLive2D.load` (legacy/packaged)
+          var api = null;
+          var apiType = '';
+          if (window.OML2D && typeof window.OML2D.loadOml2d === 'function') { api = window.OML2D.loadOml2d; apiType = 'OML2D'; }
+          else if (window.OhMyLive2D && typeof window.OhMyLive2D.load === 'function') { api = window.OhMyLive2D.load; apiType = 'OhMyLive2D'; }
+          if (!api) {
+            console && console.warn && console.warn('[OhMyLive2D] global API not found');
+            return;
+          }
           var opt = cfg.option || {};
           var options = {
             mobileDisplay: !!opt.mobileDisplay,
@@ -86,27 +99,42 @@
             libraryUrls: opt.libraryUrls || undefined
           };
           try {
-            var p = window.OhMyLive2D.load(options);
+            var oml2d = api(options);
+            if (oml2d && typeof oml2d.stageSlideIn === 'function') {
+              try { oml2d.stageSlideIn(); } catch(_) {}
+            }
             var hookStr = <%- JSON.stringify(config.OhMyLive2d.then || '') %>;
-            if (hookStr && typeof p.then === 'function') {
+            if (hookStr) {
               try {
                 var hook = eval(hookStr);
-                if (typeof hook === 'function') p.then(hook);
+                if (typeof hook === 'function') hook(oml2d);
+                else try { eval(hookStr); } catch(_) {}
               } catch (e) { /* ignore hook error */ }
             }
-          } catch (e) { /* ignore load error */ }
+            console && console.log && console.log('[OhMyLive2D] loaded via', apiType);
+          } catch (e) { console && console.error && console.error('[OhMyLive2D] load error', e); }
+        };
+        s.onerror = function () {
+          console && console.warn && console.warn('[OhMyLive2D] primary CDN failed, retry fallback');
+          var f = document.createElement('script');
+          f.src = fallback;
+          f.defer = true;
+          f.onload = s.onload;
+          f.onerror = function(){ console && console.error && console.error('[OhMyLive2D] fallback CDN failed'); };
+          document.head.appendChild(f);
         };
         document.head.appendChild(s);
       }
       function start() {
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(loadOML);
-        } else {
-          window.setTimeout(loadOML, 0);
-        }
+        // 尽早加载，同时再设一个兜底定时器，避免某些环境下 rIC 不触发
+        loadOML();
+        window.setTimeout(function(){ try { loadOML(); } catch(_){} }, 2000);
       }
       if (document.readyState === 'complete') start();
-      else window.addEventListener('load', start, { once: true });
+      else {
+        window.addEventListener('load', start, { once: true });
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+      }
     })();
   </script>
 <% } %>
