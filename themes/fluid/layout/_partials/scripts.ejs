@@ -47,6 +47,70 @@
   <%- js_ex(theme.static_prefix.internal_js, 'comments.js') %>
 <% } %>
 
+<% if (config.OhMyLive2d && config.OhMyLive2d.lazy) { %>
+  <script>
+    (function () {
+      var cfg = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
+      function resolveParentElement(val) {
+        if (!val) return document.body;
+        if (typeof val === 'string') {
+          if (val === 'document.body') return document.body;
+          try {
+            var el = document.querySelector(val);
+            return el || document.body;
+          } catch (_) { return document.body; }
+        }
+        return document.body;
+      }
+      function shouldLoad() {
+        var mobileDisplay = cfg.option && typeof cfg.option.mobileDisplay === 'boolean' ? cfg.option.mobileDisplay : false;
+        if (!mobileDisplay && (window.innerWidth < 768 || /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry/i.test(navigator.userAgent))) {
+          return false;
+        }
+        return true;
+      }
+      function loadOML() {
+        if (!shouldLoad()) return;
+        var s = document.createElement('script');
+        s.src = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/latest/files/index.min.js';
+        s.defer = true;
+        s.onload = function () {
+          if (!window.OhMyLive2D || !window.OhMyLive2D.load) return;
+          var opt = cfg.option || {};
+          var options = {
+            mobileDisplay: !!opt.mobileDisplay,
+            models: Array.isArray(opt.models) ? opt.models : [],
+            parentElement: resolveParentElement(opt.parentElement),
+            primaryColor: opt.primaryColor,
+            sayHello: !!opt.sayHello,
+            libraryUrls: opt.libraryUrls || undefined
+          };
+          try {
+            var p = window.OhMyLive2D.load(options);
+            var hookStr = <%- JSON.stringify(config.OhMyLive2d.then || '') %>;
+            if (hookStr && typeof p.then === 'function') {
+              try {
+                var hook = eval(hookStr);
+                if (typeof hook === 'function') p.then(hook);
+              } catch (e) { /* ignore hook error */ }
+            }
+          } catch (e) { /* ignore load error */ }
+        };
+        document.head.appendChild(s);
+      }
+      function start() {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadOML);
+        } else {
+          window.setTimeout(loadOML, 0);
+        }
+      }
+      if (document.readyState === 'complete') start();
+      else window.addEventListener('load', start, { once: true });
+    })();
+  </script>
+<% } %>
+
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
 <%- js_ex(theme.static_prefix.internal_js, 'boot.js') %>

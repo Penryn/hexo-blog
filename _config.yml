@@ -117,7 +117,8 @@ feed:
 
 # _config.yml
 OhMyLive2d:
-  enable: true
+  enable: false # disable plugin injection; we lazy-load via theme
+  lazy: true
   # CDN: https://registry.npmmirror.com/oh-my-live2d/latest/files
   CDN: https://qiuniu.phlin.cn/static/index.min.js
   option:
