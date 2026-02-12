@@ -1,6 +1,13 @@
 ---
 title: 矩阵与线性变换
 date: 2024-01-24 11:44:12
+updated: 2024-01-24 11:44:12
+description: "明明线代已经考完了，笔者现在才重新在几何理解线代，属实有点奇怪。"
+keywords:
+  - "线性代数"
+  - "人工智能"
+  - "数学"
+index_img: https://qiuniu.phlin.cn/bucket/202408252343293.png
 categories: 数学
 tags: 
  - 线性代数
@@ -31,6 +38,7 @@ tags:
 ![矩阵与线性变换配图](https://qiuniu.phlin.cn/bucket/202408252344237.png)
 ![矩阵与线性变换配图](https://qiuniu.phlin.cn/bucket/202408252344024.png)
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

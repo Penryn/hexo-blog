@@ -1,6 +1,12 @@
 ---
 title: 炎魂后端一面面经
 date: 2025-04-15 23:30:33
+updated: 2025-04-15 23:30:33
+description: "## 笔试 一到场，先让做一份笔试试卷（里面是算法二选一➕场景题） 算法1:有一个数组和一个target，要求返回两数之和为target的下标 算法2:没看没印象 场景题：多人协作文档要怎么共享给全部人看？离线设备和远程服务器数据冲突..."
+keywords:
+  - "golang"
+  - "面试回顾"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 面试回顾
 tags:
   - golang
@@ -62,6 +68,7 @@ tags:
     
 与上面炎魂比感觉太水了，而且公司较远、上班还早，工资一般般，业务也不是纯互联网企业，遂想拒绝。
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

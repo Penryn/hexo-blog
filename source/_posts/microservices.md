@@ -1,6 +1,12 @@
 ---
 title: 微服务框架理解
 date: 2024-10-03 20:00:10
+updated: 2024-10-03 20:00:10
+description: "因为到处都说要微服务，而且前段时间年级群有发一个实习介绍，其中也特意介绍了优先选有了解过微服务架构，基于此，笔者特写下此文以了解微服务架构。"
+keywords:
+  - "微服务框架理解"
+  - "技术博客"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 tags:
 ---
 
@@ -121,6 +127,7 @@ tags:
 这篇讲了一些微服务的部分实践和设计模式
 [微服务架构最强讲解，那叫一个通俗易懂！](https://developer.aliyun.com/article/860475)
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

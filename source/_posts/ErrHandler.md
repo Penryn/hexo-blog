@@ -1,6 +1,14 @@
 ---
 title: 全局错误处理和日志的简单使用
 date: 2024-05-15 15:48:34
+updated: 2024-05-15 15:48:34
+description: "因为，前端总是因为各种稀奇原因报服务错误，而gin本身的日志信息及其简洁，因此~~老登~~部长让我写一个日志系统，在写日志系统前，应该先了解一下全局错误处理，这样可方便我们对错误信息进行处理，以便形成一个日志。"
+keywords:
+  - "golang"
+  - "中间件"
+  - "日志"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - golang
@@ -321,6 +329,7 @@ func ErrHandler() gin.HandlerFunc {
 }
 ```
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

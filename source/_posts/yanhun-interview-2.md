@@ -1,6 +1,12 @@
 ---
 title: 炎魂后端二面面经
 date: 2025-04-17 15:27:11
+updated: 2025-04-17 15:27:11
+description: "你们组织部门是一个怎么样性质（学生社团还是跟学校合作） 3."
+keywords:
+  - "golang"
+  - "面试回顾"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 面试回顾
 tags:
   - golang
@@ -35,6 +41,7 @@ tags:
 1. 公司业务
 2. 假设我进入公司后，我会去做什么工作
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

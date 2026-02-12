@@ -1,6 +1,14 @@
 ---
 title: eino学习小记(一)
 date: 2025-03-19 21:11:28
+updated: 2025-03-19 21:11:28
+description: "最近因为服外可能要调用ai，因此去调研 Go 相关的 AI 框架。"
+keywords:
+  - "golang"
+  - "eino"
+  - "cloudwego"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - golang
@@ -518,6 +526,7 @@ Redis 的 Zset（有序集合）是面试中的高频考点，主要考察以下
 ## 参考资料
 [Eino用户手册](https://www.cloudwego.io/zh/docs/eino/)(~~可能文档还是有点旧，代码会有些问题~~)
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

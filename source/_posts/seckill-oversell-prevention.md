@@ -1,6 +1,13 @@
 ---
 title: "我对秒杀防超卖的四层方案推演（单体 / MySQL / Redis 预扣 / MQ 异步）"
 date: 2026-1-20 20:30:00
+updated: 2026-1-20 20:30:00
+description: "## 前情提要 上周面试得物时被问到一句很典型的问题：“高并发场景如何避免超卖？”我当时讲得比较混乱。这篇文章就是把那次追问逼我补齐的思考写下来：按系统演进把方案拆成 4 层，从单体到 MySQL，再到 Redis 预扣，最后到 MQ..."
+keywords:
+  - "golang"
+  - "面试"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - golang
@@ -209,6 +216,7 @@ CREATE TABLE mq_consume_log (
 
 **把兜底讲闭环**：每个方案都点名三个异常：重试（幂等键）、局部失败（回滚/补偿）、系统崩溃来不及补偿（对账与重建）。我会强调“宁可少卖不超卖”的立场：对不确定状态，优先让请求失败或排队，库存正确性永远不靠猜。
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

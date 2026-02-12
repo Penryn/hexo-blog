@@ -1,6 +1,12 @@
 ---
 title: 手把手教你搭建属于你自己的hexo博客，并布置在github page上
 date: 2023-11-11 11:35:32
+updated: 2023-11-11 11:35:32
+description: "Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。"
+keywords:
+  - "hexo"
+  - "博客"
+index_img: https://qiuniu.phlin.cn/bucket/1.png
 author: phlin
 categories: 博客
 tags: hexo
@@ -115,6 +121,7 @@ Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（�
 ```
 上传完成后，在浏览器中打开网址 你的github用户名.github.io，查看上传的网页。如果页面变成了之前本地调试时的样子，说明上传完成了。没变的话查看一下上传时命令行窗口的信息有没有错误信息，没有的话等一下或按ctrl+f5刷新清除一下浏览器缓存试试。
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

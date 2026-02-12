@@ -1,6 +1,12 @@
 ---
 title: 前端学习体会及项目初始化
 date: 2024-08-19 14:07:40
+updated: 2024-08-19 14:07:40
+description: "## 学习体会和路线分享 这个暑假想简单学一下前端，想简单成为一个~~全栈~~工程师，于是打算把大作业写完。"
+keywords:
+  - "vue"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - vue

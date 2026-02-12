@@ -1,6 +1,13 @@
 ---
 title: 跨域的原因和处理
 date: 2024-08-03 02:47:19
+updated: 2024-08-03 02:47:19
+description: "## 认识跨域 ### 什么是跨域 跨域本质是浏览器基于同源策略的一种安全手段 浏览器的跨域问题主要指的是浏览器发起的请求。浏览器在发送请求时，会根据同源策略来判断该请求是否可以被发送到目标资源，如果不符合同源策略，则会被浏览器拦截，..."
+keywords:
+  - "golang"
+  - "vue"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - golang
@@ -191,6 +198,7 @@ server {
 }
 ```
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

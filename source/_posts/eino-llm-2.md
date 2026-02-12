@@ -1,6 +1,14 @@
 ---
 title: eino学习小记(二)
 date: 2025-03-22 17:14:28
+updated: 2025-03-22 17:14:28
+description: "书接上回，笔者谈到原来的项目只是人为先去使用工具然后再给ai，而且也没有发挥eino框架的https://www.cloudwego.io/zh/docs/eino/core_modules/chain_and_graph_orche..."
+keywords:
+  - "golang"
+  - "eino"
+  - "cloudwego"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/20250322170230283.png
 categories: 开发
 tags:
   - golang
@@ -43,6 +51,7 @@ ps：
 ## 参考资料
 [Eino用户手册](https://www.cloudwego.io/zh/docs/eino/)
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

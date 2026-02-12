@@ -1,6 +1,13 @@
 ---
 title: 线性回归
 date: 2024-01-28 14:27:10
+updated: 2024-01-28 14:27:10
+description: "在学习神经网络之前，我们先了解一些简单的基础知识，我们以线性回归（预测）和softmax回归（分类）为例，了解简单的神经网络架构，数据处理，制定损失函数和如何训练模型。"
+keywords:
+  - "神经网络"
+  - "pytorch"
+  - "人工智能"
+index_img: https://qiuniu.phlin.cn/bucket/202408252343175.png
 categories: 人工智能
 tags:
   - 神经网络
@@ -225,6 +232,7 @@ print('error in estimating b', true_b - b)
 ```
 相信看到这里你应该对线性回归有简单的认识了。
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

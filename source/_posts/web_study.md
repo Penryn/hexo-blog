@@ -1,6 +1,12 @@
 ---
 title: web后端入门学习
 date: 2024-07-21 19:46:26
+updated: 2024-07-21 19:46:26
+description: "### 学习前置 先https://www.bilibili.com/video/BV1dmakeXED4/?spm_id_from=333.788&vd_source=092e077c0b01da14fa19effa14a36a19..."
+keywords:
+  - "web"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - web
@@ -36,6 +42,7 @@ ai具体有[通义千问](https://tongyi.aliyun.com/qianwen/)、[文心一言](h
 ### 总结
 相信学到这的你已经具备有完成这份大作业的基本素养了，加油！胜利就在前方。
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

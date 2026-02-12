@@ -1,6 +1,12 @@
 ---
 title: go的标准项目布局
 date: 2024-05-12 22:31:30
+updated: 2024-05-12 22:31:30
+description: "因为笔者一开始是在精弘暑期课入门的go，因此主要学习的还是部门项目微精弘的代码目录结构，所以对go的标准目录结构不是很了解，特此出一篇文章来捋一下go现在比较规范的目录结构，以此来学习。"
+keywords:
+  - "golang"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - golang
@@ -119,6 +125,7 @@ project-layout/
 
 经过多方参考，最终形成这样的一个目录，好的目录结构，总能让人眼前一亮，舒舒服服的看下去。项目的目录结构并没有一个强制性规范，我们应该不断看优秀的项目的结构目录，不断优化自己的架构意识，使得自己项目的扩展性加大的同时还能保证清晰。加油(ง •_•)ง
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

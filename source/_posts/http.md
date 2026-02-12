@@ -1,6 +1,13 @@
 ---
 title: HTTP协议介绍和常见面试题总结
-date: 2024-08-22 03:14:54
+date: 2024-08-22 23:14:54
+updated: 2024-08-22 23:14:54
+description: "由于最近开始学习java web，于是顺便把一些基础的东西整理一下，刚好看到http协议这块，遂打算整理。"
+keywords:
+  - "http"
+  - "面试"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - http
@@ -1018,6 +1025,7 @@ Nginx官方默认的 ETag 计算方式是为"文件最后修改时间16进制-�
 [2023 年最新最全的 http 网络面试题](https://www.xiabingbao.com/post/http/http-interview-rrgt3b.html)
 [从输入url到页面展示到底发生了什么](https://cchroot.github.io/interview/pages/interview%20notes/%E4%BB%8E%E8%BE%93%E5%85%A5url%E5%88%B0%E9%A1%B5%E9%9D%A2%E5%B1%95%E7%A4%BA%E5%88%B0%E5%BA%95%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88.html#%E4%B8%BB%E8%A6%81%E8%BF%87%E7%A8%8B%E6%95%B4%E7%90%86)
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

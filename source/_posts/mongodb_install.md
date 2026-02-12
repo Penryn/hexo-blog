@@ -1,6 +1,13 @@
 ---
 title: mongodb安装
 date: 2024-04-26 17:24:13
+updated: 2024-04-26 17:24:13
+description: "问卷系统要求用MongoDB存放答卷数据，因此我在我云服务器上安装了MongoDB 这是官方的https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu..."
+keywords:
+  - "ubuntu"
+  - "mongoDB"
+  - "运维"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 运维
 tags: 
  - ubuntu
@@ -202,6 +209,7 @@ db.createUser(
 db.getUsers()
 ```
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

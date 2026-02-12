@@ -1,6 +1,12 @@
 ---
 title: Go 1.14 ~ Go 1.26 版本演进复盘
 date: 2026-2-12 22:35:00
+updated: 2026-2-12 22:35:00
+description: "开篇摘要 Go 在 1.14 到 1.26 的演进，主线很清晰：先把工程化与运行时打磨到可大规模生产（1.14-1.17），再完成语言能力跃迁（1.18 泛型），最后进入“工具链智能化 + 标准库现代化 + 云原生运行时精细控制”的阶..."
+keywords:
+  - "golang"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - golang
@@ -1547,3 +1553,9 @@ err := fmt.Errorf("access denied: %w and %w", ErrPermission, ErrConfig)
 - maps 包文档: https://pkg.go.dev/maps
 - Type Parameters Proposal: https://go.googlesource.com/proposal/+/master/design/43651-type-parameters.md
 
+<!-- auto-internal-links -->
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%BC%80%E5%8F%91/)

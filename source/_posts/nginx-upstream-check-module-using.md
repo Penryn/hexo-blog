@@ -1,6 +1,12 @@
 ---
 title: 使用nginx_upstream_check_module做流量切换
 date: 2024-09-05 03:11:25
+updated: 2024-09-05 03:11:25
+description: "## 前情提要 要考虑内外网正方和统一的流量切换，笔者首先想到的是nginx好像也有健康检查功能，但原生的nginx,只有被动的健康检查能力，即仅在有请求时才会检测后端节点的健康状态。后面在黑白的建议下，发现第三方模块https://..."
+keywords:
+  - "nginx"
+  - "运维"
+index_img: https://qiuniu.phlin.cn/bucket/202409050335941.png
 categories: 运维
 tags:
   - nginx
@@ -425,6 +431,7 @@ docker compose down
 | **Check Type**  | 健康检查的类型，例如 `http`，表示通过 HTTP 请求检查服务器的健康状态。                      |
 | **Check Port**  | 健康检查使用的端口：<br>- `0`: 使用上游服务器配置的默认端口（通常为 `80`）。               |
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

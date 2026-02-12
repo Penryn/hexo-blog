@@ -4,13 +4,17 @@
   "private": true,
   "packageManager": "pnpm@10.29.3",
   "scripts": {
-    "prebuild": "pnpm seo:links",
+    "prebuild": "pnpm seo:obsidian:fix && pnpm seo:frontmatter && pnpm seo:links",
     "build": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
     "server": "hexo server",
+    "seo:obsidian:fix": "node tools/fix-obsidian-image-syntax.js",
+    "seo:obsidian:check": "node tools/fix-obsidian-image-syntax.js --check",
     "seo:links": "node tools/ensure-internal-links.js",
-    "seo:links:check": "node tools/ensure-internal-links.js --check"
+    "seo:links:check": "node tools/ensure-internal-links.js --check",
+    "seo:frontmatter": "node tools/backfill-frontmatter.js",
+    "seo:frontmatter:check": "node tools/backfill-frontmatter.js --check"
   },
   "hexo": {
     "version": "7.3.0"

@@ -1,0 +1,256 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const POSTS_DIR = path.join(process.cwd(), 'source', '_posts');
+const DEFAULT_INDEX_IMG = 'https://qiuniu.phlin.cn/bucket/hero.webp';
+
+function parseFrontMatter(content) {
+  const match = content.match(/^---\n([\s\S]*?)\n---\n?/);
+  if (!match) {
+    return {
+      hasFrontMatter: false,
+      frontMatter: '',
+      body: content,
+      frontMatterRaw: ''
+    };
+  }
+
+  return {
+    hasFrontMatter: true,
+    frontMatter: match[1],
+    body: content.slice(match[0].length),
+    frontMatterRaw: match[0]
+  };
+}
+
+function hasKey(frontMatter, key) {
+  return new RegExp(`^${key}:\\s*(?:.*)$`, 'm').test(frontMatter);
+}
+
+function getScalar(frontMatter, key) {
+  const match = frontMatter.match(new RegExp(`^${key}:\\s*(.*)$`, 'm'));
+  if (!match) {
+    return '';
+  }
+  return match[1].trim().replace(/^['"]|['"]$/g, '');
+}
+
+function parseList(frontMatter, key) {
+  const lines = frontMatter.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const m = line.match(new RegExp(`^${key}:\\s*(.*)$`));
+    if (!m) {
+      continue;
+    }
+
+    const value = m[1].trim();
+    if (value === '') {
+      const out = [];
+      let j = i + 1;
+      while (j < lines.length) {
+        const item = lines[j].match(/^\s*-\s+(.+)$/);
+        if (!item) {
+          break;
+        }
+        out.push(item[1].trim().replace(/^['"]|['"]$/g, ''));
+        j++;
+      }
+      return out.filter(Boolean);
+    }
+
+    if (value.startsWith('[') && value.endsWith(']')) {
+      return value.slice(1, -1)
+        .split(',')
+        .map(item => item.trim().replace(/^['"]|['"]$/g, ''))
+        .filter(Boolean);
+    }
+
+    return [value.replace(/^['"]|['"]$/g, '')].filter(Boolean);
+  }
+  return [];
+}
+
+function escapeYamlString(value) {
+  return String(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\r?\n/g, ' ');
+}
+
+function extractFirstImage(body) {
+  const imageMatch = body.match(/!\[[^\]]*]\(([^)\s]+)(?:\s+"[^"]*")?\)/);
+  if (!imageMatch) {
+    return '';
+  }
+  return imageMatch[1].trim();
+}
+
+function extractDescription(body, fallbackTitle) {
+  let text = body;
+  text = text
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')
+    .replace(/\[[^\]]+]\(([^)]+)\)/g, '$1')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/^!\[\[[^\]]+\]\]\s*$/gm, ' ')
+    .replace(/^[ \t]*[-*|>]+/gm, ' ')
+    .replace(/\s+/g, ' ');
+
+  const candidates = text
+    .split(/(?<=[。！？.!?])\s+/)
+    .map(item => item.trim())
+    .filter(Boolean);
+
+  let desc = candidates.find(item => item.length >= 24) || candidates[0] || fallbackTitle || '';
+  desc = desc.trim();
+  if (desc.length > 120) {
+    desc = `${desc.slice(0, 117)}...`;
+  }
+  return desc;
+}
+
+function buildKeywords(frontMatter, title) {
+  const tags = parseList(frontMatter, 'tags');
+  const categories = parseList(frontMatter, 'categories');
+  const merged = [...new Set([...tags, ...categories].map(item => item.trim()).filter(Boolean))];
+
+  if (merged.length > 0) {
+    return merged.slice(0, 8);
+  }
+
+  const cleanTitle = (title || '').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]+/g, '').slice(0, 16);
+  if (cleanTitle) {
+    return [cleanTitle, '技术博客'];
+  }
+  return ['技术博客', '学习笔记'];
+}
+
+function insertMissingFields(frontMatter, body) {
+  const title = getScalar(frontMatter, 'title');
+  const date = getScalar(frontMatter, 'date');
+  const hasUpdated = hasKey(frontMatter, 'updated');
+  const hasDescription = hasKey(frontMatter, 'description');
+  const hasKeywords = hasKey(frontMatter, 'keywords');
+  const hasIndexImg = hasKey(frontMatter, 'index_img');
+
+  const missing = {
+    updated: !hasUpdated,
+    description: !hasDescription,
+    keywords: !hasKeywords,
+    index_img: !hasIndexImg
+  };
+
+  if (!missing.updated && !missing.description && !missing.keywords && !missing.index_img) {
+    return { changed: false, frontMatter };
+  }
+
+  const lines = frontMatter.split('\n');
+  const inserts = [];
+
+  if (missing.updated) {
+    inserts.push(`updated: ${date || new Date().toISOString().slice(0, 19).replace('T', ' ')}`);
+  }
+  if (missing.description) {
+    const description = extractDescription(body, title);
+    inserts.push(`description: "${escapeYamlString(description)}"`);
+  }
+  if (missing.keywords) {
+    const keywords = buildKeywords(frontMatter, title);
+    inserts.push('keywords:');
+    for (const kw of keywords) {
+      inserts.push(`  - "${escapeYamlString(kw)}"`);
+    }
+  }
+  if (missing.index_img) {
+    const firstImg = extractFirstImage(body) || DEFAULT_INDEX_IMG;
+    inserts.push(`index_img: ${firstImg}`);
+  }
+
+  let insertAt = lines.findIndex(line => /^date:\s*/.test(line));
+  if (insertAt === -1) {
+    insertAt = lines.findIndex(line => /^title:\s*/.test(line));
+  }
+  insertAt = insertAt === -1 ? 0 : insertAt + 1;
+
+  lines.splice(insertAt, 0, ...inserts);
+  return { changed: true, frontMatter: lines.join('\n') };
+}
+
+function processFile(filePath, checkOnly) {
+  const original = fs.readFileSync(filePath, 'utf8');
+  const parsed = parseFrontMatter(original);
+
+  if (!parsed.hasFrontMatter) {
+    return { changed: false, missing: false };
+  }
+
+  const next = insertMissingFields(parsed.frontMatter, parsed.body);
+  if (!next.changed) {
+    return { changed: false, missing: false };
+  }
+
+  if (checkOnly) {
+    return { changed: false, missing: true };
+  }
+
+  const rebuilt = `---\n${next.frontMatter}\n---\n${parsed.body}`;
+  if (rebuilt !== original) {
+    fs.writeFileSync(filePath, rebuilt, 'utf8');
+    return { changed: true, missing: false };
+  }
+
+  return { changed: false, missing: false };
+}
+
+function main() {
+  const args = new Set(process.argv.slice(2));
+  const checkOnly = args.has('--check');
+
+  if (!fs.existsSync(POSTS_DIR)) {
+    console.error(`posts directory not found: ${POSTS_DIR}`);
+    process.exit(1);
+  }
+
+  const files = fs.readdirSync(POSTS_DIR)
+    .filter(name => name.endsWith('.md'))
+    .map(name => path.join(POSTS_DIR, name));
+
+  const changed = [];
+  const missing = [];
+
+  for (const file of files) {
+    const result = processFile(file, checkOnly);
+    if (result.changed) {
+      changed.push(path.relative(process.cwd(), file));
+    }
+    if (result.missing) {
+      missing.push(path.relative(process.cwd(), file));
+    }
+  }
+
+  if (checkOnly) {
+    if (missing.length === 0) {
+      console.log('OK: all posts have updated/description/keywords/index_img.');
+      return;
+    }
+    console.log('Missing front-matter metadata in:');
+    for (const file of missing) {
+      console.log(`- ${file}`);
+    }
+    process.exit(1);
+  }
+
+  console.log(`Backfilled files: ${changed.length}`);
+  if (changed.length > 0) {
+    for (const file of changed) {
+      console.log(`- ${file}`);
+    }
+  }
+}
+
+main();

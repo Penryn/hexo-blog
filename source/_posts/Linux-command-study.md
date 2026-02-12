@@ -1,6 +1,13 @@
 ---
 title: Linux命令简单学习
 date: 2024-10-29 16:33:50
+updated: 2024-10-29 16:33:50
+description: "## linux常用命令 命令 | 功能说明 | 应用场景 | 示例 | | 列出指定目录中的文件和目录。"
+keywords:
+  - "linux"
+  - "shell"
+  - "运维"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 运维
 tags: 
  - linux
@@ -88,6 +95,7 @@ tags:
 | `basename`                   | 获取文件名，不包括路径，例如 `basename /path/to/file`。                               |
 | `dirname`                    | 获取文件路径，不包括文件名，例如 `dirname /path/to/file`。                              |
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

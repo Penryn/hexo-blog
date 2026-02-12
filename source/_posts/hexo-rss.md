@@ -1,6 +1,13 @@
 ---
 title: hexo框架添加rss订阅
 date: 2024-08-19 16:11:14
+updated: 2024-08-19 16:11:14
+description: "由于我的博客主题没有默认附带rss订阅，于是得自己手动再装一个。"
+keywords:
+  - "hexo"
+  - "rss"
+  - "博客"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 博客
 tags:
   - hexo
@@ -45,6 +52,7 @@ RSS 2.0: https://your-domain.com/rss2.xml
 //将其中的 your-domain.com 替换为你的实际域名。
 ```
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

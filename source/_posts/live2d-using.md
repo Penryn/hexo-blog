@@ -1,6 +1,13 @@
 ---
 title: hexo博客使用live2d看板娘
 date: 2024-08-25 21:38:40
+updated: 2024-08-25 21:38:40
+description: "由于笔者想要给博客设置看板娘，但现在网上搜到的基本都是hexo-helper-live2d，同时因为它所引用的https://github.com/xiazeyu/live2d-widget-models版本过于老旧，不能够使用自己的..."
+keywords:
+  - "live2d"
+  - "hexo"
+  - "博客"
+index_img: https://qiuniu.phlin.cn/bucket/202408252215159.png
 categories: 博客
 tags: 
  - live2d
@@ -136,6 +143,7 @@ OhMyLive2d:
 ### 最终效果
 ![hexo博客使用live2d看板娘配图](https://qiuniu.phlin.cn/bucket/202408252215159.png)
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)

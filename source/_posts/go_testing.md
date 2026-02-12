@@ -1,6 +1,14 @@
 ---
 title: go测试（基于testing基本库）
 date: 2024-05-02 12:38:15
+updated: 2024-05-02 12:38:15
+description: "老登让我研究一下后端测试，看看MongoDB读写操作的性能，遂开始研究go的testing基本库 在testing的测试有这三种类型——单元测试，基准(性能)测试，示例测试 类型|格式|作用| 测试函数|函数名前缀为Test|测试程序..."
+keywords:
+  - "golang"
+  - "testing"
+  - "测试"
+  - "开发"
+index_img: https://qiuniu.phlin.cn/bucket/hero.webp
 categories: 开发
 tags:
   - golang
@@ -318,6 +326,7 @@ func ExampleSaveAnswerSheet() {
 
 testing库的基本用法大概就这样。
 
+<!-- auto-internal-links -->
 ## 延伸阅读
 - [文章归档](/archives/)
 - [分类导航](/categories/)
