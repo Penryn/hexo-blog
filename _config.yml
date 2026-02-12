@@ -14,7 +14,7 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://blog.phlin.top
+url: https://blog.phlin.cn
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -117,9 +117,10 @@ feed:
 
 # _config.yml
 OhMyLive2d:
-  enable: true
+  enable: false # disable plugin injection; we lazy-load via theme
+  lazy: true
   # CDN: https://registry.npmmirror.com/oh-my-live2d/latest/files
-  CDN: https://qiuniu.phlin.top/static/index.min.js
+  CDN: https://qiuniu.phlin.cn/static/index.min.js
   option:
     # importType: 'cubism2' # 导入类型, 默认使用全量导入: complete , 可选值: complete, cubism2, cubism5
     libraryUrls: # 自定义 Cubism SDK 外部资源地址
@@ -141,7 +142,7 @@ OhMyLive2d:
       #   stageStyle:
       #     width: 250
       #     height: 250
-      - path: /live2d/focalors/Focalors.model3.json
+      - path: https://qiuniu.phlin.cn/blog/Focalors.model3.json
         mobilePosition: [-10, 23] # 移动端时模型在舞台中的位置。 默认值: [0,0] [横坐标, 纵坐标]
         mobileScale: 0.1 # 移动端时模型的缩放比例 默认值: 0.1
         mobileStageStyle: # 移动端时舞台的样式

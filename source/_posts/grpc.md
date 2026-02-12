@@ -13,7 +13,7 @@ tags:
 gRPC（**Google Remote Procedure Call**）是一个现代、高性能、开源的远程过程调用（RPC）框架，最初由 Google 开发。它允许客户端和服务器应用程序之间通过网络进行通信，支持跨语言和跨平台的开发。gRPC 依赖于 Protocol Buffers（**Protobuf**）作为其接口定义语言（IDL）来定义服务和消息格式，并支持 HTTP/2 进行高效的网络传输。默认情况下，gRPC 使用 [Protocol Buffers](https://protobuf.com.cn/overview)，Google 的成熟开源机制来序列化结构化数据（尽管它可以使用其他数据格式，例如 JSON）。
 
 在 gRPC 中，客户端应用程序可以直接调用不同机器上的服务器应用程序中的方法，就像调用本地对象一样，从而更容易创建分布式应用程序和服务。与许多 RPC 系统一样，gRPC 基于定义服务的思想，指定可以远程调用的方法及其参数和返回类型。在服务器端，服务器实现此接口并运行 gRPC 服务器来处理客户端调用。在客户端端，客户端有一个存根（在某些语言中称为客户端），它提供与服务器相同的函数。
-![](https://qiuniu.phlin.top/bucket/202410021906667.png)
+![](https://qiuniu.phlin.cn/bucket/202410021906667.png)
 gRPC 客户端和服务器可以在各种环境中运行和通信，从 Google 内部服务器到您的桌面，并且可以使用 gRPC 支持的任何语言编写。因此，例如，您可以轻松地在 Java 中创建 gRPC 服务器，并在 Go、Python 或 Ruby 中使用客户端。此外，最新的 Google API 将具有其接口的 gRPC 版本，让您轻松地将 Google 功能集成到您的应用程序中。
 # proto介绍
 ## 简介

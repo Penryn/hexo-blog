@@ -201,7 +201,7 @@ Session，目前主流翻译中『会话』二字最为贴切。
     - Session有一个过期时间，通常设置为一定的空闲时间或绝对时间。如果用户在这段时间内没有进行任何操作，服务器会销毁过期的Session。这有助于释放资源和提高安全性。
     - 用户主动退出登录或服务器通过某些机制（如会话管理策略）也可以销毁Session。
 ### session-cookie认证图解
-![](https://qiuniu.phlin.top/bucket/202408290253454.png)
+![](https://qiuniu.phlin.cn/bucket/202408290253454.png)
 
 ## 各方式传递session ID的优缺点
 这三种在客户端传递Session ID的方式各有优缺点，适用于不同的场景。以下是它们的优缺点分析：
@@ -492,7 +492,7 @@ func GetUserSession(c *gin.Context) (*models.User, error) {
 ```
 # 内容补充
 ## 怎么处理跨域
-如果session ID通过cookie携带，则需要设置`Access-Control-Allow-Credentials`，具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.top/2024/08/03/cross-origin/)
+如果session ID通过cookie携带，则需要设置`Access-Control-Allow-Credentials`，具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.cn/2024/08/03/cross-origin/)
 
 ## 实现单点同域名的登录
 ### 单点登录定义

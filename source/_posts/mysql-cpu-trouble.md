@@ -9,14 +9,14 @@ tags:
   
 今天中午，离谱告诉我投票问卷的的获取投票数据接口基本显示超时(10s)，然后我看到后自己用apifox测了一下，有7s、11s甚至14s(复盘发现最高甚至有2min)，于是先去看了一下有多少数据量，发现有八百多条，当时是觉得应该是循环太多了，没处理好，而且也因为潜意识觉得只是超时，可能问题不大，多试几次是可以拿到数据的，所以当时认为还不是很急。
 
-![](https://qiuniu.phlin.top/bucket/20241211193735907.png)
+![](https://qiuniu.phlin.cn/bucket/20241211193735907.png)
 
-![](https://qiuniu.phlin.top/bucket/20241211223246098.png)
+![](https://qiuniu.phlin.cn/bucket/20241211223246098.png)
 没几分钟，青鸟在群里@我说，服务器mysql要爆了(mysql的cpu的占用会时不时蹦上>100%，据说甚至有190%)，随时处于被kill的状态，因此情况就紧急起来，因为那个数据库关系精弘全部服务，一旦kill了，所有服务都会停止。。。
 
-![](https://qiuniu.phlin.top/bucket/20241211193943106.jpg)
+![](https://qiuniu.phlin.cn/bucket/20241211193943106.jpg)
 
-![](https://qiuniu.phlin.top/bucket/20241211194015465.jpg)
+![](https://qiuniu.phlin.cn/bucket/20241211194015465.jpg)
 
 因为mysql的cpu占用变化很大，怀疑是某个接口的sql写的有问题，而且当时是投票问卷的发布时间，可以把排查接口限制为`获取问卷`、`提交答卷`、`统一验证`和`获取投票数据`。
 

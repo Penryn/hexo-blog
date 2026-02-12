@@ -26,20 +26,190 @@
   <%- js(theme.custom_js) %>
 <% } %>
 
-<!-- 注入 danmakuConfig 配置到页面中 -->
-<script>
-  // 从 Hexo 配置中注入 danmaku 配置到前端使用
-  const danmakuConfig = {
-    page: '<%= theme.danmaku.page %>' || '/comments/',    // 弹幕页面，字符串类型
-    line: <%- theme.danmaku.line %> || 10,                // 弹幕行数，数值类型
-    speed: <%- theme.danmaku.speed %> || 20,              // 弹幕播放速度，数值类型
-    hover: <%= theme.danmaku.hover ? true : false %>,     // 悬停效果，布尔值
-    loop: <%= theme.danmaku.loop ? true : false %>        // 循环播放，布尔值
-  };
-</script>
+<% 
+  var danmakuEnabled = theme.danmaku && (theme.danmaku.enabled === true || theme.danmaku.enable === true);
+  var danmakuPage = (theme.danmaku && theme.danmaku.page ? theme.danmaku.page : '/comments/').replace(/^\//, '');
+  var currentPath = (page.path || '').replace(/index\.html$/, '');
+  var shouldLoadDanmaku = danmakuEnabled && currentPath === danmakuPage;
+%>
+<% if (shouldLoadDanmaku) { %>
+  <!-- 注入 danmakuConfig 配置到页面中（仅弹幕页加载） -->
+  <script>
+    // 使用 window 挂载，确保其他脚本可访问
+    window.danmakuConfig = {
+      page: '<%= theme.danmaku.page %>' || '/comments/',
+      line: <%- theme.danmaku.line %> || 10,
+      speed: <%- theme.danmaku.speed %> || 20,
+      hover: <%= theme.danmaku.hover ? true : false %>,
+      loop: <%= theme.danmaku.loop ? true : false %>
+    };
+  </script>
+  <%- js_ex(theme.static_prefix.internal_js, 'comment.js') %>
+  <%- js_ex(theme.static_prefix.internal_js, 'comments.js') %>
+<% } %>
 
-<!-- 在注入 danmakuConfig 后再加载 comments.js 文件 -->
-<%- js_ex(theme.static_prefix.internal_js, 'comments.js') %>
+<% if (config.OhMyLive2d && config.OhMyLive2d.lazy) { %>
+  <script>
+    (function () {
+      var cfg = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
+      function resolveParentElement(val) {
+        if (!val) return document.body;
+        if (typeof val === 'string') {
+          if (val === 'document.body') return document.body;
+          try {
+            var el = document.querySelector(val);
+            return el || document.body;
+          } catch (_) { return document.body; }
+        }
+        return document.body;
+      }
+      function shouldLoad() {
+        var mobileDisplay = cfg.option && typeof cfg.option.mobileDisplay === 'boolean' ? cfg.option.mobileDisplay : false;
+        var isNarrow = window.matchMedia ? window.matchMedia('(max-width: 767px)').matches : (window.innerWidth < 768);
+        if (!mobileDisplay && isNarrow) {
+          console && console.log && console.log('[OhMyLive2D] skip by width: mobileDisplay=false', { width: window.innerWidth });
+          return false;
+        }
+        return true;
+      }
+      function loadOML() {
+        if (!shouldLoad()) return;
+        if (window.__oml2d_loading || window.__oml2d_loaded) { return; }
+        if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; return; }
+        window.__oml2d_loading = true;
+        console && console.log && console.log('[OhMyLive2D] start loading');
+        var s = document.createElement('script');
+        var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/latest/files/index.min.js';
+        var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@latest/dist/index.min.js';
+        s.src = primary;
+        s.defer = true;
+        s.onload = function () {
+          window.__oml2d_sdk_loaded = true;
+          // oh-my-live2d exposes either `OML2D.loadOml2d` (modern) or `OhMyLive2D.load` (legacy/packaged)
+          var api = null;
+          var apiType = '';
+          if (window.OML2D && typeof window.OML2D.loadOml2d === 'function') { api = window.OML2D.loadOml2d; apiType = 'OML2D'; }
+          else if (window.OhMyLive2D && typeof window.OhMyLive2D.load === 'function') { api = window.OhMyLive2D.load; apiType = 'OhMyLive2D'; }
+          if (!api) {
+            console && console.warn && console.warn('[OhMyLive2D] global API not found');
+            return;
+          }
+          var opt = cfg.option || {};
+          // merge helper for tips styles
+          function mergeTips(base, extra) {
+            var out = {};
+            base = base || {};
+            for (var k in base) if (Object.prototype.hasOwnProperty.call(base, k)) out[k] = base[k];
+            for (var k2 in extra) if (Object.prototype.hasOwnProperty.call(extra, k2)) out[k2] = extra[k2];
+            return out;
+          }
+
+          var options = {
+            mobileDisplay: !!opt.mobileDisplay,
+            models: Array.isArray(opt.models) ? opt.models : [],
+            parentElement: resolveParentElement(opt.parentElement),
+            primaryColor: opt.primaryColor,
+            sayHello: !!opt.sayHello,
+            // place stage on the right by default
+            dockedPosition: 'right',
+            libraryUrls: opt.libraryUrls || undefined,
+            // Ensure stage is visible even if defaults keep it translated or size 0
+            stageStyle: Object.assign({
+              position: 'fixed',
+              right: '32px',
+              bottom: '0px',
+              width: '280px',
+              height: '280px',
+              zIndex: '2147483646',
+              transform: 'none',
+              left: 'auto'
+            }, opt.stageStyle || {}),
+            // Fix tips (speech bubble) position: anchor to stage right-top area
+            tips: (function(){
+              var t = opt.tips || {};
+              // place bubble centered above stage
+              var style = mergeTips(t.style, {
+                right: 'auto',
+                left: '50%',
+                top: 'auto',
+                bottom: 'calc(100% + 8px)',
+                transform: 'translateX(-50%)',
+                width: (t.style && t.style.width) || '240px'
+              });
+              var mstyle = mergeTips(t.mobileStyle, {
+                right: 'auto',
+                left: '50%',
+                top: 'auto',
+                bottom: 'calc(100% + 8px)',
+                transform: 'translateX(-50%)',
+                width: (t.mobileStyle && t.mobileStyle.width) || '180px'
+              });
+              return Object.assign({}, t, { style: style, mobileStyle: mstyle });
+            })(),
+            // Move vertical menus a bit further left
+            menus: (function(){
+              var m = opt.menus || {};
+              var style = mergeTips(m.style, {
+                left: (m.style && m.style.left) || '-28px'
+              });
+              var mstyle = mergeTips(m.mobileStyle, {
+                left: (m.mobileStyle && m.mobileStyle.left) || '-24px'
+              });
+              return Object.assign({}, m, { style: style, mobileStyle: mstyle });
+            })()
+          };
+          try {
+            if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; console && console.log && console.log('[OhMyLive2D] stage exists, skip init'); return; }
+            var oml2d = api(options);
+            // Let library control stage animation; avoid forcing double slide-in
+            // 安全地解析回调函数名，避免使用 eval
+            (function(){
+              var hookName = <%- JSON.stringify((config.OhMyLive2d && config.OhMyLive2d.then) || '') %>;
+              if (!hookName || typeof hookName !== 'string') return;
+              function resolve(path) {
+                try {
+                  var parts = path.split('.');
+                  var ctx = window;
+                  for (var i = 0; i < parts.length; i++) {
+                    if (!ctx) return null;
+                    ctx = ctx[parts[i]];
+                  }
+                  return typeof ctx === 'function' ? ctx : null;
+                } catch(_) { return null; }
+              }
+              try {
+                var fn = resolve(hookName);
+                if (fn) { fn(oml2d); }
+              } catch(_) { /* ignore hook error */ }
+            })();
+            window.__oml2d_loaded = true;
+            console && console.log && console.log('[OhMyLive2D] loaded via', apiType);
+          } catch (e) { console && console.error && console.error('[OhMyLive2D] load error', e); }
+        };
+        s.onerror = function () {
+          console && console.warn && console.warn('[OhMyLive2D] primary CDN failed, retry fallback');
+          var f = document.createElement('script');
+          f.src = fallback;
+          f.defer = true;
+          f.onload = s.onload;
+          f.onerror = function(){ console && console.error && console.error('[OhMyLive2D] fallback CDN failed'); };
+          document.head.appendChild(f);
+        };
+        document.head.appendChild(s);
+      }
+      function start() {
+        // 尽早加载，同时再设一个兜底定时器，避免某些环境下 rIC 不触发
+        loadOML();
+        window.setTimeout(function(){ try { loadOML(); } catch(_){} }, 2000);
+      }
+      if (document.readyState === 'complete') start();
+      else {
+        window.addEventListener('load', start, { once: true });
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+      }
+    })();
+  </script>
+<% } %>
 
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->

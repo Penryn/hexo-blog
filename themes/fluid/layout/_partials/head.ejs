@@ -30,6 +30,21 @@ var ogConfig = Object.assign({ image: ogImage && url_for(ogImage) }, theme.open_
   <meta name="theme-color" content="<%= theme.color.navbar_bg_color %>">
   <meta name="author" content="<%= page.author || config.author %>">
   <meta name="keywords" content="<%= keywords %>">
+  <!-- Performance: preconnect/dns-prefetch for common CDNs -->
+  <link rel="preconnect" href="https://lib.baomitu.com" crossorigin>
+  <link rel="dns-prefetch" href="//lib.baomitu.com">
+  <link rel="preconnect" href="https://qiuniu.phlin.cn" crossorigin>
+  <link rel="dns-prefetch" href="//qiuniu.phlin.cn">
+  <link rel="preconnect" href="https://at.alicdn.com" crossorigin>
+  <link rel="dns-prefetch" href="//at.alicdn.com">
+  <% if (theme.web_analytics && theme.web_analytics.umami && theme.web_analytics.umami.api_server) { %>
+    <link rel="preconnect" href="<%= theme.web_analytics.umami.api_server %>" crossorigin>
+    <link rel="dns-prefetch" href="//<%= theme.web_analytics.umami.api_server.replace(/^https?:\/\//,'') %>">
+  <% } %>
+  <% if (theme.waline && theme.waline.serverURL) { %>
+    <link rel="preconnect" href="<%= theme.waline.serverURL %>" crossorigin>
+    <link rel="dns-prefetch" href="//<%= theme.waline.serverURL.replace(/^https?:\/\//,'').replace(/\/$/,'') %>">
+  <% } %>
   <% if (theme.open_graph.enable) { %>
     <%- open_graph(ogConfig) %>
   <% } else { %>

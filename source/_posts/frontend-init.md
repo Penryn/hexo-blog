@@ -109,7 +109,7 @@ module.exports = {
 这部分内容直接看[去年精弘前端网课](https://www.bilibili.com/video/BV1Qj411z75n/?spm_id_from=333.788)就行，讲的挺好。
 
 ### 处理跨域
-后面基本就很正常了，一路到了发起请求给后端处理跨域时，本来要尝试我的博客里的东西，结果发现我博客的方法是webpack打包的好像，后面学会了用vite挂代理处理，具体可看[这篇文章](https://blog.phlin.top/2024/08/03/cross-origin/)的前端处理办法。
+后面基本就很正常了，一路到了发起请求给后端处理跨域时，本来要尝试我的博客里的东西，结果发现我博客的方法是webpack打包的好像，后面学会了用vite挂代理处理，具体可看[这篇文章](https://blog.phlin.cn/2024/08/03/cross-origin/)的前端处理办法。
 
 ### ui心得
 这次用的是element-plus，ui调整主要靠的是gpt,真·面向gpt编程，个人感觉效果还算不错。
