@@ -1,12 +1,11 @@
 ---
 title: 计网——概述
 date: 2024-09-20 17:46:00
-updated: 2024-09-20 17:46:00
-description: "给以后计网复习用，先写点知识点 ## 因特网服务提供者ISP（Internet Service Provider) 是指提供互联网接入和相关服务的公司或机构。ISP 连接用户的设备（如电脑、手机、路由器等）到互联网，允许他们访问网站、..."
 keywords:
   - "计网"
   - "学习笔记"
-index_img: https://qiuniu.phlin.cn/bucket/202409201524429.png
+updated: 2024-09-20 17:46:00
+description: "给以后计网复习用，先写点知识点 ## 因特网服务提供者ISP（Internet Service Provider) 是指提供互联网接入和相关服务的公司或机构。ISP 连接用户的设备（如电脑、手机、路由器等）到互联网，允许他们访问网站、..."
 categories: 学习笔记
 tags:
   - 计网

@@ -1,13 +1,12 @@
 ---
 title: 谐云后端面经
 date: 2025-12-10 15:57:01
-updated: 2025-12-10 15:57:01
-description: "## 面试题 隔了好久了，忘记写了，可能有些遗漏，顺序也不太对了 ## go 包了解多少,经常用那些函数？"
 keywords:
   - "golang"
   - "java"
   - "面试回顾"
-index_img: https://qiuniu.phlin.cn/bucket/hero.webp
+updated: 2025-12-10 15:57:01
+description: "## 面试题 隔了好久了，忘记写了，可能有些遗漏，顺序也不太对了 ## go 包了解多少,经常用那些函数？"
 categories: 面试回顾
 tags:
   - golang

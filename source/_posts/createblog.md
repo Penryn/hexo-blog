@@ -1,12 +1,11 @@
 ---
 title: 手把手教你搭建属于你自己的hexo博客，并布置在github page上
 date: 2023-11-11 11:35:32
-updated: 2023-11-11 11:35:32
-description: "Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。"
 keywords:
   - "hexo"
   - "博客"
-index_img: https://qiuniu.phlin.cn/bucket/1.png
+updated: 2023-11-11 11:35:32
+description: "Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。"
 author: phlin
 categories: 博客
 tags: hexo

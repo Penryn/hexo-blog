@@ -1,13 +1,12 @@
 ---
 title: hexo博客的fluid主题使用waline评论功能
 date: 2024-08-25 22:11:41
-updated: 2024-08-25 22:11:41
-description: "一开始搞的是https://discuss.js.org/,但是不知道为什么全都部署好了，配置文件也更新了，但博客就还是用不了评论，于是又重新换成了waline。"
 keywords:
   - "waline"
   - "hexo"
   - "博客"
-index_img: https://vercel.com/button
+updated: 2024-08-25 22:11:41
+description: "一开始搞的是https://discuss.js.org/,但是不知道为什么全都部署好了，配置文件也更新了，但博客就还是用不了评论，于是又重新换成了waline。"
 categories: 博客
 tags: 
  - waline

@@ -1,15 +1,14 @@
 ---
 title: Ubuntu系统部署Golang-Vue前后端分离项目
 date: 2024-08-25 22:25:46
-updated: 2024-08-25 22:25:46
-description: "本文来源于惜寞学长所写的https://www.lonesome.cn/posts/ubuntu-deploy-gin-and-vue-project,只是为了部署时贪图方便，特在此转载一下，以下内容因贪图方便，没有图片，如果有图片需..."
 keywords:
   - "ubuntu"
   - "golang"
   - "vue"
   - "nginx"
   - "运维"
-index_img: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=
+updated: 2024-08-25 22:25:46
+description: "本文来源于惜寞学长所写的https://www.lonesome.cn/posts/ubuntu-deploy-gin-and-vue-project,只是为了部署时贪图方便，特在此转载一下，以下内容因贪图方便，没有图片，如果有图片需..."
 categories: 运维
 tags: 
  - ubuntu

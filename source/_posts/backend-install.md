@@ -1,12 +1,11 @@
 ---
 title: 后端环境配置
 date: 2024-07-19 19:53:02
-updated: 2024-07-19 19:53:02
-description: "## VSCode 及 Golang 插件的安装 在搜索引擎中搜索 vscode，进入官方下载网站 https://code.visualstudio.com/ 直接单击最大的下载按钮即可进行下载。"
 keywords:
   - "golang"
   - "运维"
-index_img: https://bu.dusays.com/2023/07/30/64c6703ef0233.png
+updated: 2024-07-19 19:53:02
+description: "## VSCode 及 Golang 插件的安装 在搜索引擎中搜索 vscode，进入官方下载网站 https://code.visualstudio.com/ 直接单击最大的下载按钮即可进行下载。"
 categories: 运维
 tags:
   - golang

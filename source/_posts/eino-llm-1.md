@@ -1,14 +1,13 @@
 ---
 title: eino学习小记(一)
 date: 2025-03-19 21:11:28
-updated: 2025-03-19 21:11:28
-description: "最近因为服外可能要调用ai，因此去调研 Go 相关的 AI 框架。"
 keywords:
   - "golang"
   - "eino"
   - "cloudwego"
   - "开发"
-index_img: https://qiuniu.phlin.cn/bucket/hero.webp
+updated: 2025-03-19 21:11:28
+description: "最近因为服外可能要调用ai，因此去调研 Go 相关的 AI 框架。"
 categories: 开发
 tags:
   - golang

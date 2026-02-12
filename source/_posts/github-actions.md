@@ -1,13 +1,12 @@
 ---
 title: GitHub Actions实现自动部署
 date: 2024-10-01 16:52:28
-updated: 2024-10-01 16:52:28
-description: "由于每次写完项目都要手动构建二进制文件，再使用smtp上传到服务器，最后再重启服务，这一系列操作过于麻烦，于是尝试使用GitHub Actions 来创建自动化的 CI/CD（持续集成/持续部署）流程。"
 keywords:
   - "golang"
   - "github"
   - "运维"
-index_img: https://qiuniu.phlin.cn/bucket/202410011647581.png
+updated: 2024-10-01 16:52:28
+description: "由于每次写完项目都要手动构建二进制文件，再使用smtp上传到服务器，最后再重启服务，这一系列操作过于麻烦，于是尝试使用GitHub Actions 来创建自动化的 CI/CD（持续集成/持续部署）流程。"
 categories: 运维
 tags:
   - golang

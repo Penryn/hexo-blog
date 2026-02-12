@@ -1,13 +1,12 @@
 ---
 title: neo4j安装
 date: 2024-04-26 17:55:55
-updated: 2024-04-26 17:55:55
-description: "首先更新apt neo4j需要依赖jdk环境，而且还有版本要求的 要求jdk要17版本以上 查看是否成功安装 开始安装neo4j 解压运行 到这里就成功安装了,然后就进入工作目录运行,这是后台一直运行的，不需要存为service 当然..."
 keywords:
   - "ubuntu"
   - "neo4j"
   - "运维"
-index_img: https://qiuniu.phlin.cn/bucket/hero.webp
+updated: 2024-04-26 17:55:55
+description: "首先更新apt neo4j需要依赖jdk环境，而且还有版本要求的 要求jdk要17版本以上 查看是否成功安装 开始安装neo4j 解压运行 到这里就成功安装了,然后就进入工作目录运行,这是后台一直运行的，不需要存为service 当然..."
 categories: 运维
 tags: 
  - ubuntu

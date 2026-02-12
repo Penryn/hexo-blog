@@ -1,12 +1,11 @@
 ---
 title: web后端入门学习
 date: 2024-07-21 19:46:26
-updated: 2024-07-21 19:46:26
-description: "### 学习前置 先https://www.bilibili.com/video/BV1dmakeXED4/?spm_id_from=333.788&vd_source=092e077c0b01da14fa19effa14a36a19..."
 keywords:
   - "web"
   - "开发"
-index_img: https://qiuniu.phlin.cn/bucket/hero.webp
+updated: 2024-07-21 19:46:26
+description: "### 学习前置 先https://www.bilibili.com/video/BV1dmakeXED4/?spm_id_from=333.788&vd_source=092e077c0b01da14fa19effa14a36a19..."
 categories: 开发
 tags:
   - web

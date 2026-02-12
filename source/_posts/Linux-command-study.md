@@ -1,13 +1,12 @@
 ---
 title: Linux命令简单学习
 date: 2024-10-29 16:33:50
-updated: 2024-10-29 16:33:50
-description: "## linux常用命令 命令 | 功能说明 | 应用场景 | 示例 | | 列出指定目录中的文件和目录。"
 keywords:
   - "linux"
   - "shell"
   - "运维"
-index_img: https://qiuniu.phlin.cn/bucket/hero.webp
+updated: 2024-10-29 16:33:50
+description: "## linux常用命令 命令 | 功能说明 | 应用场景 | 示例 | | 列出指定目录中的文件和目录。"
 categories: 运维
 tags: 
  - linux

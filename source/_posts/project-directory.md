@@ -1,12 +1,11 @@
 ---
 title: go的标准项目布局
 date: 2024-05-12 22:31:30
-updated: 2024-05-12 22:31:30
-description: "因为笔者一开始是在精弘暑期课入门的go，因此主要学习的还是部门项目微精弘的代码目录结构，所以对go的标准目录结构不是很了解，特此出一篇文章来捋一下go现在比较规范的目录结构，以此来学习。"
 keywords:
   - "golang"
   - "开发"
-index_img: https://qiuniu.phlin.cn/bucket/hero.webp
+updated: 2024-05-12 22:31:30
+description: "因为笔者一开始是在精弘暑期课入门的go，因此主要学习的还是部门项目微精弘的代码目录结构，所以对go的标准目录结构不是很了解，特此出一篇文章来捋一下go现在比较规范的目录结构，以此来学习。"
 categories: 开发
 tags:
   - golang

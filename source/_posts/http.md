@@ -1,13 +1,12 @@
 ---
 title: HTTP协议介绍和常见面试题总结
 date: 2024-08-22 23:14:54
-updated: 2024-08-22 23:14:54
-description: "由于最近开始学习java web，于是顺便把一些基础的东西整理一下，刚好看到http协议这块，遂打算整理。"
 keywords:
   - "http"
   - "面试"
   - "开发"
-index_img: https://qiuniu.phlin.cn/bucket/hero.webp
+updated: 2024-08-22 23:14:54
+description: "由于最近开始学习java web，于是顺便把一些基础的东西整理一下，刚好看到http协议这块，遂打算整理。"
 categories: 开发
 tags:
   - http

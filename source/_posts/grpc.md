@@ -1,14 +1,13 @@
 ---
 title: gRPC-Go框架学习
 date: 2024-10-02 19:09:11
-updated: 2024-10-02 19:09:11
-description: "## grpc介绍 gRPC（**Google Remote Procedure Call**）是一个现代、高性能、开源的远程过程调用（RPC）框架，最初由 Google 开发。它允许客户端和服务器应用程序之间通过网络进行通信，支持跨..."
 keywords:
   - "golang"
   - "gRPC"
   - "微服务"
   - "开发"
-index_img: https://qiuniu.phlin.cn/bucket/202410021906667.png
+updated: 2024-10-02 19:09:11
+description: "## grpc介绍 gRPC（**Google Remote Procedure Call**）是一个现代、高性能、开源的远程过程调用（RPC）框架，最初由 Google 开发。它允许客户端和服务器应用程序之间通过网络进行通信，支持跨..."
 categories: 开发
 tags:
   - golang
