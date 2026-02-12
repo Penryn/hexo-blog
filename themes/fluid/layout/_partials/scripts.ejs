@@ -9,10 +9,10 @@
 <% if (theme.lazyload.enable){ %>
   <% if (theme.lazyload.onlypost) { %>
     <% if (is_post() || is_page()) { %>
-      <%- js_ex(theme.static_prefix.internal_js, 'img-lazyload.js') %>
+      <%- js_ex(theme.static_prefix.internal_js, 'img-lazyload.js', 'defer') %>
     <% } %>
   <% } else { %>
-    <%- js_ex(theme.static_prefix.internal_js, 'img-lazyload.js') %>
+    <%- js_ex(theme.static_prefix.internal_js, 'img-lazyload.js', 'defer') %>
   <% } %>
 <% } %>
 
@@ -23,7 +23,10 @@
 <% page.script_snippets = [] %>
 
 <% if (theme.custom_js) { %>
-  <%- js(theme.custom_js) %>
+  <% var customJS = Array.isArray(theme.custom_js) ? theme.custom_js : [theme.custom_js] %>
+  <% for (var jsPath of customJS) { %>
+    <script defer src="<%= url_for(jsPath) %>"></script>
+  <% } %>
 <% } %>
 
 <% 
@@ -44,8 +47,8 @@
       loop: <%= theme.danmaku.loop ? true : false %>
     };
   </script>
-  <%- js_ex(theme.static_prefix.internal_js, 'comment.js') %>
-  <%- js_ex(theme.static_prefix.internal_js, 'comments.js') %>
+  <%- js_ex(theme.static_prefix.internal_js, 'comment.js', 'defer') %>
+  <%- js_ex(theme.static_prefix.internal_js, 'comments.js', 'defer') %>
 <% } %>
 
 <% if (config.OhMyLive2d && config.OhMyLive2d.lazy) { %>
@@ -79,8 +82,8 @@
         window.__oml2d_loading = true;
         console && console.log && console.log('[OhMyLive2D] start loading');
         var s = document.createElement('script');
-        var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/latest/files/index.min.js';
-        var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@latest/dist/index.min.js';
+        var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/index.min.js';
+        var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js';
         s.src = primary;
         s.defer = true;
         s.onload = function () {
@@ -213,4 +216,4 @@
 
 <!-- 主题的启动项，将它保持在最底部 -->
 <!-- the boot of the theme, keep it at the bottom -->
-<%- js_ex(theme.static_prefix.internal_js, 'boot.js') %>
+<%- js_ex(theme.static_prefix.internal_js, 'boot.js', 'defer') %>

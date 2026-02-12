@@ -30,6 +30,8 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+  - live2d/**
+  - xml/**
 
 # Writing
 new_post_name: :title.md # File name of new posts
@@ -124,20 +126,21 @@ robotstxt:
     - /
   disallow:
     - /xml/
+    - /live2d/
   sitemap: https://blog.phlin.cn/sitemap.xml
 
 # _config.yml
 OhMyLive2d:
   enable: false # disable plugin injection; we lazy-load via theme
   lazy: true
-  # CDN: https://registry.npmmirror.com/oh-my-live2d/latest/files
+  # CDN: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files
   CDN: https://qiuniu.phlin.cn/static/index.min.js
   option:
     # importType: 'cubism2' # 导入类型, 默认使用全量导入: complete , 可选值: complete, cubism2, cubism5
     libraryUrls: # 自定义 Cubism SDK 外部资源地址
-      complete: https://registry.npmmirror.com/oh-my-live2d/latest/files/lib/complete.js
-      cubism2: https://registry.npmmirror.com/oh-my-live2d/latest/files/lib/cubism2.js
-      cubism5: https://registry.npmmirror.com/oh-my-live2d/latest/files/lib/cubism5.js
+      complete: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/lib/complete.js
+      cubism2: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/lib/cubism2.js
+      cubism5: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/lib/cubism5.js
 
     mobileDisplay: false # 是否在移动端显示
     models:
