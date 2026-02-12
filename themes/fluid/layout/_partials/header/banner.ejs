@@ -10,6 +10,9 @@ var subtitle = page.subtitle || page.title
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, <%= parseFloat(banner_mask_alpha) %>)">
       <div class="banner-text text-center fade-in-up">
+        <% if (is_home()) { %>
+          <h1 class="sr-only"><%= config.title %></h1>
+        <% } %>
         <div class="h2">
           <% if(theme.fun_features.typing.enable && in_scope(theme.fun_features.typing.scope)) { %>
             <span id="subtitle" data-typed-text="<%= subtitle %>"></span>
