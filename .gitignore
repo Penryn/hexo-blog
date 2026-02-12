@@ -7,3 +7,7 @@ public/
 .deploy*/
 _multiconfig.yml
 source/_posts/using_of_v2rayA.md
+.senera
+.serena
+yarn.lock
+package-lock.json

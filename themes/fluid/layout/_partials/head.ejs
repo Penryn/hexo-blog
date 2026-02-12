@@ -14,6 +14,7 @@ var ogImageUrl = ogImage ? (String(ogImage).match(/^https?:\/\//) ? ogImage : ur
 var ogConfig = Object.assign({ image: ogImage && url_for(ogImage) }, theme.open_graph)
 var canonicalPath = (page.canonical_path || page.path || '').replace('index.html', '')
 var canonicalUrl = url_join(config.url, canonicalPath)
+var homeUrl = url_join(config.url, '/')
 var heroImage = page.banner_img || theme.index.banner_img
 var selectedCommentType = typeof page.comment === 'string' && page.comment !== '' ? page.comment : theme.post.comments.type
 var layoutName = page.layout || ''
@@ -29,6 +30,32 @@ var walinePreconnectEnabled = theme.waline
   && theme.waline.serverURL
   && selectedCommentType === 'waline'
   && commentsEnabledOnCurrentPage
+var breadcrumbItemList = [{
+  "@type": "ListItem",
+  "position": 1,
+  "name": config.title,
+  "item": homeUrl
+}]
+if (!is_home()) {
+  var breadcrumbName = page.title
+  if (!breadcrumbName) {
+    if (is_category()) {
+      breadcrumbName = page.category ? `分类：${page.category}` : '分类'
+    } else if (is_tag()) {
+      breadcrumbName = page.tag ? `标签：${page.tag}` : '标签'
+    } else if (is_archive()) {
+      breadcrumbName = '归档'
+    } else {
+      breadcrumbName = title
+    }
+  }
+  breadcrumbItemList.push({
+    "@type": "ListItem",
+    "position": 2,
+    "name": breadcrumbName,
+    "item": canonicalUrl
+  })
+}
 %>
 
 <head>
@@ -80,6 +107,15 @@ var walinePreconnectEnabled = theme.waline
       "inLanguage": config.language
     }) %>
   </script>
+  <% if (breadcrumbItemList.length > 1) { %>
+  <script type="application/ld+json">
+    <%- JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": breadcrumbItemList
+    }) %>
+  </script>
+  <% } %>
   <% if (is_post()) { %>
   <script type="application/ld+json">
     <%- JSON.stringify({
