@@ -9,7 +9,7 @@ tags:
   - 面试
 ---
 
-# 出现缘由
+## 出现缘由
 在前一篇写的HTTP专题，我们可以了解到HTTP协议有一个特点：它是无状态的。 
 
 **HTTP的无状态性** 意味着：每次HTTP请求都是独立的，服务器不会记住客户端的任何状态信息。当我们向服务器发送请求时，服务器会解析并处理该请求，然后返回相应的响应。整个过程是完全独立的，服务器不会记录前后状态的变化。换句话说，如果后续的处理需要之前的状态信息，就必须重新发送这些信息，这会导致重复的请求和资源浪费。
@@ -20,7 +20,7 @@ tags:
 
 因此，在爬虫中，通常会将登录成功后获取的Cookies放在请求头中，直接发起请求，而不必重新模拟登录。
 
-# Cookie
+## Cookie
 
 ## 定义 
 
@@ -133,7 +133,7 @@ tags:
     
     - 不同浏览器对 `Cookie` 的支持和处理方式可能略有不同，特别是在处理 `SameSite`、`Secure` 和 `HttpOnly` 等属性时，可能导致兼容性问题。
 
-# Session
+## Session
 ## 定义
 Session，目前主流翻译中『会话』二字最为贴切。
 
@@ -201,7 +201,7 @@ Session，目前主流翻译中『会话』二字最为贴切。
     - Session有一个过期时间，通常设置为一定的空闲时间或绝对时间。如果用户在这段时间内没有进行任何操作，服务器会销毁过期的Session。这有助于释放资源和提高安全性。
     - 用户主动退出登录或服务器通过某些机制（如会话管理策略）也可以销毁Session。
 ### session-cookie认证图解
-![](https://qiuniu.phlin.cn/bucket/202408290253454.png)
+![Session-Cookie介绍和相关面试题总结配图](https://qiuniu.phlin.cn/bucket/202408290253454.png)
 
 ## 各方式传递session ID的优缺点
 这三种在客户端传递Session ID的方式各有优缺点，适用于不同的场景。以下是它们的优缺点分析：
@@ -490,7 +490,7 @@ func GetUserSession(c *gin.Context) (*models.User, error) {
     return user, nil
 }
 ```
-# 内容补充
+## 内容补充
 ## 怎么处理跨域
 如果session ID通过cookie携带，则需要设置`Access-Control-Allow-Credentials`，具体可见之前写的这篇文章[跨域的原因和处理](https://blog.phlin.cn/2024/08/03/cross-origin/)
 
@@ -535,7 +535,7 @@ func GetUserSession(c *gin.Context) (*models.User, error) {
 #### 针对跨域、跨系统的限制
 
 对于跨域或跨系统的情况，即多个系统不共享 Session，或者系统部署在不同的顶级域名（如 `example.com` 和 `example.net`）下时，基于 `cookie-session` 的 SSO 方案将无法直接应用。此时，通常需要引入更复杂的单点登录机制，如基于 OAuth、SAML 或者 OpenID Connect 等协议来实现跨域、跨系统的身份认证和授权。
-# 补充面试题
+## 补充面试题
 
 ## Session与Cookie的区别
 **Cookie**和**Session**是Web开发中常用的两种保持用户状态的机制，它们的主要区别如下：
@@ -592,7 +592,7 @@ Session通常与用户会话的生命周期绑定，当浏览器关闭或会话�
 
 5. 缓存策略：使用缓存技术，将频繁访问的Session数据缓存在内存中，减少对持久化存储的依赖，加快访问速度。
 
-# 参考资料
+## 参考资料
 [Session是怎么实现的？存储在哪里？](https://juejin.cn/post/6942852054847062053#heading-12)
 [深入理解COOKIE&SESSION的原理和区别](https://cloud.tencent.com/developer/article/2002609)
 [Session是什么意思？详解Session的特点、工作原理及与Cookie的区别](https://www.youhuaxing.cn/seojianzhan/17673.html)

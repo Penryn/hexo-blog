@@ -67,3 +67,9 @@ sudo ./bin/neo4j start
 
 最后再云服务器的安全组开放7474和7687两个端口就可以在外面连接该服务器运行的neo4j的知识图谱网页版了。
 http://（你的ip）:7474/browser/
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E8%BF%90%E7%BB%B4/)

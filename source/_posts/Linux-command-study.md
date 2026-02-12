@@ -88,3 +88,8 @@ tags:
 | `basename`                   | 获取文件名，不包括路径，例如 `basename /path/to/file`。                               |
 | `dirname`                    | 获取文件路径，不包括文件名，例如 `dirname /path/to/file`。                              |
 
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E8%BF%90%E7%BB%B4/)

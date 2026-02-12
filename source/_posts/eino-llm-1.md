@@ -517,3 +517,9 @@ Redis 的 Zset（有序集合）是面试中的高频考点，主要考察以下
 
 ## 参考资料
 [Eino用户手册](https://www.cloudwego.io/zh/docs/eino/)(~~可能文档还是有点旧，代码会有些问题~~)
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%BC%80%E5%8F%91/)

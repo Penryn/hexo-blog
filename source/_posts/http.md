@@ -8,10 +8,10 @@ tags:
 ---
 由于最近开始学习java web，于是顺便把一些基础的东西整理一下，刚好看到http协议这块，遂打算整理。
 
-# 简介
+## 简介
 **超文本传输协议**（英语：**H**yper**T**ext **T**ransfer **P**rotocol，缩写：**HTTP**）是一种用于分布式、协作式和超媒体信息系统的应用层协议。用我们更熟悉的说法，http是一种用于在Web浏览器与Web服务器之间传输超文本信息的应用层协议。
 
-# 基本特点
+## 基本特点
 - **基于请求/响应模型**：
     
     - HTTP是基于TCP/IP协议，通信过程中必须先由客户端发起请求，然后服务器进行响应。每次HTTP通信都是独立的，且请求和响应必须成对出现。
@@ -33,7 +33,7 @@ tags:
 
 
 
-# 协议功能
+## 协议功能
 设计HTTP最初的目的是为了提供一种发布和接收HTML页面的方法。通过HTTP或者HTTPS协议请求的资源由统一资源标识符（Uniform Resource Identifiers，URI）来标识。
 
 我们在浏览器的地址栏里输入的网站地址叫做统一资源定位符(Uniform Resource Locator，URL )。就像每家每户都有一个门牌地址一样，每个网页也都有一个Internet地址。当你在浏览器的地址框中输入一个URL或是单击一个超级链接时，URL就确定了要浏览的地址。浏览器通过超文本传输协议(HTTP)，将Web服务器上站点的网页代码提取出来，并翻译成漂亮的网页。
@@ -435,7 +435,7 @@ Date: Tue, 21 Aug 2024 12:00:00 GMT
 |**Warning**|警告实体可能存在的问题。|`Warning: 199 Miscellaneous warning`|
 |**WWW-Authenticate**|表明客户端请求实体应该使用的授权方案。|`WWW-Authenticate: Basic`|
 
-# 各版本主要变化
+## 各版本主要变化
 目前主要是HTTP/1.1和HTTP/2比较广泛使用
 
 ### HTTP/0.9
@@ -496,7 +496,7 @@ Date: Tue, 21 Aug 2024 12:00:00 GMT
     - 增加了传输的可靠性和效率，尤其是在丢包率高的网络环境下。
     - 与HTTP/2一样，HTTP/3保持了与HTTP/1.x的语义一致性，协议接口对应用层保持透明。
 - **省流**：基于QUIC协议，进一步降低延迟，提升传输效率，尤其在不稳定网络中表现出色。
-# HTTPS协议
+## HTTPS协议
 HTTPS（HyperText Transfer Protocol Secure）是HTTP（超文本传输协议）的安全版本。它通过在HTTP协议上添加SSL（Secure Sockets Layer）或TLS（Transport Layer Security）协议来实现安全的数据传输。简而言之，HTTPS可以看作是HTTP与SSL/TLS的组合，用于加密数据传输、验证服务器身份，并确保通信的完整性。
 ## 主要特点
 - **数据加密**：
@@ -553,7 +553,7 @@ HTTPS（HyperText Transfer Protocol Secure）是HTTP（超文本传输协议）�
     - **颁发速度**：通常需要较长时间（几天到几周），因为验证过程复杂。
     - **信任度**：非常高，浏览器地址栏会显示组织名称和安全锁标志，提供最大的用户信任。
 
-# 补充知识
+## 补充知识
 ## 跨站攻击
 ### CSRF（跨站请求伪造）
 
@@ -614,7 +614,7 @@ XSS 是实现 CSRF 的诸多途径中的一条，但绝对不是唯一的一条�
     
 3. **使用内容安全策略（CSP）**  
     配置 CSP 可以限制网页加载和执行的资源，从而减少 XSS 攻击的风险。通过 CSP 可以阻止不可信的脚本执行，并控制资源的加载来源。
-# 补充面试题
+## 补充面试题
 ## HTTP 有哪些缺点？
 ### 无状态
     - 所谓的优点和缺点还是要分场景来看的，对于 HTTP 而言，最具争议的地方在于它的无状态
@@ -1005,7 +1005,7 @@ Nginx官方默认的 ETag 计算方式是为"文件最后修改时间16进制-�
 
 
 
-# 参考资料
+## 参考资料
 
 [超文本传输协议](https://zh.wikipedia.org/wiki/%E8%B6%85%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE)
 [HTTP 响应状态码](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status#%E4%BF%A1%E6%81%AF%E5%93%8D%E5%BA%94)
@@ -1017,3 +1017,9 @@ Nginx官方默认的 ETag 计算方式是为"文件最后修改时间16进制-�
 [HTTP精选面试题](https://cchroot.github.io/interview/pages/interview%20questions/HTTP%E7%B2%BE%E9%80%89%E9%9D%A2%E8%AF%95%E9%A2%98.html)
 [2023 年最新最全的 http 网络面试题](https://www.xiabingbao.com/post/http/http-interview-rrgt3b.html)
 [从输入url到页面展示到底发生了什么](https://cchroot.github.io/interview/pages/interview%20notes/%E4%BB%8E%E8%BE%93%E5%85%A5url%E5%88%B0%E9%A1%B5%E9%9D%A2%E5%B1%95%E7%A4%BA%E5%88%B0%E5%BA%95%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88.html#%E4%B8%BB%E8%A6%81%E8%BF%87%E7%A8%8B%E6%95%B4%E7%90%86)
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%BC%80%E5%8F%91/)

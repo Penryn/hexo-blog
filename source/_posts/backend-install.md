@@ -7,7 +7,7 @@ tags:
 ---
 
 
-# VSCode 及 Golang 插件的安装
+## VSCode 及 Golang 插件的安装
 ![Untitled](https://bu.dusays.com/2023/07/30/64c6703ef0233.png)
 
 在搜索引擎中搜索 vscode，进入官方下载网站 [https://code.visualstudio.com/](https://code.visualstudio.com/)
@@ -41,7 +41,7 @@ tags:
 
 ![Untitled](https://bu.dusays.com/2023/07/30/64c6705d3cc14.png)
 
-# Golang 的安装与配置
+## Golang 的安装与配置
 
 下载链接：[https://golang.google.cn](https://golang.google.cn/)
 
@@ -94,7 +94,7 @@ go env -w GOPROXY=https://goproxy.cn,direct
 
 ![Untitled](https://img.lonesome.cn/jhwl/class/2024/basic/28.webp)
 
-# 编写第一个 Go 程序
+## 编写第一个 Go 程序
 + 在本地新建一个文件夹，接着在该文件夹内鼠标右键新建文本文档，然后重命名为`main.go`的文件
 ![Untitled](https://img.lonesome.cn/jhwl/class/2024/basic/29.webp)
 + 用vscode打开文件夹
@@ -118,7 +118,7 @@ func main() {
 在终端输入 `go run main.go` 即可运行显示结果
 
 ![Untitled](https://img.lonesome.cn/jhwl/class/2024/basic/32.webp)
-# 安装 MySQL
+## 安装 MySQL
 
 推荐直接从下面两个镜像站下载 MySQL 的离线安装包
 
@@ -198,12 +198,12 @@ func main() {
 我们再点击这个小按钮，也可以显示我们刚刚终端显示的内容。
 ![Untitled](https://img.lonesome.cn/jhwl/class/2024/basic/65.webp)
 到此，我们成功使用vscode连接本地的mysql数据库了
-# vscode的markdown阅读插件
+## vscode的markdown阅读插件
 比如此次授课的课程材料都是md为后缀的文件，这用markdown语法编写的文件，可以用vscode打开，但是此时还不便查看，因此我们可以再安装一个以下插件。
 ![Untitled](https://img.lonesome.cn/jhwl/class/2024/basic/66.webp)
 它的使用方法是这样的，可以显示内容和目录。
 ![Untitled](https://img.lonesome.cn/jhwl/class/2024/basic/67.webp)
-# vscode常用快捷键
+## vscode常用快捷键
 
 * 打开命令面板: Ctrl + Shift + P (Windows), Shift + Option + F (Mac)
 
@@ -223,3 +223,9 @@ func main() {
 * 注释：Ctrl + / (windows),Cmd + / (Mac)
   
 将所选内容注释或取消注释
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E8%BF%90%E7%BB%B4/)

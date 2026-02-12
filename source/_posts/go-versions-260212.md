@@ -1546,3 +1546,9 @@ err := fmt.Errorf("access denied: %w and %w", ErrPermission, ErrConfig)
 - slices 包文档: https://pkg.go.dev/slices
 - maps 包文档: https://pkg.go.dev/maps
 - Type Parameters Proposal: https://go.googlesource.com/proposal/+/master/design/43651-type-parameters.md
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%BC%80%E5%8F%91/)

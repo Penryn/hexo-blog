@@ -320,3 +320,9 @@ func ErrHandler() gin.HandlerFunc {
 	}
 }
 ```
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%BC%80%E5%8F%91/)

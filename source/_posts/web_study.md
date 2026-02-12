@@ -35,3 +35,9 @@ ai具体有[通义千问](https://tongyi.aliyun.com/qianwen/)、[文心一言](h
 
 ### 总结
 相信学到这的你已经具备有完成这份大作业的基本素养了，加油！胜利就在前方。
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%BC%80%E5%8F%91/)

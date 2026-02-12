@@ -6,7 +6,7 @@ tags:
   - nginx
 ---
 
-# 前情提要
+## 前情提要
 要考虑内外网正方和统一的流量切换，笔者首先想到的是nginx好像也有健康检查功能，但原生的nginx,只有被动的健康检查能力，即仅在有请求时才会检测后端节点的健康状态。后面在黑白的建议下，发现第三方模块[nginx_upstream_check_module](https://github.com/yaoweibin/nginx_upstream_check_module)效果还不错，可以实现主动的健康检查。
 
 ## 主动健康检查的概念
@@ -24,7 +24,7 @@ tags:
 
 
 
-# 本地编译安装
+## 本地编译安装
 要为已经安装好的 NGINX 添加 `nginx_upstream_check_module` 模块，通常需要重新编译 NGINX，因为大多数第三方模块都需要在编译时进行集成。下面是大致的步骤：
 
 ### 1. 准备环境
@@ -103,7 +103,7 @@ source ~/.bashrc
 ```bash
 nginx -V
 ```
-![](https://qiuniu.phlin.cn/bucket/202409050335941.png)
+![使用nginx_upstream_check_module做流量切换配图](https://qiuniu.phlin.cn/bucket/202409050335941.png)
 在输出的配置选项中，应该能看到 `--add-module=.../nginx_upstream_check_module`。
 
 ### 8. nginx命令和设置systemd进程守护
@@ -228,7 +228,7 @@ http {
 }
 
 ```
-# 构建成docker运行
+## 构建成docker运行
 首先在` /usr/src/nginx-<你的版本号>`的目录下新建一个Dockerfile，并写上这些内容
 ```vim
 # 使用基础镜像
@@ -283,7 +283,7 @@ docker run -d -p 80:80 --name check check
 #进入
 docker exec -it check /bin/bash
 ```
-# 用docker-compose模拟实现后端节点健康检查
+## 用docker-compose模拟实现后端节点健康检查
 编写`nginx.conf`
 ```vim
 worker_processes auto;  # 根据CPU核心数量动态调整工作进程数，优化资源使用
@@ -408,9 +408,9 @@ docker compose down
 ## 运行效果
 访问`localhost/status`就可以查看上流服务的结果
 都成功的效果
-![](https://qiuniu.phlin.cn/bucket/202409050238100.png)
+![使用nginx_upstream_check_module做流量切换配图](https://qiuniu.phlin.cn/bucket/202409050238100.png)
 当其中一个服务突然停掉
-![](https://qiuniu.phlin.cn/bucket/202409050318491.png)
+![使用nginx_upstream_check_module做流量切换配图](https://qiuniu.phlin.cn/bucket/202409050318491.png)
 
 ### 字段解释
 
@@ -424,3 +424,9 @@ docker compose down
 | **Fall Counts** | 自上次状态改变后，连续健康检查失败的次数。达到配置值后，服务器状态将从 `up` 变为 `down`。  |
 | **Check Type**  | 健康检查的类型，例如 `http`，表示通过 HTTP 请求检查服务器的健康状态。                      |
 | **Check Port**  | 健康检查使用的端口：<br>- `0`: 使用上游服务器配置的默认端口（通常为 `80`）。               |
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E8%BF%90%E7%BB%B4/)

@@ -5,8 +5,12 @@
 # Site
 title: "phlin's blog"
 subtitle: "望舒的尘歌壶"
-description: ""
-keywords: []
+description: "一个后端开发的个人学习笔记"
+keywords:
+  - 后端开发
+  - Golang
+  - 面试复盘
+  - 学习笔记
 author: phlin
 language: zh-CN
 timezone: Asia/Shanghai

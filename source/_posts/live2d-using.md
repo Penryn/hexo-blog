@@ -134,4 +134,10 @@ OhMyLive2d:
 ```
 
 ### 最终效果
-![](https://qiuniu.phlin.cn/bucket/202408252215159.png)
+![hexo博客使用live2d看板娘配图](https://qiuniu.phlin.cn/bucket/202408252215159.png)
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%8D%9A%E5%AE%A2/)

@@ -127,7 +127,7 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 ## 验证部署
 以上步骤完成，你可以推送main分支，然后看见github会自动开始构建，
 成功后会有以下页面
-![](https://qiuniu.phlin.cn/bucket/202410011647581.png)
+![GitHub Actions实现自动部署配图](https://qiuniu.phlin.cn/bucket/202410011647581.png)
 
 到服务器也可以通过输入以下命令查看服务是否运行
 ```sh
@@ -136,3 +136,9 @@ sudo systemctl status easy-forum.service
 
 ## 补充
 当然，其实可以在在配置文件中，让GitHub Actions自动配置 `systemd` 服务文件的，这里就不再多写了，可以自行尝试。
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E8%BF%90%E7%BB%B4/)

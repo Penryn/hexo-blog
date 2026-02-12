@@ -19,7 +19,7 @@ tags:
 ```
 cat /etc/lsb-release
 ```
-# 本地安装
+## 本地安装
 ### 导入包管理系统使用的公钥
 从终端安装，gnupg如果curl它们尚不可用：
 ```
@@ -165,7 +165,7 @@ mongosh -u new_root -p
 mongosh --username yourUsername --password yourPassword --authenticationDatabase yourDatabaseName
 ```
 
-# docker安装
+## docker安装
 先拉取docker镜像
 ```
 docker pull mongo:latest
@@ -201,3 +201,9 @@ db.createUser(
 )
 db.getUsers()
 ```
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E8%BF%90%E7%BB%B4/)

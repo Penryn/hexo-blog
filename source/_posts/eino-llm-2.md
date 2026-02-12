@@ -27,10 +27,10 @@ tags:
 
 如下图所示，我们可以在可视化界面上设计链路，确保上游节点的输入输出类型匹配。之后，就可以生成相应的项目代码，再补充配置信息和业务逻辑，即可实现我们想要的效果。
 
-![](https://qiuniu.phlin.cn/bucket/20250322170230283.png)
+![eino学习小记(二)配图](https://qiuniu.phlin.cn/bucket/20250322170230283.png)
 
 之后，生成的代码架构大致如下：
-![](https://qiuniu.phlin.cn/bucket/20250322173309897.png)
+![eino学习小记(二)配图](https://qiuniu.phlin.cn/bucket/20250322173309897.png)
 之后我们再进入把配置信息和业务逻辑补齐就可以实现自己想要的效果了
 
 具体代码详见[我的仓库]((https://github.com/Penryn/eino-llm)，欢迎自取！OvO
@@ -42,3 +42,9 @@ ps：
 
 ## 参考资料
 [Eino用户手册](https://www.cloudwego.io/zh/docs/eino/)
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%BC%80%E5%8F%91/)

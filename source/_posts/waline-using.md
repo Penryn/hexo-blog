@@ -78,4 +78,10 @@ waline:
   pageSize: 10
 ```
 3. 最终效果
-![](https://qiuniu.phlin.cn/bucket/202408252209585.png)
+![hexo博客的fluid主题使用waline评论功能配图](https://qiuniu.phlin.cn/bucket/202408252209585.png)
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%8D%9A%E5%AE%A2/)

@@ -44,3 +44,9 @@ Atom Feed: https://your-domain.com/atom.xml
 RSS 2.0: https://your-domain.com/rss2.xml
 //将其中的 your-domain.com 替换为你的实际域名。
 ```
+
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E5%8D%9A%E5%AE%A2/)
