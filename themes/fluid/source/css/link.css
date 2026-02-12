@@ -25,3 +25,14 @@ a.card-body.hover-with-bg {
     border-left-width: 15px;
     background-color: #fff;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    a.card-body.hover-with-bg,
+    a.card-body.hover-with-bg img {
+      transition: none !important;
+    }
+
+    a.card-body.hover-with-bg:hover img {
+      transform: none !important;
+    }
+  }

@@ -8,4 +8,11 @@
   .index-img img {
     margin: 20px 0;
   }
-  
+
+  @media (prefers-reduced-motion: reduce) {
+    .index-card {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
