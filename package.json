@@ -4,10 +4,13 @@
   "private": true,
   "packageManager": "pnpm@10.29.3",
   "scripts": {
+    "prebuild": "pnpm seo:links",
     "build": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server"
+    "server": "hexo server",
+    "seo:links": "node tools/ensure-internal-links.js",
+    "seo:links:check": "node tools/ensure-internal-links.js --check"
   },
   "hexo": {
     "version": "7.3.0"
