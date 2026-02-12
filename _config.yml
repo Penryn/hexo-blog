@@ -3,13 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: phlin's blog
-subtitle: '望舒的尘歌壶'
-description: ''
-keywords:
+title: "phlin's blog"
+subtitle: "望舒的尘歌壶"
+description: ""
+keywords: []
 author: phlin
 language: zh-CN
-timezone: ''
+timezone: Asia/Shanghai
 
 
 # URL
@@ -90,9 +90,9 @@ pagination_dir: page
 
 # Include / Exclude file(s)
 ## include:/exclude: options only apply to the 'source/' folder
-include:
-exclude:
-ignore:
+include: []
+exclude: []
+ignore: []
 
 # Extensions
 ## Plugins: https://hexo.io/plugins/
