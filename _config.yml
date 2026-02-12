@@ -43,7 +43,7 @@ filename_case: 0
 render_drafts: false
 post_asset_folder: false
 relative_link: false
-future: true
+future: false
 syntax_highlighter: highlight.js
 highlight:
   line_number: true
@@ -114,6 +114,17 @@ feed:
   content_limit: 
   content_limit_delim: ' '
   order_by: -date
+
+sitemap:
+  path: sitemap.xml
+
+robotstxt:
+  useragent: "*"
+  allow:
+    - /
+  disallow:
+    - /xml/
+  sitemap: https://blog.phlin.cn/sitemap.xml
 
 # _config.yml
 OhMyLive2d:

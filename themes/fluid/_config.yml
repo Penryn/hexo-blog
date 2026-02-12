@@ -18,11 +18,11 @@
 
 # 用于浏览器标签的图标
 # Icon for browser tab
-favicon: https://qiuniu.phlin.cn/bucket/icon.png
+favicon: /img/favicon-32.png
 
 # 用于苹果设备的图标
 # Icon for Apple touch
-apple_touch_icon: https://qiuniu.phlin.cn/bucket/icon.png
+apple_touch_icon: /img/apple-touch-icon.png
 
 # 浏览器标签页中的标题分隔符，效果：文章名 - 站点名
 # Title separator in browser tab, eg: article - site
@@ -235,13 +235,11 @@ font:
 # Specify the path of your custom js file, support list. The path is relative to the source directory, such as `/js/custom.js` corresponding to the directory `source/js/custom.js`
 custom_js:
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/DynamicRibbon.min.js # 动态彩带
-  - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/snowflake.min.js # 小雪花飘落
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/Cherry.min.js #樱花飘落
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/star.min.js # 鼠标跟随小星星
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/containsWord.min.js # 鼠标点击出字
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/love.min.js #鼠标点击出爱心
   - /js/scrollAnimation.js
-  - https://qiuniu.phlin.cn/static/waline.js #评论系统
   # 弹幕脚本仅在弹幕页按需加载，已由模板注入
 
 
@@ -251,11 +249,9 @@ custom_css:
   - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/shubiao.css #鼠标指针
   - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/scroll.css # 滚动条颜色
   - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/gradient.css # 头部打字机颜色效果渐变
-  - https://qiuniu.phlin.cn/static/style.min.css #调用字体
   - /css/scrollAnimation.css
   - /css/code.css
   - /css/link.css
-  - https://qiuniu.phlin.cn/static/waline.css #评论样式
 
 
 # 网页访问统计
@@ -515,7 +511,7 @@ footer:
 index:
   # 首页 Banner 头图，可以是相对路径或绝对路径，以下相同
   # Path of Banner image, can be a relative path or an absolute path, the same on other pages
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
 
   # 头图高度，屏幕百分比
   # Height ratio of banner image
@@ -587,7 +583,7 @@ index:
 # Post Page
 #---------------------------
 post:
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 70
   banner_mask_alpha: 0.3
 
@@ -952,7 +948,7 @@ discuss:
 # Archive Page
 #---------------------------
 archive:
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 60
   banner_mask_alpha: 0.3
 
@@ -963,7 +959,7 @@ archive:
 #---------------------------
 category:
   enable: true
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 60
   banner_mask_alpha: 0.3
 
@@ -992,7 +988,7 @@ category:
 #---------------------------
 tag:
   enable: true
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 80
   banner_mask_alpha: 0.3
   tagcloud:
@@ -1009,7 +1005,7 @@ tag:
 #---------------------------
 about:
   enable: true
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 60
   banner_mask_alpha: 0.3
   avatar: https://qiuniu.phlin.cn/bucket/icon.png
@@ -1031,7 +1027,7 @@ about:
 # Custom Page through `hexo new page`
 #---------------------------
 page:
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 60
   banner_mask_alpha: 0.3
 
@@ -1042,7 +1038,7 @@ page:
 #---------------------------
 page404:
   enable: true
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 85
   banner_mask_alpha: 0.3
   # 重定向到首页的延迟(毫秒)
@@ -1056,7 +1052,7 @@ page404:
 #---------------------------
 links:
   enable: true
-  banner_img: https://qiuniu.phlin.cn/bucket/bg.jpeg
+  banner_img: /img/banner/hero.webp
   banner_img_height: 60
   banner_mask_alpha: 0.3
   # 友链的成员项
@@ -1228,7 +1224,7 @@ static_prefix:
 
 # 加载动画
 loading:
-  enable: true
+  enable: false
   play_time: 500
   avatar_url: "https://qiuniu.phlin.cn/bucket/icon.png"  # 在这里存放头像的 URL
 

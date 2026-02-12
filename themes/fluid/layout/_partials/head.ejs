@@ -10,7 +10,11 @@ if (description) {
   description = strip_html(description).substring(0, 200).trim().replace(/\n/g, ' ')
 }
 var ogImage = page.og_img || page.index_img
+var ogImageUrl = ogImage ? (String(ogImage).match(/^https?:\/\//) ? ogImage : url_join(config.url, url_for(ogImage))) : null
 var ogConfig = Object.assign({ image: ogImage && url_for(ogImage) }, theme.open_graph)
+var canonicalPath = (page.canonical_path || page.path || '').replace('index.html', '')
+var canonicalUrl = url_join(config.url, canonicalPath)
+var heroImage = page.banner_img || theme.index.banner_img
 %>
 
 <head>
@@ -19,7 +23,10 @@ var ogConfig = Object.assign({ image: ogImage && url_for(ogImage) }, theme.open_
   <link rel="apple-touch-icon" sizes="76x76" href="<%= url_for(theme.apple_touch_icon) %>">
   <link rel="icon" href="<%= url_for(theme.favicon) %>">
   <% if (theme.canonical.enable) { %>
-    <link rel="canonical" href="<%= url_join(config.url, page.canonical_path.replace('index.html', '')) %>"/>
+    <link rel="canonical" href="<%= canonicalUrl %>"/>
+  <% } %>
+  <% if ((is_home() || is_post() || is_page()) && heroImage) { %>
+    <link rel="preload" as="image" href="<%= url_for(heroImage) %>" fetchpriority="high">
   <% } %>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -49,6 +56,32 @@ var ogConfig = Object.assign({ image: ogImage && url_for(ogImage) }, theme.open_
     <%- open_graph(ogConfig) %>
   <% } else { %>
     <meta name="description" content="<%= description %>">
+  <% } %>
+  <script type="application/ld+json">
+    <%- JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": config.title,
+      "url": config.url,
+      "inLanguage": config.language
+    }) %>
+  </script>
+  <% if (is_post()) { %>
+  <script type="application/ld+json">
+    <%- JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": page.title,
+      "description": description,
+      "author": { "@type": "Person", "name": page.author || config.author },
+      "datePublished": page.date ? date_xml(page.date) : undefined,
+      "dateModified": (page.updated || page.date) ? date_xml(page.updated || page.date) : undefined,
+      "url": canonicalUrl,
+      "mainEntityOfPage": canonicalUrl,
+      "image": ogImageUrl || undefined,
+      "inLanguage": config.language
+    }) %>
+  </script>
   <% } %>
   <% if ((theme.post.meta.views.enable && theme.post.meta.views.source === 'busuanzi')
     || (theme.footer.statistics.enable && theme.footer.statistics.source === 'busuanzi')) { %>
