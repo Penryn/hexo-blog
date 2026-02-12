@@ -310,7 +310,7 @@ web_analytics:
 
     # 如果你只想统计特定的域名可以填入此字段，多个域名通过逗号分隔，这可以避免统计 localhost。
     # If you only want to tracker to specific domains you can fill in this field, multiple domain names are separated by commas, which can avoid tracker localhost
-    domains: blog.phlin.cn
+    domains: blog.phlin.cn,phlin.cn
 
     # 用于统计 PV UV 的开始时间，格式为 "YYYY-MM-DD"
     # statistics on the start time, the format is "YYYY-MM-DD"
