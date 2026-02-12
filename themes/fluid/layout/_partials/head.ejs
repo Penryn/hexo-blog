@@ -15,6 +15,20 @@ var ogConfig = Object.assign({ image: ogImage && url_for(ogImage) }, theme.open_
 var canonicalPath = (page.canonical_path || page.path || '').replace('index.html', '')
 var canonicalUrl = url_join(config.url, canonicalPath)
 var heroImage = page.banner_img || theme.index.banner_img
+var selectedCommentType = typeof page.comment === 'string' && page.comment !== '' ? page.comment : theme.post.comments.type
+var layoutName = page.layout || ''
+var commentsEnabledOnCurrentPage = false
+if (layoutName === 'post') {
+  commentsEnabledOnCurrentPage = theme.post.comments.enable && page.comments
+} else if (layoutName === 'links') {
+  commentsEnabledOnCurrentPage = theme.links.comments && theme.links.comments.enable
+} else if (layoutName === 'page' || layoutName === 'about' || layoutName === 'comments') {
+  commentsEnabledOnCurrentPage = page.comments
+}
+var walinePreconnectEnabled = theme.waline
+  && theme.waline.serverURL
+  && selectedCommentType === 'waline'
+  && commentsEnabledOnCurrentPage
 %>
 
 <head>
@@ -48,7 +62,7 @@ var heroImage = page.banner_img || theme.index.banner_img
     <link rel="preconnect" href="<%= theme.web_analytics.umami.api_server %>" crossorigin>
     <link rel="dns-prefetch" href="//<%= theme.web_analytics.umami.api_server.replace(/^https?:\/\//,'') %>">
   <% } %>
-  <% if (theme.waline && theme.waline.serverURL) { %>
+  <% if (walinePreconnectEnabled) { %>
     <link rel="preconnect" href="<%= theme.waline.serverURL %>" crossorigin>
     <link rel="dns-prefetch" href="//<%= theme.waline.serverURL.replace(/^https?:\/\//,'').replace(/\/$/,'') %>">
   <% } %>
