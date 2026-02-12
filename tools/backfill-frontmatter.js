@@ -80,29 +80,46 @@ function escapeYamlString(value) {
     .replace(/\r?\n/g, ' ');
 }
 
-function extractDescription(body, fallbackTitle) {
-  let text = body;
+function cleanPlainText(input) {
+  let text = String(input || '');
   text = text
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/`[^`]*`/g, ' ')
     .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')
-    .replace(/\[[^\]]+]\(([^)]+)\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\[\[[^\]]+\]\]/g, ' ')
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/^!\[\[[^\]]+\]\]\s*$/gm, ' ')
-    .replace(/^[ \t]*[-*|>]+/gm, ' ')
-    .replace(/\s+/g, ' ');
+    .replace(/^[ \t]*\d+\.\s+/gm, ' ')
+    .replace(/^[ \t]*[-*+|>]+\s*/gm, ' ')
+    .replace(/[*_~>#`]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return text;
+}
+
+function normalizeDescription(text, fallbackTitle) {
+  const cleaned = cleanPlainText(text) || cleanPlainText(fallbackTitle) || '';
+  if (!cleaned) {
+    return '';
+  }
+  if (cleaned.length > 120) {
+    return `${cleaned.slice(0, 117)}...`;
+  }
+  return cleaned;
+}
+
+function extractDescription(body, fallbackTitle) {
+  const text = cleanPlainText(body);
 
   const candidates = text
     .split(/(?<=[。！？.!?])\s+/)
     .map(item => item.trim())
     .filter(Boolean);
 
-  let desc = candidates.find(item => item.length >= 24) || candidates[0] || fallbackTitle || '';
-  desc = desc.trim();
-  if (desc.length > 120) {
-    desc = `${desc.slice(0, 117)}...`;
-  }
-  return desc;
+  const chosen = candidates.find(item => item.length >= 24) || candidates[0] || '';
+  return normalizeDescription(chosen, fallbackTitle);
 }
 
 function buildKeywords(frontMatter, title) {
@@ -143,13 +160,52 @@ function stripDeprecatedFields(frontMatter) {
   };
 }
 
+function sanitizeDescriptionField(frontMatter, fallbackTitle) {
+  const lines = frontMatter.split('\n');
+  let changed = false;
+  let hasDescription = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^description:\s*(.*)$/);
+    if (!m) {
+      continue;
+    }
+
+    const raw = m[1].trim().replace(/^['"]|['"]$/g, '');
+    const normalized = normalizeDescription(raw, fallbackTitle);
+    if (!normalized) {
+      lines.splice(i, 1);
+      changed = true;
+      hasDescription = false;
+      break;
+    }
+
+    hasDescription = true;
+    const expectedLine = `description: "${escapeYamlString(normalized)}"`;
+    if (lines[i] !== expectedLine) {
+      lines[i] = expectedLine;
+      changed = true;
+    }
+    break;
+  }
+
+  return {
+    changed,
+    hasDescription,
+    frontMatter: lines.join('\n')
+  };
+}
+
 function insertMissingFields(frontMatter, body) {
   const stripped = stripDeprecatedFields(frontMatter);
-  const cleanFrontMatter = stripped.frontMatter;
+  let cleanFrontMatter = stripped.frontMatter;
   const title = getScalar(cleanFrontMatter, 'title');
+  const descSanitized = sanitizeDescriptionField(cleanFrontMatter, title);
+  cleanFrontMatter = descSanitized.frontMatter;
+
   const date = getScalar(cleanFrontMatter, 'date');
   const hasUpdated = hasKey(cleanFrontMatter, 'updated');
-  const hasDescription = hasKey(cleanFrontMatter, 'description');
+  const hasDescription = descSanitized.hasDescription || hasKey(cleanFrontMatter, 'description');
   const hasKeywords = hasKey(cleanFrontMatter, 'keywords');
 
   const missing = {
@@ -158,7 +214,7 @@ function insertMissingFields(frontMatter, body) {
     keywords: !hasKeywords
   };
 
-  if (!missing.updated && !missing.description && !missing.keywords && !stripped.changed) {
+  if (!missing.updated && !missing.description && !missing.keywords && !stripped.changed && !descSanitized.changed) {
     return { changed: false, frontMatter: cleanFrontMatter };
   }
 

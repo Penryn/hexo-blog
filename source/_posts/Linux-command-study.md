@@ -6,7 +6,7 @@ keywords:
   - "shell"
   - "运维"
 updated: 2024-10-29 16:33:50
-description: "## linux常用命令 命令 | 功能说明 | 应用场景 | 示例 | | 列出指定目录中的文件和目录。"
+description: "linux常用命令 命令 | 功能说明 | 应用场景 | 示例 | | 列出指定目录中的文件和目录。"
 categories: 运维
 tags: 
  - linux

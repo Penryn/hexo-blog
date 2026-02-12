@@ -8,7 +8,7 @@ keywords:
   - "面试"
   - "开发"
 updated: 2024-08-28 04:05:48
-description: "## 出现缘由 在前一篇写的HTTP专题，我们可以了解到HTTP协议有一个特点：它是无状态的。"
+description: "出现缘由 在前一篇写的HTTP专题，我们可以了解到HTTP协议有一个特点：它是无状态的。"
 categories: 开发
 tags:
   - 鉴权

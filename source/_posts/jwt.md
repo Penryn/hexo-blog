@@ -7,7 +7,7 @@ keywords:
   - "面试"
   - "开发"
 updated: 2024-08-30 19:05:30
-description: "## 定义 JSON Web Token（简称 JWT）是 ，它是一种用于在不同方之间安全传递信息的开放标准（RFC 7519）。它以紧凑、自包含的方式将信息封装为 JSON 对象，常用于 Web 应用中的认证和信息交换，尤其适用于分..."
+description: "定义 JSON Web Token（简称 JWT）是 ，它是一种用于在不同方之间安全传递信息的开放标准（RFC 7519）。它以紧凑、自包含的方式将信息封装为 JSON 对象，常用于 Web 应用中的认证和信息交换，尤其适用于分..."
 categories: 开发
 tags:
   - 鉴权

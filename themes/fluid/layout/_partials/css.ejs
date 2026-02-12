@@ -24,3 +24,7 @@
 <% if (theme.custom_css) { %>
   <%- css(theme.custom_css) %>
 <% } %>
+
+<% if (page.layout === 'links') { %>
+  <%- css_ex(theme.static_prefix.internal_css, 'link.css') %>
+<% } %>

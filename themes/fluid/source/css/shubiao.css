@@ -1,0 +1,75 @@
+/* 鼠标指针图标（本地化） */
+
+body {
+  cursor: url('/img/cursor/Arrow.cur'), auto;
+}
+
+/* a 标签 */
+a:hover {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* 按钮 */
+button:hover {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* 文字 */
+code:hover {
+  cursor: url('/img/cursor/IBeam.cur'), auto;
+}
+
+#rightside > div > button,
+#rightside > div > a {
+  display: block;
+  margin-bottom: 2px;
+  width: 30px;
+  height: 30px;
+  color: var(--btn-color);
+  text-align: center;
+  font-size: 16px;
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* 文章标签 */
+.layout_post .tag_share .post-meta__tags {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* 评论区 */
+.vcol * {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+.v[data-class=v] .vicon {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+.v[data-class=v] .vbtn {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* 回复 */
+.vat {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* i 标签 */
+i:hover {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* up 酱 */
+#upj:hover {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* 分页器 */
+#pagination .page-number:hover {
+  cursor: url('/img/cursor/Hand.cur'), auto;
+}
+
+/* 分页器三个点 (...) */
+.space {
+  color: #00c4b6;
+}

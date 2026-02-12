@@ -7,7 +7,7 @@ keywords:
   - "cloudwego"
   - "开发"
 updated: 2025-03-22 17:14:28
-description: "书接上回，笔者谈到原来的项目只是人为先去使用工具然后再给ai，而且也没有发挥eino框架的https://www.cloudwego.io/zh/docs/eino/core_modules/chain_and_graph_orche..."
+description: "书接上回，笔者谈到原来的项目只是人为先去使用工具然后再给ai，而且也没有发挥eino框架的https://www.cloudwego.io/zh/docs/eino/core modules/chain and graph orche..."
 categories: 开发
 tags:
   - golang

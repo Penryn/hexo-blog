@@ -50,7 +50,7 @@
     background-color: #f9fffa;
   }
   
-  [data-user-color-scheme='dark'] .markdown-body table tr {
+[data-user-color-scheme='dark'] figure.highlight tr {
     background-color: #25272d;
   }
   
