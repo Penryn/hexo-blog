@@ -2,6 +2,7 @@
   "name": "hexo-theme-fluid",
   "version": "1.9.8",
   "description": "An elegant Material-Design theme for Hexo.",
+  "packageManager": "pnpm@9.15.0",
   "main": "package.json",
   "files": [
     "languages",
