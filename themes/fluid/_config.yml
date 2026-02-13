@@ -1067,6 +1067,12 @@ links:
     - {
       title: "派大星",
       intro: "派大星的博客",
+      link: "https://zjutjh.github.io/",
+      avatar: "https://qiuniu.phlin.cn/bucket/20260213232625704.png"
+    }
+    - {
+      title: "派大星",
+      intro: "派大星的博客",
       link: "https://blog.cnpatrickstar.com/",
       avatar: "https://blog.cnpatrickstar.com/images/avatar.jpg"
     }
