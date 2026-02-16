@@ -52,9 +52,16 @@
 <% } %>
 
 <% if (config.OhMyLive2d && config.OhMyLive2d.lazy) { %>
+  <script src="<%- url_for('/live2d-config.js') %>"></script>
   <script>
     (function () {
-      var cfg = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
+      var cfg = (window.__oml2d_runtime_config && typeof window.__oml2d_runtime_config === 'object')
+        ? window.__oml2d_runtime_config
+        : {};
+      if (!cfg.option || !Array.isArray(cfg.option.models) || !cfg.option.models.length) {
+        console && console.warn && console.warn('[OhMyLive2D] runtime config missing models, skip init');
+        return;
+      }
       var degradeCfg = cfg.degrade || {};
       window.__oml2d_strategy = cfg.strategy || {};
       var userToggleKey = typeof degradeCfg.userToggleStorageKey === 'string' && degradeCfg.userToggleStorageKey.trim()
@@ -382,7 +389,7 @@
             // Let library control stage animation; avoid forcing double slide-in
             // 安全地解析回调函数名，避免使用 eval
             (function(){
-              var hookRef = <%- JSON.stringify((config.OhMyLive2d && config.OhMyLive2d.then) || '') %>;
+              var hookRef = cfg.then || '';
               try {
                 var fn = resolveHook(hookRef);
                 if (fn) { fn(oml2d); }
