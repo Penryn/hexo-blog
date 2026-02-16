@@ -229,6 +229,7 @@ OhMyLive2d:
         height: 170
         left: calc(50% - 20px)
         top: -100px
+        textAlign: "left"
         color: "#0f172a"
         backgroundColor: "rgba(255, 255, 255, 0.96)"
         border: "1px solid rgba(15, 23, 42, 0.14)"
@@ -240,6 +241,7 @@ OhMyLive2d:
         height: 120
         left: calc(50% - 30px)
         top: -100px
+        textAlign: "left"
         color: "#0f172a"
         backgroundColor: "rgba(255, 255, 255, 0.96)"
         border: "1px solid rgba(15, 23, 42, 0.14)"
@@ -257,7 +259,7 @@ OhMyLive2d:
             var root = (typeof window !== 'undefined')
               ? window
               : ((typeof globalThis !== 'undefined') ? globalThis : {});
-            var cacheKey = 'live2d:hitokoto:cache:v4';
+            var cacheKey = 'live2d:hitokoto:cache:v5';
             var lockKey = 'live2d:hitokoto:lock:v1';
             var inflightKey = '__live2d_hitokoto_inflight_v1';
             var cacheTtlMs = 10 * 60 * 1000;
@@ -307,18 +309,50 @@ OhMyLive2d:
             function randomFallback() {
               return fallbackPool[Math.floor(Math.random() * fallbackPool.length)];
             }
+            function normalizeText(value) {
+              return (typeof value === 'string') ? value.trim() : '';
+            }
+            function normalizeComparableText(value) {
+              return normalizeText(value)
+                .toLowerCase()
+                .replace(/[\s\-_.·•,，。!！?？'"“”‘’`~:：;；()（）\[\]{}<>《》【】]/g, '');
+            }
+            function sameTextIgnoreCase(a, b) {
+              if (!a || !b) return false;
+              return normalizeComparableText(a) === normalizeComparableText(b);
+            }
+            function limitText(value, maxLen) {
+              if (!value || value.length <= maxLen) return value;
+              return value.slice(0, maxLen - 1) + '…';
+            }
+            function escapeHtml(value) {
+              return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+            }
             function formatQuote(data) {
-              var quote = (data && data.hitokoto) ? data.hitokoto : randomFallback();
-              var from = data && data.from ? data.from : '';
-              var fromWho = data && data.from_who ? data.from_who : '';
+              var quote = normalizeText(data && data.hitokoto) || randomFallback();
+              quote = limitText(quote, 88);
+              var from = limitText(normalizeText(data && data.from), 20);
+              var fromWho = limitText(normalizeText(data && data.from_who), 14);
+              if (sameTextIgnoreCase(from, fromWho)) fromWho = '';
               var type = data && data.type ? data.type : '';
               var source = '';
               if (from) {
                 source = '《' + from + '》';
-                if (fromWho) source += ' / ' + fromWho;
+                if (fromWho) source += '（' + fromWho + '）';
+              } else if (fromWho) {
+                source = fromWho;
               }
               var typeName = typeNameMap[type] || '一言';
-              return source ? (quote + '\n—— ' + source + ' · ' + typeName) : (quote + ' · ' + typeName);
+              var safeQuote = escapeHtml(quote);
+              var safeTypeName = escapeHtml(typeName);
+              return source
+                ? (safeQuote + '<br>—— ' + escapeHtml(source) + ' · ' + safeTypeName)
+                : (safeQuote + ' · ' + safeTypeName);
             }
             function fetchJsonWithTimeout(url, timeoutMs) {
               if (typeof AbortController === 'function') {

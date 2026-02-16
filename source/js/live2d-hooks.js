@@ -66,6 +66,34 @@
     }
   }
 
+  function applyTipsContentReadableStyle() {
+    var content = doc.getElementById('oml2d-tips-content');
+    if (!content) return false;
+    content.style.textAlign = 'left';
+    content.style.whiteSpace = 'normal';
+    content.style.wordBreak = 'normal';
+    content.style.overflowWrap = 'break-word';
+    content.style.lineHeight = '1.45';
+    return true;
+  }
+
+  function ensureTipsContentReadableStyle(retries) {
+    if (applyTipsContentReadableStyle()) return;
+    if (retries <= 0) return;
+    win.setTimeout(function () {
+      ensureTipsContentReadableStyle(retries - 1);
+    }, 120);
+  }
+
+  function bindTipsStyleSync(oml2d) {
+    ensureTipsContentReadableStyle(30);
+    if (typeof oml2d.onLoad === 'function') {
+      oml2d.onLoad(function (status) {
+        if (status === 'success') ensureTipsContentReadableStyle(20);
+      });
+    }
+  }
+
   function applyEnabledState(enabled) {
     writeEnabledState(enabled);
     if (!enabled) writeDisplayStatus('sleep');
@@ -249,6 +277,7 @@
     currentOml2d = oml2d;
     currentStrategy = mergeStrategyConfig();
     bindStageStatusSync(oml2d);
+    bindTipsStyleSync(oml2d);
     clearStrategyTimers();
     applyPageBasedModel(oml2d, currentStrategy);
     resumeActivities();
