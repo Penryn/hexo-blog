@@ -333,7 +333,7 @@
           function createNextQuoteMenuItem() {
             return {
               id: 'NextQuote',
-              icon: 'icon-like',
+              icon: 'icon-setting',
               title: '下一条文案',
               onClick: function (oml2d) {
                 if (!oml2d || typeof oml2d.tipsMessage !== 'function') return;
@@ -368,8 +368,24 @@
               }
             };
           }
+          function isOfficialAboutMenuItem(item) {
+            if (!item || typeof item !== 'object') return false;
+            if (item.id === 'About') return true;
+            if (typeof item.title === 'string' && item.title.trim() === '关于') return true;
+            return false;
+          }
+          function removeOfficialAboutMenuItem(items) {
+            var list = Array.isArray(items) ? items : [];
+            var out = [];
+            for (var i = 0; i < list.length; i++) {
+              var item = list[i];
+              if (isOfficialAboutMenuItem(item)) continue;
+              out.push(item);
+            }
+            return out;
+          }
           function appendNextQuoteMenuItem(items) {
-            var list = Array.isArray(items) ? items.slice() : [];
+            var list = removeOfficialAboutMenuItem(items);
             var exists = false;
             for (var i = 0; i < list.length; i++) {
               if (list[i] && list[i].id === 'NextQuote') {
