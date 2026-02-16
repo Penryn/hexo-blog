@@ -2,13 +2,15 @@
 var banner_img = page.banner_img || theme.index.banner_img
 var banner_img_height = parseFloat(page.banner_img_height || theme.index.banner_img_height)
 var banner_mask_alpha = parseFloat(page.banner_mask_alpha || theme.index.banner_mask_alpha)
+if (!Number.isFinite(banner_mask_alpha)) banner_mask_alpha = 0.3
+var banner_mask_attr = 'style="background-color: rgba(0, 0, 0, ' + banner_mask_alpha + ')"'
 var subtitle = page.subtitle || page.title
 %>
 
 <div id="banner" class="banner" <%- theme.banner && theme.banner.parallax && 'parallax=true' %>
      style="background: url('<%- url_for(banner_img) %>') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, <%= parseFloat(banner_mask_alpha) %>)">
+    <div class="mask flex-center" <%- banner_mask_attr %>>
       <div class="banner-text text-center fade-in-up">
         <% if (is_home()) { %>
           <h1 class="sr-only"><%= config.title %></h1>
