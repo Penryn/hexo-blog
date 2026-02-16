@@ -441,21 +441,22 @@
             // Fix tips (speech bubble) position: anchor to stage right-top area
             tips: (function(){
               var t = opt.tips || {};
-              // keep bubble centered above stage; shift left a bit more to keep right spacing
+              // keep bubble above stage and leave viewport right spacing.
+              // Note: tips animation rewrites `transform`, so horizontal offset should come from `left`.
               var style = mergeTips(t.style, {
                 right: 'auto',
-                left: '50%',
+                left: '44%',
                 top: 'auto',
                 bottom: 'calc(100% + 8px)',
-                transform: 'translateX(calc(-50% - 18px))',
+                transform: 'translateX(-50%)',
                 width: (t.style && t.style.width) || '240px'
               });
               var mstyle = mergeTips(t.mobileStyle, {
                 right: 'auto',
-                left: '50%',
+                left: '34%',
                 top: 'auto',
                 bottom: 'calc(100% + 8px)',
-                transform: 'translateX(calc(-50% - 14px))',
+                transform: 'translateX(-50%)',
                 width: (t.mobileStyle && t.mobileStyle.width) || '180px'
               });
               return Object.assign({}, t, { style: style, mobileStyle: mstyle });
