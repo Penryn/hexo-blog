@@ -75,8 +75,23 @@
           window.localStorage.setItem(userToggleKey, enabled ? '1' : '0');
         } catch (_) {}
       }
+      function hasOml2dDom() {
+        return !!(
+          document.getElementById('oml2d-stage') ||
+          document.getElementById('oml2d-statusBar') ||
+          document.getElementById('oml2d-tips') ||
+          document.getElementById('oml2d-menus')
+        );
+      }
       function removeOml2dDom() {
-        var selectors = ['.oml2d-stage', '.oml2d-status-bar', '.oml2d-menu', '.oml2d-menus', '.oml2d-tips'];
+        var selectors = [
+          '#oml2d-stage',
+          '#oml2d-statusBar',
+          '#oml2d-tips',
+          '#oml2d-menus',
+          '#oml2d-global-style',
+          '#oml2d-icon-svg'
+        ];
         for (var i = 0; i < selectors.length; i++) {
           var nodes = document.querySelectorAll(selectors[i]);
           for (var j = 0; j < nodes.length; j++) nodes[j].remove();
@@ -166,7 +181,14 @@
       function loadOML() {
         if (!shouldLoad()) return;
         if (window.__oml2d_loading || window.__oml2d_loaded) { return; }
-        if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; return; }
+        if (hasOml2dDom()) {
+          if (window.__oml2d_instance) {
+            window.__oml2d_loaded = true;
+            return;
+          }
+          // 清理残留节点，避免历史实例导致“只关掉最新实例”
+          removeOml2dDom();
+        }
         window.__oml2d_loading = true;
         console && console.log && console.log('[OhMyLive2D] start loading');
         var s = document.createElement('script');
@@ -251,7 +273,7 @@
             })()
           };
           try {
-            if (document.querySelector('.oml2d-stage')) {
+            if (hasOml2dDom()) {
               window.__oml2d_loaded = true;
               window.__oml2d_loading = false;
               console && console.log && console.log('[OhMyLive2D] stage exists, skip init');
