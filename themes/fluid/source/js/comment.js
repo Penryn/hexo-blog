@@ -113,9 +113,9 @@ class EasyDanmaku {
     send(contentObj, style = null, callback = null) {
         const contentKey = typeof contentObj === 'object' ? JSON.stringify(contentObj) : contentObj; // 简单去重
 
-        // 这里不再强制去重，因为循环播放需要重复发送
-        // if (this.sentComments.has(contentKey)) return;
-        // this.sentComments.add(contentKey);
+        // 这里启用去重逻辑，配合 animationend 的清理，确保弹幕在同一时间只出现一次
+        if (this.sentComments.has(contentKey)) return;
+        this.sentComments.add(contentKey);
 
         const row = this.getAvailableRow();
 
@@ -179,7 +179,7 @@ class EasyDanmaku {
             danmu.style.animationPlayState = 'running';
 
             danmu.addEventListener('animationend', () => {
-                // this.sentComments.delete(key);
+                this.sentComments.delete(key);
                 danmu.remove();
                 if (callback) callback({ runtime: speed, target: danmu });
             });
