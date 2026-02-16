@@ -441,21 +441,21 @@
             // Fix tips (speech bubble) position: anchor to stage right-top area
             tips: (function(){
               var t = opt.tips || {};
-              // place bubble centered above stage
+              // keep bubble above stage with a right inset to avoid edge sticking
               var style = mergeTips(t.style, {
-                right: 'auto',
-                left: '50%',
+                right: '16px',
+                left: 'auto',
                 top: 'auto',
                 bottom: 'calc(100% + 8px)',
-                transform: 'translateX(-50%)',
+                transform: 'none',
                 width: (t.style && t.style.width) || '240px'
               });
               var mstyle = mergeTips(t.mobileStyle, {
-                right: 'auto',
-                left: '50%',
+                right: '12px',
+                left: 'auto',
                 top: 'auto',
                 bottom: 'calc(100% + 8px)',
-                transform: 'translateX(-50%)',
+                transform: 'none',
                 width: (t.mobileStyle && t.mobileStyle.width) || '180px'
               });
               return Object.assign({}, t, { style: style, mobileStyle: mstyle });
