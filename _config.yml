@@ -261,7 +261,7 @@ OhMyLive2d:
             var root = (typeof window !== 'undefined')
               ? window
               : ((typeof globalThis !== 'undefined') ? globalThis : {});
-            var cacheKey = 'live2d:hitokoto:cache:v5';
+            var cacheKey = 'live2d:hitokoto:cache:v6';
             var lockKey = 'live2d:hitokoto:lock:v1';
             var inflightKey = '__live2d_hitokoto_inflight_v1';
             var cacheTtlMs = 10 * 60 * 1000;
@@ -320,6 +320,14 @@ OhMyLive2d:
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
+            }
+            // 兼容历史缓存格式：去掉末尾的 “ · 类型”
+            function stripLegacyTypeSuffix(value) {
+              var text = normalizeText(value);
+              if (!text) return '';
+              text = text.replace(/(<br>——[^<]+?)\s·\s[^<·]+$/, '$1');
+              text = text.replace(/\s·\s[^<·]+$/, '');
+              return text;
             }
             function formatQuote(data) {
               var quote = normalizeText(data && data.hitokoto) || randomFallback();
@@ -395,8 +403,8 @@ OhMyLive2d:
                 if (!cache.ts || (now() - cache.ts) >= staleTtlMs) return null;
                 var pool = [];
                 for (var i = 0; i < cache.pool.length; i++) {
-                  var text = cache.pool[i];
-                  if (typeof text !== 'string' || !text.trim()) continue;
+                  var text = stripLegacyTypeSuffix(cache.pool[i]);
+                  if (!text) continue;
                   if (pool.indexOf(text) !== -1) continue;
                   pool.push(text);
                 }
