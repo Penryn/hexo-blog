@@ -233,14 +233,14 @@
       }
       function scheduleLoad(callback) {
         if ('requestIdleCallback' in window) {
-          var idleId = window.requestIdleCallback(function () { callback(); }, { timeout: 2500 });
+          var idleId = window.requestIdleCallback(function () { callback(); }, { timeout: 300 });
           return function cancelIdleTask() {
             if (typeof window.cancelIdleCallback === 'function') {
               window.cancelIdleCallback(idleId);
             }
           };
         }
-        var timeoutId = window.setTimeout(callback, 200);
+        var timeoutId = window.setTimeout(callback, 300);
         return function cancelTimeoutTask() {
           window.clearTimeout(timeoutId);
         };
@@ -614,7 +614,7 @@
         function runWithFallback() {
           if (!startState.queued) return;
           startState.idleCancel = scheduleLoad(runOnce);
-          startState.fallbackTimer = window.setTimeout(runOnce, 3500);
+          startState.fallbackTimer = window.setTimeout(runOnce, 800);
         }
         if (document.visibilityState === 'hidden') {
           startState.hiddenListener = function () {

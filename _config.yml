@@ -180,7 +180,7 @@ OhMyLive2d:
     minHardwareConcurrency: 2
     userToggleStorageKey: live2d:enabled
     statusStorageKey: live2d:status
-    scriptTimeoutMs: 8000
+    scriptTimeoutMs: 3000
   strategy:
     enable: true
     # 页面类型优先切模（可填模型索引或模型 name），未命中时按时间兜底
@@ -197,7 +197,7 @@ OhMyLive2d:
     modelRotateIntervalMs: 1800000 # 30 分钟
     clothesRotateIntervalMs: 600000 # 10 分钟（仅 path 为数组时生效）
   option:
-    # importType: 'cubism2' # 导入类型, 默认使用全量导入: complete , 可选值: complete, cubism2, cubism5
+    importType: 'cubism5' # 导入类型, 默认使用全量导入: complete , 可选值: complete, cubism2, cubism5
     libraryUrls: # 自定义 Cubism SDK 外部资源地址
       complete: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/lib/complete.js
       cubism2: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/lib/cubism2.js
