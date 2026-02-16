@@ -41,10 +41,10 @@
     // 使用 window 挂载，确保其他脚本可访问
     window.danmakuConfig = {
       page: '<%= theme.danmaku.page %>' || '/comments/',
-      line: <%- theme.danmaku.line %> || 10,
-      speed: <%- theme.danmaku.speed %> || 20,
-      hover: <%= theme.danmaku.hover ? true : false %>,
-      loop: <%= theme.danmaku.loop ? true : false %>
+      line: Number('<%- theme.danmaku.line %>') || 10,
+      speed: Number('<%- theme.danmaku.speed %>') || 20,
+      hover: '<%= theme.danmaku.hover ? "true" : "false" %>' === 'true',
+      loop: '<%= theme.danmaku.loop ? "true" : "false" %>' === 'true'
     };
   </script>
   <%- js_ex(theme.static_prefix.internal_js, 'comment.js', 'defer') %>
