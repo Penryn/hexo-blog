@@ -127,13 +127,38 @@ sitemap:
   tags: false
   categories: false
 
-robotstxt:
-  useragent: "*"
+robots:
+  user_agent: "*"
   allow:
     - /
   disallow:
     - /live2d/
-  sitemap: https://blog.phlin.cn/sitemap.xml
+  sitemaps:
+    - https://blog.phlin.cn/sitemap.xml
+
+minify:
+  js:
+    enable: true
+    exclude:
+      - "*.min.js"
+      - "live2d/**"
+  css:
+    enable: true
+    exclude:
+      - "*.min.css"
+  image:
+    enable: true
+    options:
+      avif: true
+      webp: true
+      quality: 65
+      effort: 2
+      replaceSrc: true
+      persistCache: true
+    exclude:
+      - "live2d/**"
+      - "img/favicon-32.png"
+      - "img/apple-touch-icon.png"
 
 # _config.yml
 OhMyLive2d:

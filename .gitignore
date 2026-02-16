@@ -8,6 +8,7 @@ yarn.lock
 public/
 .deploy*/
 _multiconfig.yml
+lightning-minify/
 source/_posts/using_of_v2rayA.md
 .senera
 .serena
