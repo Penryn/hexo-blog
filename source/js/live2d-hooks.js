@@ -67,7 +67,12 @@
   }
 
   function applyTipsContentReadableStyle() {
+    var tips = doc.getElementById('oml2d-tips');
     var content = doc.getElementById('oml2d-tips-content');
+    if (tips) {
+      tips.style.maxWidth = 'min(78vw, 320px)';
+      tips.style.boxSizing = 'border-box';
+    }
     if (!content) return false;
     content.style.textAlign = 'left';
     content.style.whiteSpace = 'normal';
