@@ -17,8 +17,9 @@ function danmu() {
         el: '#danmu',              // 弹幕容器元素
         line: danmakuConfig.line,  // 弹幕行数
         speed: danmakuConfig.speed, // 弹幕速度
-        hover: danmakuConfig.hover, // 悬停效果
-        loop: danmakuConfig.loop   // 循环播放
+        hover: true,                // 强制开启悬停效果
+        loop: danmakuConfig.loop,   // 循环播放
+        colourful: true             // 启用彩色弹幕
     });
     window.__danmu_state.instance = Danmaku;
 

@@ -1,0 +1,72 @@
+/* 弹幕容器 */
+#comments {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  /* 确保有一定的高度 */
+  min-height: 200px; 
+}
+
+/* 单个弹幕样式 */
+.danmaku-item {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  color: #333;
+  pointer-events: auto; /* 允许鼠标交互 */
+  will-change: transform;
+  z-index: 10;
+  /* 初始在右侧不可见 */
+  left: 100%;
+  /* 动画定义 */
+  animation-name: danmaku-slide;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* 暗色模式适配 (如果 Fluid 主题支持 html[data-user-color-scheme="dark"]) */
+[data-user-color-scheme="dark"] .danmaku-item {
+  background-color: rgba(40, 44, 52, 0.9);
+  color: #eee;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 弹幕中的头像 */
+.danmaku-item img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+[data-user-color-scheme="dark"] .danmaku-item img {
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 弹幕悬停暂停 */
+.danmaku-item:hover {
+  animation-play-state: paused !important;
+  z-index: 100; /* 悬停时层级提高 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05); /* 微微放大 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 关键帧定义 */
+@keyframes danmaku-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* 使用 CSS 变量控制精确的移动距离，默认回退值为 -100% - 100vw */
+    transform: translateX(var(--d-translate-x, calc(-100vw - 100%)));
+  }
+}

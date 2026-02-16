@@ -253,6 +253,7 @@ custom_css:
   - /css/gradient.css # 头部打字机颜色效果渐变（本地化）
   - /css/scrollAnimation.css
   - /css/code.css
+  - /css/danmaku.css
 
 
 # 网页访问统计

@@ -34,229 +34,277 @@ function truncateText(text, maxLen) {
 }
 
 class EasyDanmaku {
-    constructor(t) {
-        this.container = this.checkParams(t);
-        this.pathname = t.page || null;
-        this.wrapperStyle = t.wrapperStyle || null;
-        this.line = t.line || 10; // 弹幕行数
-        this.speed = t.speed || 5; // 弹幕速度
-        this.runtime = t.runtime || 10; // 弹幕持续时间
-        this.colourful = t.colourful || false; // 是否启用彩色弹幕
-        this.loop = t.loop || false; // 是否循环播放
-        this.hover = t.hover || false; // 是否启用悬停功能
-        this.coefficient = t.coefficient || 1.38; // 弹幕显示间隔系数
-        this.originIndex = 0; // 弹幕初始索引
-        this.offsetValue = this.container.offsetHeight / this.line; // 每行高度偏移
-        this.aisle = []; // 存储每行状态
-        this.overflowArr = []; // 用于存储溢出的弹幕
-        this.sentComments = new Set(); // 存储已经发送过的弹幕评论
-        this.clearIng = false; // 标记是否正在清理弹幕
-        this._hoverBound = false;
+    constructor(config) {
+        this.container = this.checkParams(config);
+        this.wrapperStyle = config.wrapperStyle || null;
+        this.line = config.line || 10;
+        this.speed = config.speed || 5;
+        this.runtime = config.runtime || 10;
+        this.colourful = config.colourful || false;
+        this.loop = config.loop || false;
+        this.hover = config.hover || false;
+        this.offsetValue = this.container.offsetHeight / this.line;
+        this.aisle = [];
+        this.overflowArr = [];
+        this.sentComments = new Set();
+        this.clearIng = false;
         this._batchTimer = null;
+        
+        // 优化的配色方案 (柔和的 Material/Pastel 色系)
+        this.colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+            '#F7DC6F', '#BB8FCE', '#82E0AA', '#F1948A', '#85C1E9',
+            '#F0B27A', '#D7BDE2', '#A9DFBF', '#F5CBA7', '#AED6F1'
+        ];
+
         this.init();
-        this.handleEvents(t);
+        this.handleEvents(config);
     }
 
-    handleEvents(t) {
-        this.onComplete = t.onComplete || null;
-        this.onHover = t.onHover || null;
+    handleEvents(config) {
+        this.onComplete = config.onComplete || null;
+        // hover 事件由 CSS 处理
     }
 
-    // 初始化弹幕通道
     init() {
-        this.runstatus = 1;
         this.container.style.overflow = "hidden";
-        if (this.hover && !this._hoverBound) this.handleMouseHover();
-        if (Utils.getStyle(this.container, "position") !== "relative" &&
-            Utils.getStyle(this.container, "position") !== "fixed") {
+        const pos = window.getComputedStyle(this.container).position;
+        if (pos !== "relative" && pos !== "fixed" && pos !== "absolute") {
             this.container.style.position = "relative";
         }
+        
+        // 初始化轨道状态
         for (let i = 0; i < this.line; i++) {
-            this.aisle.push({ normalRow: true });
+            this.aisle.push({
+                occupied: false,
+                lastItemTime: 0 // 记录最后一次该轨道有弹幕进入的时间
+            });
         }
     }
 
-    // 检查参数
-    checkParams(t) {
-        if (!document.querySelector(t.el)) throw `Could not find the ${t.el} element`;
-        return document.querySelector(t.el);
+    checkParams(config) {
+        const el = document.querySelector(config.el);
+        if (!el) throw `Could not find the ${config.el} element`;
+        return el;
     }
 
-    // 发送单条弹幕
+    // 获取可用轨道 (优先选择空闲时间最长的轨道，避免重叠)
+    getAvailableRow() {
+        const now = Date.now();
+        let bestRow = -1;
+        let maxIdleTime = -1;
+
+        // 随机打乱检查顺序，避免总是偏向前面的轨道
+        const indexes = Array.from({ length: this.line }, (_, i) => i);
+        // Fisher-Yates shuffle
+        for (let i = indexes.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
+        }
+
+        for (const idx of indexes) {
+            if (!this.aisle[idx].occupied) {
+                return idx;
+            }
+        }
+        return -1;
+    }
+
     send(contentObj, style = null, callback = null) {
-        const contentKey = contentObj.content; // 获取内容的标识（例如内容文本）
+        const contentKey = typeof contentObj === 'object' ? JSON.stringify(contentObj) : contentObj; // 简单去重
 
-        if (this.sentComments.has(contentKey)) {
-            return;
+        // 这里不再强制去重，因为循环播放需要重复发送
+        // if (this.sentComments.has(contentKey)) return;
+        // this.sentComments.add(contentKey);
+
+        const row = this.getAvailableRow();
+
+        if (row !== -1) {
+            this.createDanmaku(contentObj, style, row, callback, contentKey);
+        } else {
+            // 所有轨道都被占用，放入等待队列
+            // console.log('Overflow, adding to queue');
+            this.overflowArr.push({ content: contentObj, normalClass: style, key: contentKey });
+            if (!this.clearIng) this.processOverflow();
+        }
+    }
+
+    createDanmaku(contentObj, style, row, callback, key) {
+        const danmu = document.createElement("div");
+        // 处理内容，如果是纯文本对象
+        if (typeof contentObj === 'string') {
+             danmu.innerHTML = contentObj;
+        } else if (contentObj.content) {
+             danmu.innerHTML = contentObj.content;
         }
 
-        this.sentComments.add(contentKey);
-
-        let danmu = document.createElement("div");
-        let row = 0;
-        let speed = this.speed;
-
-        // 设置弹幕内容及样式
-        danmu.innerHTML = contentObj.content;
-        danmu.style.display = "inline-flex";
-        danmu.style.alignItems = "center";
-        danmu.style.whiteSpace = "nowrap";
-        danmu.style.boxShadow = "2px 2px 5px rgba(0, 0, 0, 0.3)";
-        danmu.classList.add("default-style");
+        danmu.classList.add("danmaku-item");
         if (style || this.wrapperStyle) danmu.classList.add(style || this.wrapperStyle);
 
-        const placeDanmu = () => {
-            row = Math.round(Math.random() * (this.line - 1)); // 随机选择一行
-            if (this.aisle[row].normalRow) {
-                this.aisle[row].normalRow = false;
-                this.container.appendChild(danmu);
+        // 标记轨道被占用
+        this.aisle[row].occupied = true;
+        this.aisle[row].lastItemTime = Date.now();
 
-                // 设置弹幕的滚动动画
-                danmu.style.cssText += `
-                    position: absolute;
-                    right: -${danmu.offsetWidth + 130}px;
-                    transition: transform ${speed}s linear;
-                    transform: translateX(-${danmu.parentNode.offsetWidth + danmu.offsetWidth + 130}px);
-                    top: ${row * this.offsetValue}px;
-                    line-height: ${this.offsetValue}px;
-                    color: ${this.colourful ? "#" + ("00000" + (16777216 * Math.random() << 0).toString(16)).substr(-6) : ""};
-                `;
+        // 设置垂直位置，稍微随机偏移一点点，让每一行不那么死板
+        const randomYOffset = (Math.random() - 0.5) * 4; 
+        const topPos = row * this.offsetValue + (this.offsetValue - 30) / 2 + randomYOffset; // 假设高度约30px
+        danmu.style.top = `${topPos}px`;
+        
+        // 设置颜色
+        if (this.colourful) {
+            const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+            danmu.style.color = randomColor;
+            // 稍作透明处理的背景
+            danmu.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+            danmu.style.border = `1px solid ${randomColor}`;
+        }
 
-                // 动画结束时的处理
-                setTimeout(() => {
-                    this.aisle[row].normalRow = true;
-                    this.sentComments.delete(contentKey);
-                    if (callback) callback({ runtime: speed, target: danmu });
-                    danmu.remove();
-                }, speed * 1000);
-            } else {
-                if (this.aisle.some(row => row.normalRow)) {
-                    placeDanmu();
-                } else {
-                    this.overflowArr.push({ content: contentObj, normalClass: style });
-                    if (!this.clearIng) this.clearOverflowDanmakuArray();
-                }
-            }
-        };
+        this.container.appendChild(danmu);
 
-        placeDanmu(); // 开始放置弹幕
+        // 必须等到下一帧才能准确获取宽度
+        requestAnimationFrame(() => {
+            const containerWidth = this.container.offsetWidth;
+            const itemWidth = danmu.offsetWidth;
+            
+            // 设定CSS变量用于动画
+            // 移动距离 = 容器宽 + 自身宽 + 50px缓冲
+            const distance = containerWidth + itemWidth + 50; 
+            danmu.style.setProperty('--d-translate-x', `-${distance}px`);
+            
+            // 随机速度差异：基准速度 * (0.8 ~ 1.2)
+            const speed = this.speed * (0.8 + Math.random() * 0.4); 
+            danmu.style.animationDuration = `${speed}s`;
+            
+            // 开始动画
+            danmu.style.animationPlayState = 'running';
+
+            danmu.addEventListener('animationend', () => {
+                // this.sentComments.delete(key);
+                danmu.remove();
+                if (callback) callback({ runtime: speed, target: danmu });
+            });
+            
+            // 计算何时释放轨道
+            // 核心逻辑：当弹幕完全进入可视区域 + 一个安全间距后，轨道即可释放
+            // itemWidth + safeGap (e.g. 50px)
+            // 移动这么多距离需要的时间 = (itemWidth + 80) / distance * speed
+            const safeGap = 80 + Math.random() * 50; // 随机间距 80-130px
+            const occupyTime = ((itemWidth + safeGap) / distance) * speed * 1000;
+            
+            setTimeout(() => {
+                this.aisle[row].occupied = false;
+                // 尝试处理积压
+                if (this.overflowArr.length > 0) {
+                     this.processOverflow();
+                 }
+            }, occupyTime);
+        });
     }
 
-    // 批量发送弹幕（对内容进行转义，头像 URL 校验）
+    processOverflow() {
+        if (this.overflowArr.length === 0) {
+            this.clearIng = false;
+            return;
+        }
+        
+        // 尝试非阻塞处理
+        requestAnimationFrame(() => {
+            const row = this.getAvailableRow();
+            if (row !== -1) {
+                const item = this.overflowArr.shift();
+                this.createDanmaku(item.content, item.normalClass, row, null, item.key);
+                this.clearIng = true; // 继续保持清理状态
+                
+                // 给一点小延迟避免瞬间占满
+                if (this.overflowArr.length > 0) {
+                     setTimeout(() => this.processOverflow(), 100);
+                }
+            } else {
+                // 依然没有轨道，稍后再试
+                this.clearIng = true;
+                setTimeout(() => this.processOverflow(), 500);
+            }
+        });
+    }
+
     batchSend(contentList, hasAvatar = false, style = null) {
-        // 清理上一次批量发送的计划
         if (this._batchTimer) {
-            try { clearTimeout(this._batchTimer); } catch(_) {}
+            clearTimeout(this._batchTimer);
             this._batchTimer = null;
         }
-        const intervalTime = this.runtime || 1.23 * contentList.length;
+        
         this.originList = contentList;
         this.originIndex = 0;
-
-        const sendNextDanmu = () => {
-            if (this.originIndex >= contentList.length) {
+        
+        // 调整批量发送的间隔
+        // 我们不依赖固定间隔，而是尽可能填满轨道
+        // 使用一个循环检查器
+        
+        const sendNext = () => {
+            if (this.originIndex >= this.originList.length) {
                 if (this.loop) {
                     this.originIndex = 0;
-                    sendNextDanmu();
+                     // 循环时，稍微休息一下再重头开始，避免首尾相接太紧
+                    this._batchTimer = setTimeout(sendNext, 2000);
+                    return;
                 } else {
                     this.onComplete && this.onComplete();
                     return;
                 }
             }
 
+            // 尝试发送，如果成功（有轨道），则继续下一个，间隔很短
+            // 如果失败（无轨道，进入overflow），也继续下一个，交给 overflow 处理
+            // 但是为了避免瞬间把 overflow 塞满，我们还是控制一下速率
+            
+            const raw = this.originList[this.originIndex];
+            let contentHtml = '';
+
             if (hasAvatar) {
-                const raw = contentList[this.originIndex] || {};
                 const safeAvatar = escapeAttr(
                   sanitizeURL(raw.avatar) || 'https://cravatar.cn/avatar/d615d5793929e8c7d70eab5f00f7f5f1?d=mp'
                 );
-                const safeText = escapeHTML(truncateText(raw.content || '', 120));
-                const html = `<img src="${safeAvatar}" referrerpolicy="no-referrer" style="height: 30px; width: 30px; border-radius: 50%; margin-right: 5px;">` +
-                             `<p style="margin: 0;">${safeText}</p>`;
-                this.send({ content: html }, style || this.wrapperStyle);
+                // 限制长度，太长不好看
+                const safeText = escapeHTML(truncateText(raw.content || '', 30)); 
+                
+                // 构建更好看的 HTML 结构
+                contentHtml = `<img src="${safeAvatar}" referrerpolicy="no-referrer">` +
+                              `<span>${safeText}</span>`;
             } else {
-                const safeText = escapeHTML(truncateText((contentList[this.originIndex] || {}).content || '', 120));
-                this.send({ content: safeText }, style || this.wrapperStyle);
+                contentHtml = `<span>${escapeHTML(truncateText(raw.content || '', 30))}</span>`;
             }
-
+            
+            // 尝试发送
+            // 注意：这里 send 会处理 overflow
+            this.send({ content: contentHtml }, style || this.wrapperStyle);
+            
             this.originIndex++;
-            this._batchTimer = setTimeout(sendNextDanmu, intervalTime / contentList.length * 1000);
+            
+            // 动态间隔：如果 overflow 太多，就慢一点
+            let delay = 300;
+            if (this.overflowArr.length > 5) delay = 800;
+            if (this.overflowArr.length > 10) delay = 1500;
+            
+            // 随机波动
+            delay = delay * (0.8 + Math.random() * 0.4);
+            
+            this._batchTimer = setTimeout(sendNext, delay);
         };
 
-        sendNextDanmu();
+        sendNext();
     }
 
-    // 清理溢出弹幕
-    clearOverflowDanmakuArray() {
-        clearInterval(this.cleartimer);
-        this.clearIng = true;
-
-        this.cleartimer = setInterval(() => {
-            if (this.overflowArr.length === 0) {
-                clearInterval(this.cleartimer);
-                this.clearIng = false;
-            } else {
-                const overflowDanmu = this.overflowArr.shift();
-                this.send(overflowDanmu.content, overflowDanmu.normalClass || this.wrapperStyle);
-            }
-        }, 500);
-    }
-
-    // 处理悬停事件
-    handleMouseHover() {
-        Utils.eventDelegation(this.container, "default-style", "mouseover", danmu => {
-            const computedStyle = window.getComputedStyle(danmu);
-            const transformMatrix = new DOMMatrix(computedStyle.transform);
-            const translateX = transformMatrix.m41; // 获取当前的X轴偏移量
-
-            danmu.style.transition = "none"; // 停止动画
-            danmu.style.transform = `translateX(${translateX}px)`; // 保持当前位置
-        });
-
-        Utils.eventDelegation(this.container, "default-style", "mouseout", danmu => {
-            const computedStyle = window.getComputedStyle(danmu);
-            const transformMatrix = new DOMMatrix(computedStyle.transform);
-            const translateX = transformMatrix.m41; // 获取当前的X轴偏移量
-
-            const remainingDistance = danmu.parentNode.offsetWidth + danmu.offsetWidth + 130 + translateX; // 剩余距离
-            const remainingTime = (remainingDistance / (danmu.parentNode.offsetWidth + danmu.offsetWidth + 130)) * this.speed; // 剩余时间
-
-            danmu.style.transition = `transform ${remainingTime}s linear`;
-            danmu.style.transform = `translateX(-${danmu.parentNode.offsetWidth + danmu.offsetWidth + 130}px)`; // 继续滚动
-        });
-        this._hoverBound = true;
-    }
-
-    // 释放资源，便于 PJAX 或重复初始化时清理
     dispose() {
-        try { clearInterval(this.cleartimer); } catch(_) {}
-        try { clearTimeout(this._batchTimer); } catch(_) {}
-        this.cleartimer = null;
-        this._batchTimer = null;
-        this.sentComments && this.sentComments.clear && this.sentComments.clear();
+        if (this._batchTimer) clearTimeout(this._batchTimer);
+        this.sentComments.clear();
         this.overflowArr = [];
-        if (this.container) {
-            try { this.container.innerHTML = ''; } catch(_) {}
-        }
+        this.container.innerHTML = '';
     }
 }
 
-// 工具类
 class Utils {
     static getStyle(element, styleProp) {
         return window.getComputedStyle(element, null)[styleProp];
     }
-
-    static eventDelegation(parent, childClassName, eventType, callback) {
-        parent.addEventListener(eventType, event => {
-            try {
-                if (event.target.className.includes(childClassName)) {
-                    callback(event.target);
-                } else if (event.target.parentNode.className.includes(childClassName)) {
-                    callback(event.target.parentNode);
-                }
-            } catch (error) {
-                console.error("事件委托错误:", error);
-            }
-        });
-    }
+    // eventDelegation 不再需要，CSS处理 Hover
 }
