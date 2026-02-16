@@ -228,21 +228,67 @@ OhMyLive2d:
         height: 120
         left: calc(50% - 20px)
         top: -100px
+        color: "#0f172a"
+        backgroundColor: "rgba(255, 255, 255, 0.96)"
+        border: "1px solid rgba(15, 23, 42, 0.14)"
+        boxShadow: "0 10px 28px rgba(15, 23, 42, 0.18)"
+        textShadow: "none"
+        lineHeight: 1.45
       mobileStyle:
         width: 180
         height: 80
         left: calc(50% - 30px)
         top: -100px
+        color: "#0f172a"
+        backgroundColor: "rgba(255, 255, 255, 0.96)"
+        border: "1px solid rgba(15, 23, 42, 0.14)"
+        boxShadow: "0 8px 20px rgba(15, 23, 42, 0.16)"
+        textShadow: "none"
+        lineHeight: 1.35
       idleTips:
         interval: 60000
         # message:
         #   - 你好呀~
         #   - 欢迎来到我的小站~
-        # 自定义提示语，使用原生 fetch（无需额外引入 axios）
+        # 自定义提示语（多分类随机 + 长度过滤 + 来源署名 + 本地缓存）
         message: |
           function(){
-            var cacheKey = 'live2d:hitokoto:cache';
-            var cacheTtlMs = 5 * 60 * 1000;
+            var cacheKey = 'live2d:hitokoto:cache:v2';
+            var cacheTtlMs = 10 * 60 * 1000;
+            var fallbackPool = [
+              '今天也要稳扎稳打，慢一点也没关系。',
+              '别急，先把手上的一个点做到可验证。',
+              '复杂问题先拆小，持续迭代就会有进展。',
+              '写代码前先想边界条件，能省很多返工。'
+            ];
+            var typeNameMap = {
+              a: '动画',
+              b: '漫画',
+              c: '游戏',
+              d: '文学',
+              e: '原创',
+              f: '网络',
+              g: '其他',
+              h: '影视',
+              i: '诗词',
+              j: '网易云',
+              k: '哲学',
+              l: '抖机灵'
+            };
+            var categories = ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'i', 'k', 'l'];
+            function randomPick(arr, count) {
+              var copied = arr.slice();
+              var out = [];
+              var take = Math.max(1, Math.min(count, copied.length));
+              for (var i = 0; i < take; i++) {
+                var idx = Math.floor(Math.random() * copied.length);
+                out.push(copied.splice(idx, 1)[0]);
+              }
+              return out;
+            }
+            function randomFallback() {
+              return fallbackPool[Math.floor(Math.random() * fallbackPool.length)];
+            }
             try {
               var raw = localStorage.getItem(cacheKey);
               if (raw) {
@@ -252,7 +298,14 @@ OhMyLive2d:
                 }
               }
             } catch (_) {}
-            return fetch('https://v1.hitokoto.cn?c=i')
+            var selected = randomPick(categories, 2 + Math.floor(Math.random() * 2));
+            var params = new URLSearchParams();
+            for (var i = 0; i < selected.length; i++) {
+              params.append('c', selected[i]);
+            }
+            params.set('min_length', '8');
+            params.set('max_length', '80');
+            return fetch('https://v1.hitokoto.cn?' + params.toString())
               .then(function (response) {
                 if (!response.ok) {
                   throw new Error('hitokoto request failed: ' + response.status);
@@ -260,7 +313,17 @@ OhMyLive2d:
                 return response.json();
               })
               .then(function (data) {
-                var text = (data && data.hitokoto) ? data.hitokoto : '欢迎来到我的小站~';
+                var quote = (data && data.hitokoto) ? data.hitokoto : randomFallback();
+                var from = data && data.from ? data.from : '';
+                var fromWho = data && data.from_who ? data.from_who : '';
+                var type = data && data.type ? data.type : '';
+                var source = '';
+                if (from) {
+                  source = '《' + from + '》';
+                  if (fromWho) source += ' / ' + fromWho;
+                }
+                var typeName = typeNameMap[type] || '一言';
+                var text = source ? (quote + '\n—— ' + source + ' · ' + typeName) : (quote + ' · ' + typeName);
                 try {
                   localStorage.setItem(cacheKey, JSON.stringify({ text: text, ts: Date.now() }));
                 } catch (_) {}
@@ -268,12 +331,21 @@ OhMyLive2d:
               })
               .catch(function (error) {
                 console.error('[OhMyLive2D] idleTips request failed', error);
-                return '欢迎来到我的小站~';
+                return randomFallback();
               });
           }
-        wordTheDay: |
-          function(wordTheDayData){
-            return `${wordTheDayData.hitokoto}    by.${wordTheDayData.from}`;
-          }
+        # true/function 会接管 message，若希望走上面的自定义 message，请保持 false
+        wordTheDay: false
+    statusBar:
+      style:
+        color: "#0f172a"
+        backgroundColor: "rgba(255, 255, 255, 0.92)"
+        border: "1px solid rgba(15, 23, 42, 0.14)"
+        boxShadow: "0 10px 28px rgba(15, 23, 42, 0.18)"
+      mobileStyle:
+        color: "#0f172a"
+        backgroundColor: "rgba(255, 255, 255, 0.92)"
+        border: "1px solid rgba(15, 23, 42, 0.14)"
+        boxShadow: "0 8px 20px rgba(15, 23, 42, 0.16)"
 
 then: live2dHooks.onReady
