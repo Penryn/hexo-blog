@@ -241,6 +241,7 @@ custom_js:
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/love.min.js #鼠标点击出爱心
   - /js/reading-progress.js
   - /js/scrollAnimation.js
+  - /js/duration.js
   # 弹幕脚本仅在弹幕页按需加载，已由模板注入
 
 
@@ -488,6 +489,9 @@ footer:
     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
     <i class="iconfont icon-love"></i>
     <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a>
+    <br>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
 
   # 展示网站的 PV、UV 统计数
   # Display website PV and UV statistics
