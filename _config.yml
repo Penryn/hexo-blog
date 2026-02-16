@@ -223,9 +223,10 @@ OhMyLive2d:
     sayHello: false # 是否在初始化阶段打印项目信息
 
     tips:
+      messageLine: 7
       style:
-        width: 230
-        height: 120
+        width: 280
+        height: 170
         left: calc(50% - 20px)
         top: -100px
         color: "#0f172a"
@@ -235,8 +236,8 @@ OhMyLive2d:
         textShadow: "none"
         lineHeight: 1.45
       mobileStyle:
-        width: 180
-        height: 80
+        width: 220
+        height: 120
         left: calc(50% - 30px)
         top: -100px
         color: "#0f172a"
