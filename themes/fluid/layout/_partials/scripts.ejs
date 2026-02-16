@@ -314,6 +314,89 @@
             return option;
           }
           opt = normalizeOptionFunctions(opt);
+          var manualQuoteInFlight = false;
+          function pickFromArray(arr) {
+            if (!Array.isArray(arr) || !arr.length) return '';
+            var idx = Math.floor(Math.random() * arr.length);
+            var val = arr[idx];
+            return typeof val === 'string' ? val : '';
+          }
+          function extractIdleMessageSource(oml2d) {
+            try {
+              var tips = oml2d && oml2d.options && oml2d.options.tips;
+              var idleTips = tips && tips.idleTips;
+              return idleTips ? idleTips.message : null;
+            } catch (_) {
+              return null;
+            }
+          }
+          function createNextQuoteMenuItem() {
+            return {
+              id: 'NextQuote',
+              icon: 'icon-like',
+              title: '下一条文案',
+              onClick: function (oml2d) {
+                if (!oml2d || typeof oml2d.tipsMessage !== 'function') return;
+                if (manualQuoteInFlight) {
+                  oml2d.tipsMessage('文案获取中，请稍候…', 1800, 9);
+                  return;
+                }
+                var messageSource = extractIdleMessageSource(oml2d);
+                function showText(text) {
+                  var content = (typeof text === 'string' && text.trim()) ? text : '暂时没有新文案，稍后再试。';
+                  oml2d.tipsMessage(content, 6500, 9);
+                }
+                if (typeof messageSource === 'function') {
+                  manualQuoteInFlight = true;
+                  Promise.resolve()
+                    .then(function () { return messageSource(); })
+                    .then(function (text) { showText(text); })
+                    .catch(function (error) {
+                      console && console.warn && console.warn('[OhMyLive2D] manual next quote failed', error);
+                      showText('');
+                    })
+                    .finally(function () {
+                      manualQuoteInFlight = false;
+                    });
+                  return;
+                }
+                if (Array.isArray(messageSource)) {
+                  showText(pickFromArray(messageSource));
+                  return;
+                }
+                showText('');
+              }
+            };
+          }
+          function appendNextQuoteMenuItem(items) {
+            var list = Array.isArray(items) ? items.slice() : [];
+            var exists = false;
+            for (var i = 0; i < list.length; i++) {
+              if (list[i] && list[i].id === 'NextQuote') {
+                exists = true;
+                break;
+              }
+            }
+            if (!exists) list.push(createNextQuoteMenuItem());
+            return list;
+          }
+          function normalizeMenusItems(items) {
+            if (Array.isArray(items)) return appendNextQuoteMenuItem(items);
+            if (typeof items === 'function') {
+              return function (defaultItems) {
+                var resolved = defaultItems;
+                try {
+                  resolved = items(defaultItems);
+                } catch (error) {
+                  console && console.warn && console.warn('[OhMyLive2D] resolve menus.items failed, fallback defaults', error);
+                }
+                return appendNextQuoteMenuItem(resolved);
+              };
+            }
+            return function (defaultItems) {
+              return appendNextQuoteMenuItem(defaultItems);
+            };
+          }
 
           var options = {
             mobileDisplay: !!opt.mobileDisplay,
@@ -370,7 +453,11 @@
               var mstyle = mergeTips(m.mobileStyle, {
                 left: (m.mobileStyle && m.mobileStyle.left) || '-24px'
               });
-              return Object.assign({}, m, { style: style, mobileStyle: mstyle });
+              return Object.assign({}, m, {
+                style: style,
+                mobileStyle: mstyle,
+                items: normalizeMenusItems(m.items)
+              });
             })()
           };
           try {
