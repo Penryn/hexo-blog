@@ -6,6 +6,8 @@
   var clothesRotateTimer = null;
   var currentOml2d = null;
   var currentStrategy = null;
+  var tipsMutationObserver = null;
+  var tipsClampTimer = null;
 
   function getEnabledStorageKey() {
     return win.__oml2d_toggle_key || 'live2d:enabled';
@@ -66,19 +68,74 @@
     }
   }
 
+  function clampTipsToViewport() {
+    var tips = doc.getElementById('oml2d-tips');
+    if (!tips) return false;
+    var rect = tips.getBoundingClientRect();
+    if (!rect || !rect.width || !rect.height) return false;
+
+    var padding = 16;
+    var dx = 0;
+    var dy = 0;
+    if (rect.left < padding) {
+      dx = padding - rect.left;
+    } else if (rect.right > win.innerWidth - padding) {
+      dx = (win.innerWidth - padding) - rect.right;
+    }
+    if (rect.top < padding) {
+      dy = padding - rect.top;
+    }
+    if (!dx && !dy) return true;
+
+    var parent = tips.offsetParent;
+    var parentRect = parent && typeof parent.getBoundingClientRect === 'function'
+      ? parent.getBoundingClientRect()
+      : { left: 0, top: 0 };
+    if (dx) {
+      var nextLeft = rect.left + dx - parentRect.left;
+      if (isFinite(nextLeft)) {
+        tips.style.left = Math.round(nextLeft) + 'px';
+        tips.style.right = 'auto';
+        tips.style.marginLeft = '0px';
+      }
+    }
+    if (dy) {
+      var nextTop = rect.top + dy - parentRect.top;
+      if (isFinite(nextTop)) {
+        tips.style.top = Math.round(nextTop) + 'px';
+        tips.style.marginTop = '0px';
+      }
+    }
+    return true;
+  }
+
+  function scheduleTipsClamp(repeats) {
+    var remaining = Math.max(1, repeats || 1);
+    if (tipsClampTimer) {
+      win.clearTimeout(tipsClampTimer);
+      tipsClampTimer = null;
+    }
+    (function tick() {
+      clampTipsToViewport();
+      remaining -= 1;
+      if (remaining <= 0) return;
+      tipsClampTimer = win.setTimeout(tick, 40);
+    })();
+  }
+
   function applyTipsContentReadableStyle() {
     var tips = doc.getElementById('oml2d-tips');
     var content = doc.getElementById('oml2d-tips-content');
-    if (tips) {
-      tips.style.maxWidth = 'min(78vw, 320px)';
-      tips.style.boxSizing = 'border-box';
-    }
-    if (!content) return false;
+    if (!tips || !content) return false;
+    tips.style.maxWidth = 'min(78vw, 320px)';
+    tips.style.width = 'min(78vw, 320px)';
+    tips.style.boxSizing = 'border-box';
     content.style.textAlign = 'left';
     content.style.whiteSpace = 'normal';
     content.style.wordBreak = 'normal';
     content.style.overflowWrap = 'break-word';
     content.style.lineHeight = '1.45';
+    scheduleTipsClamp(8);
     return true;
   }
 
@@ -90,11 +147,36 @@
     }, 120);
   }
 
+  function bindTipsMutationSync() {
+    if (typeof MutationObserver !== 'function') return;
+    var tips = doc.getElementById('oml2d-tips');
+    var content = doc.getElementById('oml2d-tips-content');
+    if (!tips || !content) return;
+    if (tipsMutationObserver) {
+      tipsMutationObserver.disconnect();
+      tipsMutationObserver = null;
+    }
+    tipsMutationObserver = new MutationObserver(function () {
+      scheduleTipsClamp(10);
+    });
+    tipsMutationObserver.observe(tips, { attributes: true });
+    tipsMutationObserver.observe(content, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
+
   function bindTipsStyleSync(oml2d) {
     ensureTipsContentReadableStyle(30);
+    bindTipsMutationSync();
     if (typeof oml2d.onLoad === 'function') {
       oml2d.onLoad(function (status) {
-        if (status === 'success') ensureTipsContentReadableStyle(20);
+        if (status === 'success') {
+          ensureTipsContentReadableStyle(20);
+          bindTipsMutationSync();
+        }
       });
     }
   }
@@ -304,6 +386,11 @@
     } else {
       resumeActivities();
     }
+  });
+
+  win.addEventListener('resize', function () {
+    ensureTipsContentReadableStyle(2);
+    scheduleTipsClamp(8);
   });
 
   win.addEventListener('storage', function (evt) {
