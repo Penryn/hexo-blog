@@ -280,20 +280,6 @@ OhMyLive2d:
               '复杂问题先拆小，持续迭代就会有进展。',
               '写代码前先想边界条件，能省很多返工。'
             ];
-            var typeNameMap = {
-              a: '动画',
-              b: '漫画',
-              c: '游戏',
-              d: '文学',
-              e: '原创',
-              f: '网络',
-              g: '其他',
-              h: '影视',
-              i: '诗词',
-              j: '网易云',
-              k: '哲学',
-              l: '抖机灵'
-            };
             var categories = ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'i', 'k', 'l'];
             function now() {
               return Date.now();
@@ -341,7 +327,6 @@ OhMyLive2d:
               var from = limitText(normalizeText(data && data.from), 20);
               var fromWho = limitText(normalizeText(data && data.from_who), 14);
               if (sameTextIgnoreCase(from, fromWho)) fromWho = '';
-              var type = data && data.type ? data.type : '';
               var source = '';
               if (from) {
                 source = '《' + from + '》';
@@ -349,12 +334,10 @@ OhMyLive2d:
               } else if (fromWho) {
                 source = fromWho;
               }
-              var typeName = typeNameMap[type] || '一言';
               var safeQuote = escapeHtml(quote);
-              var safeTypeName = escapeHtml(typeName);
               return source
-                ? (safeQuote + '<br>—— ' + escapeHtml(source) + ' · ' + safeTypeName)
-                : (safeQuote + ' · ' + safeTypeName);
+                ? (safeQuote + '<br>—— ' + escapeHtml(source))
+                : safeQuote;
             }
             function fetchJsonWithTimeout(url, timeoutMs) {
               if (typeof AbortController === 'function') {
