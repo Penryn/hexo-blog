@@ -178,6 +178,11 @@ OhMyLive2d:
     disableOnSlowNetwork: true
     minDeviceMemory: 2
     minHardwareConcurrency: 2
+    userToggleStorageKey: live2d:enabled
+  strategy:
+    enable: true
+    modelRotateIntervalMs: 1800000 # 30 分钟
+    clothesRotateIntervalMs: 600000 # 10 分钟（仅 path 为数组时生效）
   option:
     # importType: 'cubism2' # 导入类型, 默认使用全量导入: complete , 可选值: complete, cubism2, cubism5
     libraryUrls: # 自定义 Cubism SDK 外部资源地址
@@ -216,13 +221,24 @@ OhMyLive2d:
         left: calc(50% - 30px)
         top: -100px
       idleTips:
-        interval: 15000
+        interval: 60000
         # message:
         #   - 你好呀~
         #   - 欢迎来到我的小站~
         # 自定义提示语，使用原生 fetch（无需额外引入 axios）
         message: |
           function(){
+            var cacheKey = 'live2d:hitokoto:cache';
+            var cacheTtlMs = 5 * 60 * 1000;
+            try {
+              var raw = localStorage.getItem(cacheKey);
+              if (raw) {
+                var cache = JSON.parse(raw);
+                if (cache && cache.text && cache.ts && (Date.now() - cache.ts) < cacheTtlMs) {
+                  return Promise.resolve(cache.text);
+                }
+              }
+            } catch (_) {}
             return fetch('https://v1.hitokoto.cn?c=i')
               .then(function (response) {
                 if (!response.ok) {
@@ -231,7 +247,11 @@ OhMyLive2d:
                 return response.json();
               })
               .then(function (data) {
-                return (data && data.hitokoto) ? data.hitokoto : '欢迎来到我的小站~';
+                var text = (data && data.hitokoto) ? data.hitokoto : '欢迎来到我的小站~';
+                try {
+                  localStorage.setItem(cacheKey, JSON.stringify({ text: text, ts: Date.now() }));
+                } catch (_) {}
+                return text;
               })
               .catch(function (error) {
                 console.error('[OhMyLive2D] idleTips request failed', error);

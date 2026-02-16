@@ -56,6 +56,32 @@
     (function () {
       var cfg = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
       var degradeCfg = cfg.degrade || {};
+      window.__oml2d_strategy = cfg.strategy || {};
+      var userToggleKey = typeof degradeCfg.userToggleStorageKey === 'string' && degradeCfg.userToggleStorageKey.trim()
+        ? degradeCfg.userToggleStorageKey.trim()
+        : 'live2d:enabled';
+      window.__oml2d_toggle_key = userToggleKey;
+      function readUserEnabled() {
+        try {
+          var value = window.localStorage.getItem(userToggleKey);
+          if (value === null || value === undefined || value === '') return true;
+          return !/^(0|false|off)$/i.test(String(value).trim());
+        } catch (_) {
+          return true;
+        }
+      }
+      function writeUserEnabled(enabled) {
+        try {
+          window.localStorage.setItem(userToggleKey, enabled ? '1' : '0');
+        } catch (_) {}
+      }
+      function removeOml2dDom() {
+        var selectors = ['.oml2d-stage', '.oml2d-status-bar', '.oml2d-menu', '.oml2d-menus', '.oml2d-tips'];
+        for (var i = 0; i < selectors.length; i++) {
+          var nodes = document.querySelectorAll(selectors[i]);
+          for (var j = 0; j < nodes.length; j++) nodes[j].remove();
+        }
+      }
       function resolveParentElement(val) {
         if (!val) return document.body;
         if (typeof val === 'string') {
@@ -85,6 +111,10 @@
         }
       }
       function shouldLoad() {
+        if (!readUserEnabled()) {
+          console && console.log && console.log('[OhMyLive2D] skip by user preference');
+          return false;
+        }
         var option = cfg.option || {};
         var mobileDisplay = typeof option.mobileDisplay === 'boolean' ? option.mobileDisplay : false;
         var isNarrow = window.matchMedia ? window.matchMedia('(max-width: 767px)').matches : (window.innerWidth < 768);
@@ -228,6 +258,7 @@
               return;
             }
             var oml2d = api(options);
+            window.__oml2d_instance = oml2d;
             // Let library control stage animation; avoid forcing double slide-in
             // 安全地解析回调函数名，避免使用 eval
             (function(){
@@ -261,9 +292,24 @@
         };
         document.head.appendChild(s);
       }
+      function unloadOML() {
+        var instance = window.__oml2d_instance;
+        try {
+          if (instance && typeof instance.clearTips === 'function') instance.clearTips();
+        } catch (_) {}
+        try {
+          if (instance && typeof instance.stopTipsIdle === 'function') instance.stopTipsIdle();
+        } catch (_) {}
+        try {
+          if (instance && typeof instance.stageSlideOut === 'function') instance.stageSlideOut();
+        } catch (_) {}
+        removeOml2dDom();
+        window.setTimeout(removeOml2dDom, 350);
+        window.__oml2d_instance = null;
+        window.__oml2d_loaded = false;
+        window.__oml2d_loading = false;
+      }
       function start() {
-        if (window.__oml2d_start_scheduled) return;
-        window.__oml2d_start_scheduled = true;
         var started = false;
         function runOnce() {
           if (started) return;
@@ -286,6 +332,18 @@
         }
         runWithFallback();
       }
+      window.__loadOhMyLive2D = function () {
+        writeUserEnabled(true);
+        start();
+      };
+      window.__unloadOhMyLive2D = function () {
+        writeUserEnabled(false);
+        unloadOML();
+      };
+      window.__setOhMyLive2DEnabled = function (enabled) {
+        if (enabled) window.__loadOhMyLive2D();
+        else window.__unloadOhMyLive2D();
+      };
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
       else start();
     })();
