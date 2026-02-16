@@ -6,10 +6,15 @@
   height: 3px;
   transform: scaleX(0);
   transform-origin: left center;
-  background: linear-gradient(90deg, var(--link-hover-color), var(--navbar-bg-color));
+  /* 使用主题变量颜色，确保与页面风格协调 */
+  background: linear-gradient(90deg, var(--link-hover-color), var(--post-link-color));
+  /* 添加发光阴影效果，颜色跟随主题 */
+  box-shadow: 0 0 8px var(--link-hover-color);
   pointer-events: none;
-  z-index: 1080;
-  opacity: 0.95;
+  z-index: 9999;
+  opacity: 0.9;
+  /* 添加平滑过渡 */
+  transition: transform 0.1s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 @media (max-width: 768px) {
