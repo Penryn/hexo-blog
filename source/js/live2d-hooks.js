@@ -71,16 +71,26 @@
   function clampTipsToViewport() {
     var tips = doc.getElementById('oml2d-tips');
     if (!tips) return false;
+    var padding = 24;
+    var viewportWidth = win.innerWidth || doc.documentElement.clientWidth || 0;
+    var maxWidth = Math.max(180, viewportWidth - padding * 2);
+    tips.style.maxWidth = maxWidth + 'px';
+    tips.style.marginLeft = '0px';
+    tips.style.marginTop = '0px';
+
     var rect = tips.getBoundingClientRect();
     if (!rect || !rect.width || !rect.height) return false;
+    if (rect.width > maxWidth + 0.5) {
+      tips.style.width = maxWidth + 'px';
+      rect = tips.getBoundingClientRect();
+    }
 
-    var padding = 16;
     var dx = 0;
     var dy = 0;
     if (rect.left < padding) {
       dx = padding - rect.left;
-    } else if (rect.right > win.innerWidth - padding) {
-      dx = (win.innerWidth - padding) - rect.right;
+    } else if (rect.right > viewportWidth - padding) {
+      dx = (viewportWidth - padding) - rect.right;
     }
     if (rect.top < padding) {
       dy = padding - rect.top;
@@ -88,24 +98,23 @@
     if (!dx && !dy) return true;
 
     var parent = tips.offsetParent;
-    var parentRect = parent && typeof parent.getBoundingClientRect === 'function'
+    var parentRect = (parent && typeof parent.getBoundingClientRect === 'function')
       ? parent.getBoundingClientRect()
-      : { left: 0, top: 0 };
-    if (dx) {
-      var nextLeft = rect.left + dx - parentRect.left;
-      if (isFinite(nextLeft)) {
-        tips.style.left = Math.round(nextLeft) + 'px';
-        tips.style.right = 'auto';
-        tips.style.marginLeft = '0px';
+      : null;
+    var scaleX = 1;
+    var scaleY = 1;
+    if (parent && parentRect) {
+      if (parent.offsetWidth > 0 && parentRect.width > 0) {
+        scaleX = parentRect.width / parent.offsetWidth;
+      }
+      if (parent.offsetHeight > 0 && parentRect.height > 0) {
+        scaleY = parentRect.height / parent.offsetHeight;
       }
     }
-    if (dy) {
-      var nextTop = rect.top + dy - parentRect.top;
-      if (isFinite(nextTop)) {
-        tips.style.top = Math.round(nextTop) + 'px';
-        tips.style.marginTop = '0px';
-      }
-    }
+    if (!isFinite(scaleX) || scaleX <= 0) scaleX = 1;
+    if (!isFinite(scaleY) || scaleY <= 0) scaleY = 1;
+    if (dx) tips.style.marginLeft = Math.round(dx / scaleX) + 'px';
+    if (dy) tips.style.marginTop = Math.round(dy / scaleY) + 'px';
     return true;
   }
 
