@@ -5,7 +5,9 @@
   overflow: hidden;
   margin-bottom: 2rem;
   /* 确保有一定的高度 */
-  min-height: 200px; 
+  min-height: 200px;
+  /* 避免容器自身遮挡 */
+  z-index: 1;
 }
 
 /* 单个弹幕样式 */
@@ -14,37 +16,57 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 6px 14px;
+  border-radius: 50px;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* 更柔和的阴影 */
   font-size: 14px;
-  color: #333;
+  color: #333; /* 默认深色字体 */
   pointer-events: auto; /* 允许鼠标交互 */
-  will-change: transform;
+  will-change: transform; /* 性能优化 */
   z-index: 10;
-  /* 初始在右侧不可见 */
   left: 100%;
+  
   /* 动画定义 */
   animation-name: danmaku-slide;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
+  
+  /* 解决溢出问题：不用 max-width，使用 max-content auto */
+  width: max-content;
+  max-width: none;
 }
 
-/* 暗色模式适配 (如果 Fluid 主题支持 html[data-user-color-scheme="dark"]) */
+/* 强制文字颜色深色，确保可读性 */
+.danmaku-item span {
+  color: #333;
+  margin-left: 8px; /* 增加一点间距 */
+  font-weight: 500;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* 暗色模式适配 */
 [data-user-color-scheme="dark"] .danmaku-item {
-  background-color: rgba(40, 44, 52, 0.9);
+  background-color: rgba(40, 44, 52, 0.95);
   color: #eee;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-user-color-scheme="dark"] .danmaku-item span {
+  color: #eee;
 }
 
 /* 弹幕中的头像 */
 .danmaku-item img {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  margin-right: 8px;
-  border: 1px solid rgba(0,0,0,0.1);
+  margin-right: 0; 
+  border: 1px solid rgba(0,0,0,0.05);
+  flex-shrink: 0; /* 防止头像被压缩 */
+  display: inline-block;
+  vertical-align: middle;
 }
 
 [data-user-color-scheme="dark"] .danmaku-item img {
@@ -55,9 +77,10 @@
 .danmaku-item:hover {
   animation-play-state: paused !important;
   z-index: 100; /* 悬停时层级提高 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   transform: scale(1.05); /* 微微放大 */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), box-shadow 0.2s ease;
+  cursor: default;
 }
 
 /* 关键帧定义 */
@@ -66,7 +89,6 @@
     transform: translateX(0);
   }
   to {
-    /* 使用 CSS 变量控制精确的移动距离，默认回退值为 -100% - 100vw */
     transform: translateX(var(--d-translate-x, calc(-100vw - 100%)));
   }
 }
