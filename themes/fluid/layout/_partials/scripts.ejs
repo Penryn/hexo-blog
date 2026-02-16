@@ -149,6 +149,7 @@
           '#oml2d-tips',
           '#oml2d-menus',
           '#oml2d-global-style',
+          '#oml2d-local-fix-style',
           '#oml2d-icon-svg'
         ];
         for (var i = 0; i < selectors.length; i++) {
@@ -413,6 +414,25 @@
               return appendNextQuoteMenuItem(defaultItems);
             };
           }
+          function ensureOml2dLocalFixStyle() {
+            var styleId = 'oml2d-local-fix-style';
+            var css = [
+              '@keyframes oml2d-hidden-tips {',
+              '  0% { opacity: 0; visibility: hidden; }',
+              '  100% { opacity: 0; visibility: hidden; }',
+              '}',
+              '#oml2d-tips {',
+              '  filter: none !important;',
+              '}'
+            ].join('\n');
+            var styleEl = document.getElementById(styleId);
+            if (!styleEl) {
+              styleEl = document.createElement('style');
+              styleEl.id = styleId;
+              document.head.appendChild(styleEl);
+            }
+            if (styleEl.textContent !== css) styleEl.textContent = css;
+          }
 
           var options = {
             mobileDisplay: !!opt.mobileDisplay,
@@ -449,6 +469,9 @@
                 top: 'auto',
                 bottom: 'calc(100% + 8px)',
                 transform: 'translateX(-50%)',
+                // avoid initial white flash/shadow on refresh
+                animationName: (t.style && t.style.animationName) || 'none, oml2d-shake-tips',
+                filter: (t.style && t.style.filter) || 'none',
                 width: (t.style && t.style.width) || '240px'
               });
               var mstyle = mergeTips(t.mobileStyle, {
@@ -457,6 +480,8 @@
                 top: 'auto',
                 bottom: 'calc(100% + 8px)',
                 transform: 'translateX(-50%)',
+                animationName: (t.mobileStyle && t.mobileStyle.animationName) || 'none, oml2d-shake-tips',
+                filter: (t.mobileStyle && t.mobileStyle.filter) || 'none',
                 width: (t.mobileStyle && t.mobileStyle.width) || '180px'
               });
               return Object.assign({}, t, { style: style, mobileStyle: mstyle });
@@ -489,6 +514,7 @@
               return;
             }
             var oml2d = api(options);
+            ensureOml2dLocalFixStyle();
             window.__oml2d_instance = oml2d;
             // Let library control stage animation; avoid forcing double slide-in
             // 安全地解析回调函数名，避免使用 eval
