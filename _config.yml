@@ -172,6 +172,12 @@ OhMyLive2d:
   lazy: true
   # CDN: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files
   CDN: https://qiuniu.phlin.cn/static/index.min.js
+  degrade:
+    disableOnReducedMotion: true
+    disableOnSaveData: true
+    disableOnSlowNetwork: true
+    minDeviceMemory: 2
+    minHardwareConcurrency: 2
   option:
     # importType: 'cubism2' # 导入类型, 默认使用全量导入: complete , 可选值: complete, cubism2, cubism5
     libraryUrls: # 自定义 Cubism SDK 外部资源地址
@@ -214,15 +220,22 @@ OhMyLive2d:
         # message:
         #   - 你好呀~
         #   - 欢迎来到我的小站~
-        # 自定义提示语 需要 引入 axios 库 ,也可以使用其他方法
+        # 自定义提示语，使用原生 fetch（无需额外引入 axios）
         message: |
           function(){
-            return axios.get('https://v1.hitokoto.cn?c=i')
+            return fetch('https://v1.hitokoto.cn?c=i')
               .then(function (response) {
-                return response.data.hitokoto;
+                if (!response.ok) {
+                  throw new Error('hitokoto request failed: ' + response.status);
+                }
+                return response.json();
+              })
+              .then(function (data) {
+                return (data && data.hitokoto) ? data.hitokoto : '欢迎来到我的小站~';
               })
               .catch(function (error) {
-                console.error(error);
+                console.error('[OhMyLive2D] idleTips request failed', error);
+                return '欢迎来到我的小站~';
               });
           }
         wordTheDay: |
@@ -230,9 +243,4 @@ OhMyLive2d:
             return `${wordTheDayData.hitokoto}    by.${wordTheDayData.from}`;
           }
 
-then: |
-  (oml2d)=>{
-     setTimeout(() => {
-      oml2d.tipsMessage('hello world', 3000, 10);
-    }, 8000);
-  }
+then: live2dHooks.onReady

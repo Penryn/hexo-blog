@@ -55,6 +55,7 @@
   <script>
     (function () {
       var cfg = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
+      var degradeCfg = cfg.degrade || {};
       function resolveParentElement(val) {
         if (!val) return document.body;
         if (typeof val === 'string') {
@@ -66,14 +67,71 @@
         }
         return document.body;
       }
+      function resolveHook(ref) {
+        if (typeof ref === 'function') return ref;
+        if (typeof ref !== 'string') return null;
+        var path = ref.trim();
+        if (!path) return null;
+        try {
+          var parts = path.split('.');
+          var ctx = window;
+          for (var i = 0; i < parts.length; i++) {
+            if (!ctx) return null;
+            ctx = ctx[parts[i]];
+          }
+          return typeof ctx === 'function' ? ctx : null;
+        } catch (_) {
+          return null;
+        }
+      }
       function shouldLoad() {
-        var mobileDisplay = cfg.option && typeof cfg.option.mobileDisplay === 'boolean' ? cfg.option.mobileDisplay : false;
+        var option = cfg.option || {};
+        var mobileDisplay = typeof option.mobileDisplay === 'boolean' ? option.mobileDisplay : false;
         var isNarrow = window.matchMedia ? window.matchMedia('(max-width: 767px)').matches : (window.innerWidth < 768);
         if (!mobileDisplay && isNarrow) {
           console && console.log && console.log('[OhMyLive2D] skip by width: mobileDisplay=false', { width: window.innerWidth });
           return false;
         }
+
+        var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (degradeCfg.disableOnReducedMotion !== false && reducedMotion) {
+          console && console.log && console.log('[OhMyLive2D] skip by reduced-motion preference');
+          return false;
+        }
+
+        var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (conn) {
+          if (degradeCfg.disableOnSaveData !== false && conn.saveData) {
+            console && console.log && console.log('[OhMyLive2D] skip by save-data mode');
+            return false;
+          }
+          var effectiveType = String(conn.effectiveType || '').toLowerCase();
+          if (degradeCfg.disableOnSlowNetwork !== false && /(^|-)2g$/.test(effectiveType)) {
+            console && console.log && console.log('[OhMyLive2D] skip by slow network', { effectiveType: effectiveType });
+            return false;
+          }
+        }
+
+        var minDeviceMemory = typeof degradeCfg.minDeviceMemory === 'number' ? degradeCfg.minDeviceMemory : 2;
+        if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < minDeviceMemory) {
+          console && console.log && console.log('[OhMyLive2D] skip by low memory', { deviceMemory: navigator.deviceMemory });
+          return false;
+        }
+
+        var minHardwareConcurrency = typeof degradeCfg.minHardwareConcurrency === 'number' ? degradeCfg.minHardwareConcurrency : 2;
+        if (typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency < minHardwareConcurrency) {
+          console && console.log && console.log('[OhMyLive2D] skip by low cpu cores', { hardwareConcurrency: navigator.hardwareConcurrency });
+          return false;
+        }
+
         return true;
+      }
+      function scheduleLoad(callback) {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(function () { callback(); }, { timeout: 2500 });
+        } else {
+          window.setTimeout(callback, 200);
+        }
       }
       function loadOML() {
         if (!shouldLoad()) return;
@@ -86,7 +144,7 @@
         var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js';
         s.src = primary;
         s.defer = true;
-        s.onload = function () {
+        function onScriptLoaded() {
           window.__oml2d_sdk_loaded = true;
           // oh-my-live2d exposes either `OML2D.loadOml2d` (modern) or `OhMyLive2D.load` (legacy/packaged)
           var api = null;
@@ -95,6 +153,7 @@
           else if (window.OhMyLive2D && typeof window.OhMyLive2D.load === 'function') { api = window.OhMyLive2D.load; apiType = 'OhMyLive2D'; }
           if (!api) {
             console && console.warn && console.warn('[OhMyLive2D] global API not found');
+            window.__oml2d_loading = false;
             return;
           }
           var opt = cfg.option || {};
@@ -162,54 +221,73 @@
             })()
           };
           try {
-            if (document.querySelector('.oml2d-stage')) { window.__oml2d_loaded = true; console && console.log && console.log('[OhMyLive2D] stage exists, skip init'); return; }
+            if (document.querySelector('.oml2d-stage')) {
+              window.__oml2d_loaded = true;
+              window.__oml2d_loading = false;
+              console && console.log && console.log('[OhMyLive2D] stage exists, skip init');
+              return;
+            }
             var oml2d = api(options);
             // Let library control stage animation; avoid forcing double slide-in
             // 安全地解析回调函数名，避免使用 eval
             (function(){
-              var hookName = <%- JSON.stringify((config.OhMyLive2d && config.OhMyLive2d.then) || '') %>;
-              if (!hookName || typeof hookName !== 'string') return;
-              function resolve(path) {
-                try {
-                  var parts = path.split('.');
-                  var ctx = window;
-                  for (var i = 0; i < parts.length; i++) {
-                    if (!ctx) return null;
-                    ctx = ctx[parts[i]];
-                  }
-                  return typeof ctx === 'function' ? ctx : null;
-                } catch(_) { return null; }
-              }
+              var hookRef = <%- JSON.stringify((config.OhMyLive2d && config.OhMyLive2d.then) || '') %>;
               try {
-                var fn = resolve(hookName);
+                var fn = resolveHook(hookRef);
                 if (fn) { fn(oml2d); }
+                else if (hookRef) { console && console.warn && console.warn('[OhMyLive2D] hook not found:', hookRef); }
               } catch(_) { /* ignore hook error */ }
             })();
             window.__oml2d_loaded = true;
+            window.__oml2d_loading = false;
             console && console.log && console.log('[OhMyLive2D] loaded via', apiType);
-          } catch (e) { console && console.error && console.error('[OhMyLive2D] load error', e); }
-        };
+          } catch (e) {
+            window.__oml2d_loading = false;
+            console && console.error && console.error('[OhMyLive2D] load error', e);
+          }
+        }
+        s.onload = onScriptLoaded;
         s.onerror = function () {
           console && console.warn && console.warn('[OhMyLive2D] primary CDN failed, retry fallback');
           var f = document.createElement('script');
           f.src = fallback;
           f.defer = true;
-          f.onload = s.onload;
-          f.onerror = function(){ console && console.error && console.error('[OhMyLive2D] fallback CDN failed'); };
+          f.onload = onScriptLoaded;
+          f.onerror = function(){
+            window.__oml2d_loading = false;
+            console && console.error && console.error('[OhMyLive2D] fallback CDN failed');
+          };
           document.head.appendChild(f);
         };
         document.head.appendChild(s);
       }
       function start() {
-        // 尽早加载，同时再设一个兜底定时器，避免某些环境下 rIC 不触发
-        loadOML();
-        window.setTimeout(function(){ try { loadOML(); } catch(_){} }, 2000);
+        if (window.__oml2d_start_scheduled) return;
+        window.__oml2d_start_scheduled = true;
+        var started = false;
+        function runOnce() {
+          if (started) return;
+          started = true;
+          try { loadOML(); } catch (_) {}
+        }
+        function runWithFallback() {
+          scheduleLoad(runOnce);
+          window.setTimeout(runOnce, 3500);
+        }
+        if (document.visibilityState === 'hidden') {
+          var onVisible = function () {
+            if (document.visibilityState !== 'visible') return;
+            document.removeEventListener('visibilitychange', onVisible);
+            runWithFallback();
+          };
+          document.addEventListener('visibilitychange', onVisible);
+          window.setTimeout(runWithFallback, 12000);
+          return;
+        }
+        runWithFallback();
       }
-      if (document.readyState === 'complete') start();
-      else {
-        window.addEventListener('load', start, { once: true });
-        document.addEventListener('DOMContentLoaded', start, { once: true });
-      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+      else start();
     })();
   </script>
 <% } %>
