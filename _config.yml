@@ -250,11 +250,24 @@ OhMyLive2d:
         # message:
         #   - 你好呀~
         #   - 欢迎来到我的小站~
-        # 自定义提示语（多分类随机 + 长度过滤 + 来源署名 + 本地缓存）
+        # 自定义提示语（多分类随机 + 超时重试 + 并发锁 + SWR 缓存池）
         message: |
           function(){
-            var cacheKey = 'live2d:hitokoto:cache:v3';
+            var root = (typeof window !== 'undefined')
+              ? window
+              : ((typeof globalThis !== 'undefined') ? globalThis : {});
+            var cacheKey = 'live2d:hitokoto:cache:v4';
+            var lockKey = 'live2d:hitokoto:lock:v1';
+            var inflightKey = '__live2d_hitokoto_inflight_v1';
             var cacheTtlMs = 10 * 60 * 1000;
+            var staleTtlMs = 24 * 60 * 60 * 1000;
+            var lockTtlMs = 15 * 1000;
+            var waitForLockMs = 1800;
+            var requestTimeoutMs = 3500;
+            var backoffKey = 'live2d:hitokoto:backoff:v1';
+            var backoffBaseMs = 30 * 1000;
+            var backoffMaxMs = 30 * 60 * 1000;
+            var backoffMaxFailCount = 8;
             var targetPoolSize = 4;
             var fallbackPool = [
               '今天也要稳扎稳打，慢一点也没关系。',
@@ -277,6 +290,9 @@ OhMyLive2d:
               l: '抖机灵'
             };
             var categories = ['a', 'b', 'c', 'd', 'e', 'f', 'h', 'i', 'k', 'l'];
+            function now() {
+              return Date.now();
+            }
             function randomPick(arr, count) {
               var copied = arr.slice();
               var out = [];
@@ -303,6 +319,34 @@ OhMyLive2d:
               var typeName = typeNameMap[type] || '一言';
               return source ? (quote + '\n—— ' + source + ' · ' + typeName) : (quote + ' · ' + typeName);
             }
+            function fetchJsonWithTimeout(url, timeoutMs) {
+              if (typeof AbortController === 'function') {
+                var controller = new AbortController();
+                var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
+                return fetch(url, { signal: controller.signal })
+                  .then(function (response) {
+                    clearTimeout(timer);
+                    return response;
+                  })
+                  .catch(function (error) {
+                    clearTimeout(timer);
+                    throw error;
+                  });
+              }
+              var timerId = 0;
+              var timeoutPromise = new Promise(function (_, reject) {
+                timerId = setTimeout(function () {
+                  reject(new Error('hitokoto request timeout'));
+                }, timeoutMs);
+              });
+              return Promise.race([fetch(url), timeoutPromise]).then(function (response) {
+                clearTimeout(timerId);
+                return response;
+              }, function (error) {
+                clearTimeout(timerId);
+                throw error;
+              });
+            }
             function fetchOne() {
               var selected = randomPick(categories, 2 + Math.floor(Math.random() * 2));
               var params = new URLSearchParams();
@@ -311,7 +355,7 @@ OhMyLive2d:
               }
               params.set('min_length', '8');
               params.set('max_length', '80');
-              return fetch('https://v1.hitokoto.cn?' + params.toString())
+              return fetchJsonWithTimeout('https://v1.hitokoto.cn?' + params.toString(), requestTimeoutMs)
               .then(function (response) {
                 if (!response.ok) {
                   throw new Error('hitokoto request failed: ' + response.status);
@@ -328,7 +372,16 @@ OhMyLive2d:
                 if (!raw) return null;
                 var cache = JSON.parse(raw);
                 if (!cache || !Array.isArray(cache.pool) || !cache.pool.length) return null;
-                if (!cache.ts || (Date.now() - cache.ts) >= cacheTtlMs) return null;
+                if (!cache.ts || (now() - cache.ts) >= staleTtlMs) return null;
+                var pool = [];
+                for (var i = 0; i < cache.pool.length; i++) {
+                  var text = cache.pool[i];
+                  if (typeof text !== 'string' || !text.trim()) continue;
+                  if (pool.indexOf(text) !== -1) continue;
+                  pool.push(text);
+                }
+                if (!pool.length) return null;
+                cache.pool = pool;
                 if (typeof cache.idx !== 'number' || !isFinite(cache.idx)) cache.idx = 0;
                 return cache;
               } catch (_) {
@@ -340,28 +393,169 @@ OhMyLive2d:
                 localStorage.setItem(cacheKey, JSON.stringify(cache));
               } catch (_) {}
             }
-            var cached = readCache();
-            if (cached) {
-              var text = cached.pool[cached.idx % cached.pool.length];
-              cached.idx = (cached.idx + 1) % cached.pool.length;
-              writeCache(cached);
-              return Promise.resolve(text);
+            function readBackoff() {
+              try {
+                var raw = localStorage.getItem(backoffKey);
+                if (!raw) return { failCount: 0, nextRetryAt: 0 };
+                var state = JSON.parse(raw);
+                if (!state || typeof state !== 'object') return { failCount: 0, nextRetryAt: 0 };
+                var failCount = Number(state.failCount);
+                if (!isFinite(failCount) || failCount < 0) failCount = 0;
+                var nextRetryAt = Number(state.nextRetryAt);
+                if (!isFinite(nextRetryAt) || nextRetryAt < 0) nextRetryAt = 0;
+                return { failCount: Math.floor(failCount), nextRetryAt: Math.floor(nextRetryAt) };
+              } catch (_) {
+                return { failCount: 0, nextRetryAt: 0 };
+              }
             }
-            var tasks = [];
-            for (var n = 0; n < targetPoolSize; n++) {
-              tasks.push(fetchOne().catch(function () { return ''; }));
+            function writeBackoff(state) {
+              try {
+                localStorage.setItem(backoffKey, JSON.stringify(state));
+              } catch (_) {}
             }
-            return Promise.all(tasks)
-              .then(function (response) {
+            function getBackoffState() {
+              return readBackoff();
+            }
+            function inBackoffWindow(state) {
+              return !!(state && state.nextRetryAt > now());
+            }
+            function markRefreshSuccess() {
+              writeBackoff({ failCount: 0, nextRetryAt: 0 });
+            }
+            function markRefreshFailure() {
+              var state = readBackoff();
+              var failCount = state.failCount + 1;
+              if (failCount > backoffMaxFailCount) failCount = backoffMaxFailCount;
+              var delay = backoffBaseMs * Math.pow(2, failCount - 1);
+              if (!isFinite(delay) || delay < backoffBaseMs) delay = backoffBaseMs;
+              if (delay > backoffMaxMs) delay = backoffMaxMs;
+              writeBackoff({
+                failCount: failCount,
+                nextRetryAt: now() + delay
+              });
+            }
+            function nextFromCache(cache) {
+              if (!cache || !Array.isArray(cache.pool) || !cache.pool.length) return '';
+              var idx = cache.idx % cache.pool.length;
+              if (idx < 0) idx = 0;
+              var text = cache.pool[idx] || '';
+              cache.idx = (idx + 1) % cache.pool.length;
+              writeCache(cache);
+              return text;
+            }
+            function readLock() {
+              try {
+                var raw = localStorage.getItem(lockKey);
+                if (!raw) return null;
+                var lock = JSON.parse(raw);
+                if (!lock || typeof lock.id !== 'string' || typeof lock.expireAt !== 'number') return null;
+                return lock;
+              } catch (_) {
+                return null;
+              }
+            }
+            function createLockId() {
+              return String(now()) + ':' + Math.random().toString(36).slice(2);
+            }
+            function tryAcquireLock(lockId) {
+              try {
+                var current = readLock();
+                if (current && current.expireAt > now() && current.id !== lockId) return false;
+                localStorage.setItem(lockKey, JSON.stringify({ id: lockId, expireAt: now() + lockTtlMs }));
+                var verify = readLock();
+                return !!(verify && verify.id === lockId);
+              } catch (_) {
+                return false;
+              }
+            }
+            function releaseLock(lockId) {
+              try {
+                var current = readLock();
+                if (current && current.id === lockId) {
+                  localStorage.removeItem(lockKey);
+                }
+              } catch (_) {}
+            }
+            function waitForCache(timeoutMs) {
+              return new Promise(function (resolve) {
+                var end = now() + timeoutMs;
+                (function poll() {
+                  var cache = readCache();
+                  if (cache) return resolve(cache);
+                  if (now() >= end) return resolve(null);
+                  setTimeout(poll, 120);
+                })();
+              });
+            }
+            function buildPoolWithLock(lockId) {
+              var tasks = [];
+              for (var n = 0; n < targetPoolSize; n++) {
+                tasks.push(fetchOne().catch(function () { return ''; }));
+              }
+              return Promise.all(tasks).then(function (response) {
                 var pool = [];
                 for (var i = 0; i < response.length; i++) {
                   var text = response[i];
                   if (!text || pool.indexOf(text) !== -1) continue;
                   pool.push(text);
                 }
-                if (!pool.length) return randomFallback();
-                writeCache({ pool: pool, idx: 1, ts: Date.now() });
-                return pool[0];
+                if (!pool.length) return null;
+                var cache = { pool: pool, idx: 0, ts: now() };
+                writeCache(cache);
+                return cache;
+              }).finally(function () {
+                releaseLock(lockId);
+              });
+            }
+            function refreshPool() {
+              var backoff = getBackoffState();
+              if (inBackoffWindow(backoff)) {
+                return Promise.resolve(readCache());
+              }
+              if (root[inflightKey]) return root[inflightKey];
+              var lockId = createLockId();
+              if (!tryAcquireLock(lockId)) {
+                return waitForCache(waitForLockMs).then(function (cache) {
+                  return cache || readCache();
+                });
+              }
+              var task = buildPoolWithLock(lockId)
+                .then(function (cache) {
+                  if (cache && cache.pool && cache.pool.length) {
+                    markRefreshSuccess();
+                    return cache;
+                  }
+                  markRefreshFailure();
+                  return null;
+                })
+                .catch(function (error) {
+                  console.error('[OhMyLive2D] idleTips refresh failed', error);
+                  markRefreshFailure();
+                  return null;
+                });
+              var wrapped = task.finally(function () {
+                if (root[inflightKey] === wrapped) root[inflightKey] = null;
+              });
+              root[inflightKey] = wrapped;
+              return wrapped;
+            }
+            function refreshInBackground() {
+              refreshPool().catch(function () {});
+            }
+            var cached = readCache();
+            if (cached) {
+              var text = nextFromCache(cached) || randomFallback();
+              var backoff = getBackoffState();
+              if ((now() - cached.ts) >= cacheTtlMs && !inBackoffWindow(backoff)) {
+                refreshInBackground();
+              }
+              return Promise.resolve(text);
+            }
+            return refreshPool()
+              .then(function (cache) {
+                var latest = cache || readCache();
+                if (!latest) return randomFallback();
+                return nextFromCache(latest) || randomFallback();
               })
               .catch(function (error) {
                 console.error('[OhMyLive2D] idleTips request failed', error);

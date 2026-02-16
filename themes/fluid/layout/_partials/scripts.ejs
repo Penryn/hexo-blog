@@ -68,6 +68,43 @@
       var scriptTimeoutMs = typeof degradeCfg.scriptTimeoutMs === 'number' && degradeCfg.scriptTimeoutMs > 0
         ? degradeCfg.scriptTimeoutMs
         : 8000;
+      var loadSessionSeq = (typeof window.__oml2d_load_session === 'number' && isFinite(window.__oml2d_load_session))
+        ? window.__oml2d_load_session
+        : 0;
+      window.__oml2d_load_session = loadSessionSeq;
+      var startState = {
+        queued: false,
+        idleCancel: null,
+        fallbackTimer: 0,
+        hiddenTimer: 0,
+        hiddenListener: null
+      };
+      function invalidateLoadSession() {
+        loadSessionSeq += 1;
+        window.__oml2d_load_session = loadSessionSeq;
+        return loadSessionSeq;
+      }
+      function isLoadSessionActive(sessionId) {
+        return sessionId === window.__oml2d_load_session && readUserEnabled();
+      }
+      function clearStartSchedule() {
+        if (typeof startState.idleCancel === 'function') {
+          try { startState.idleCancel(); } catch (_) {}
+        }
+        startState.idleCancel = null;
+        if (startState.fallbackTimer) {
+          window.clearTimeout(startState.fallbackTimer);
+          startState.fallbackTimer = 0;
+        }
+        if (startState.hiddenTimer) {
+          window.clearTimeout(startState.hiddenTimer);
+          startState.hiddenTimer = 0;
+        }
+        if (startState.hiddenListener) {
+          document.removeEventListener('visibilitychange', startState.hiddenListener);
+          startState.hiddenListener = null;
+        }
+      }
       function readUserEnabled() {
         try {
           var value = window.localStorage.getItem(userToggleKey);
@@ -188,14 +225,22 @@
       }
       function scheduleLoad(callback) {
         if ('requestIdleCallback' in window) {
-          window.requestIdleCallback(function () { callback(); }, { timeout: 2500 });
-        } else {
-          window.setTimeout(callback, 200);
+          var idleId = window.requestIdleCallback(function () { callback(); }, { timeout: 2500 });
+          return function cancelIdleTask() {
+            if (typeof window.cancelIdleCallback === 'function') {
+              window.cancelIdleCallback(idleId);
+            }
+          };
         }
+        var timeoutId = window.setTimeout(callback, 200);
+        return function cancelTimeoutTask() {
+          window.clearTimeout(timeoutId);
+        };
       }
       function loadOML() {
         if (!shouldLoad()) return;
         if (window.__oml2d_loading || window.__oml2d_loaded) { return; }
+        var sessionId = invalidateLoadSession();
         if (hasOml2dDom()) {
           if (window.__oml2d_instance) {
             window.__oml2d_loaded = true;
@@ -209,6 +254,11 @@
         var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/index.min.js';
         var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js';
         function onScriptLoaded() {
+          if (!isLoadSessionActive(sessionId) || !shouldLoad()) {
+            window.__oml2d_loading = false;
+            console && console.log && console.log('[OhMyLive2D] abort init: session expired or disabled');
+            return;
+          }
           window.__oml2d_sdk_loaded = true;
           // oh-my-live2d exposes either `OML2D.loadOml2d` (modern) or `OhMyLive2D.load` (legacy/packaged)
           var api = null;
@@ -317,6 +367,10 @@
             })()
           };
           try {
+            if (!isLoadSessionActive(sessionId) || !shouldLoad()) {
+              window.__oml2d_loading = false;
+              return;
+            }
             if (hasOml2dDom()) {
               window.__oml2d_loaded = true;
               window.__oml2d_loading = false;
@@ -346,6 +400,10 @@
         var sdkInitDone = false;
         function runSdkInitOnce() {
           if (sdkInitDone) return;
+          if (!isLoadSessionActive(sessionId) || !shouldLoad()) {
+            window.__oml2d_loading = false;
+            return;
+          }
           sdkInitDone = true;
           onScriptLoaded();
         }
@@ -375,6 +433,10 @@
           document.head.appendChild(script);
         }
         loadScriptWithTimeout(primary, 'primary', runSdkInitOnce, function (reason) {
+          if (!isLoadSessionActive(sessionId)) {
+            window.__oml2d_loading = false;
+            return;
+          }
           console && console.warn && console.warn('[OhMyLive2D] primary CDN failed, retry fallback', { reason: reason, timeout: scriptTimeoutMs });
           loadScriptWithTimeout(fallback, 'fallback', runSdkInitOnce, function (fallbackReason) {
             window.__oml2d_loading = false;
@@ -383,6 +445,9 @@
         });
       }
       function unloadOML() {
+        startState.queued = false;
+        clearStartSchedule();
+        invalidateLoadSession();
         var instance = window.__oml2d_instance;
         try {
           if (instance && typeof instance.clearTips === 'function') instance.clearTips();
@@ -399,32 +464,43 @@
         window.__oml2d_loaded = false;
         window.__oml2d_loading = false;
       }
-      function start() {
-        var started = false;
+      function requestStart() {
+        if (window.__oml2d_loaded || window.__oml2d_loading) return;
+        if (startState.queued) return;
+        startState.queued = true;
         function runOnce() {
-          if (started) return;
-          started = true;
+          if (!startState.queued) return;
+          startState.queued = false;
+          clearStartSchedule();
           try { loadOML(); } catch (_) {}
         }
         function runWithFallback() {
-          scheduleLoad(runOnce);
-          window.setTimeout(runOnce, 3500);
+          if (!startState.queued) return;
+          startState.idleCancel = scheduleLoad(runOnce);
+          startState.fallbackTimer = window.setTimeout(runOnce, 3500);
         }
         if (document.visibilityState === 'hidden') {
-          var onVisible = function () {
+          startState.hiddenListener = function () {
             if (document.visibilityState !== 'visible') return;
-            document.removeEventListener('visibilitychange', onVisible);
+            if (startState.hiddenListener) {
+              document.removeEventListener('visibilitychange', startState.hiddenListener);
+              startState.hiddenListener = null;
+            }
+            if (startState.hiddenTimer) {
+              window.clearTimeout(startState.hiddenTimer);
+              startState.hiddenTimer = 0;
+            }
             runWithFallback();
           };
-          document.addEventListener('visibilitychange', onVisible);
-          window.setTimeout(runWithFallback, 12000);
+          document.addEventListener('visibilitychange', startState.hiddenListener);
+          startState.hiddenTimer = window.setTimeout(runWithFallback, 12000);
           return;
         }
         runWithFallback();
       }
       window.__loadOhMyLive2D = function () {
         writeUserEnabled(true);
-        start();
+        requestStart();
       };
       window.__unloadOhMyLive2D = function () {
         writeUserEnabled(false);
@@ -434,8 +510,8 @@
         if (enabled) window.__loadOhMyLive2D();
         else window.__unloadOhMyLive2D();
       };
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
-      else start();
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', requestStart, { once: true });
+      else requestStart();
     })();
   </script>
 <% } %>
