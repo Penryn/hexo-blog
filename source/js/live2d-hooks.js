@@ -249,13 +249,6 @@
     currentOml2d = oml2d;
     currentStrategy = mergeStrategyConfig();
     bindStageStatusSync(oml2d);
-    window.setTimeout(function () {
-      try {
-        if (typeof oml2d.tipsMessage === 'function') {
-          oml2d.tipsMessage('hello world', 3000, 10);
-        }
-      } catch (_) {}
-    }, 8000);
     clearStrategyTimers();
     applyPageBasedModel(oml2d, currentStrategy);
     resumeActivities();
