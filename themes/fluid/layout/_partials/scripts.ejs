@@ -61,6 +61,13 @@
         ? degradeCfg.userToggleStorageKey.trim()
         : 'live2d:enabled';
       window.__oml2d_toggle_key = userToggleKey;
+      var statusStorageKey = typeof degradeCfg.statusStorageKey === 'string' && degradeCfg.statusStorageKey.trim()
+        ? degradeCfg.statusStorageKey.trim()
+        : 'live2d:status';
+      window.__oml2d_status_key = statusStorageKey;
+      var scriptTimeoutMs = typeof degradeCfg.scriptTimeoutMs === 'number' && degradeCfg.scriptTimeoutMs > 0
+        ? degradeCfg.scriptTimeoutMs
+        : 8000;
       function readUserEnabled() {
         try {
           var value = window.localStorage.getItem(userToggleKey);
@@ -74,6 +81,14 @@
         try {
           window.localStorage.setItem(userToggleKey, enabled ? '1' : '0');
         } catch (_) {}
+      }
+      function readStoredStatus() {
+        try {
+          var value = window.localStorage.getItem(statusStorageKey);
+          return (value === 'sleep' || value === 'active') ? value : '';
+        } catch (_) {
+          return '';
+        }
       }
       function hasOml2dDom() {
         return !!(
@@ -191,11 +206,8 @@
         }
         window.__oml2d_loading = true;
         console && console.log && console.log('[OhMyLive2D] start loading');
-        var s = document.createElement('script');
         var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/index.min.js';
         var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js';
-        s.src = primary;
-        s.defer = true;
         function onScriptLoaded() {
           window.__oml2d_sdk_loaded = true;
           // oh-my-live2d exposes either `OML2D.loadOml2d` (modern) or `OhMyLive2D.load` (legacy/packaged)
@@ -224,6 +236,11 @@
             parentElement: resolveParentElement(opt.parentElement),
             primaryColor: opt.primaryColor,
             sayHello: !!opt.sayHello,
+            initialStatus: (function() {
+              var storedStatus = readStoredStatus();
+              if (storedStatus) return storedStatus;
+              return (opt.initialStatus === 'sleep' || opt.initialStatus === 'active') ? opt.initialStatus : 'active';
+            })(),
             // place stage on the right by default
             dockedPosition: 'right',
             libraryUrls: opt.libraryUrls || undefined,
@@ -298,20 +315,44 @@
             console && console.error && console.error('[OhMyLive2D] load error', e);
           }
         }
-        s.onload = onScriptLoaded;
-        s.onerror = function () {
-          console && console.warn && console.warn('[OhMyLive2D] primary CDN failed, retry fallback');
-          var f = document.createElement('script');
-          f.src = fallback;
-          f.defer = true;
-          f.onload = onScriptLoaded;
-          f.onerror = function(){
+        var sdkInitDone = false;
+        function runSdkInitOnce() {
+          if (sdkInitDone) return;
+          sdkInitDone = true;
+          onScriptLoaded();
+        }
+        function loadScriptWithTimeout(src, label, onSuccess, onFail) {
+          var script = document.createElement('script');
+          script.src = src;
+          script.defer = true;
+          var done = false;
+          function finish(success, reason) {
+            if (done) return;
+            done = true;
+            script.onload = null;
+            script.onerror = null;
+            if (timer) window.clearTimeout(timer);
+            if (!success) {
+              try { script.remove(); } catch (_) {}
+              if (typeof onFail === 'function') onFail(reason || 'error');
+              return;
+            }
+            if (typeof onSuccess === 'function') onSuccess();
+          }
+          var timer = window.setTimeout(function () {
+            finish(false, 'timeout');
+          }, scriptTimeoutMs);
+          script.onload = function () { finish(true); };
+          script.onerror = function () { finish(false, 'error'); };
+          document.head.appendChild(script);
+        }
+        loadScriptWithTimeout(primary, 'primary', runSdkInitOnce, function (reason) {
+          console && console.warn && console.warn('[OhMyLive2D] primary CDN failed, retry fallback', { reason: reason, timeout: scriptTimeoutMs });
+          loadScriptWithTimeout(fallback, 'fallback', runSdkInitOnce, function (fallbackReason) {
             window.__oml2d_loading = false;
-            console && console.error && console.error('[OhMyLive2D] fallback CDN failed');
-          };
-          document.head.appendChild(f);
-        };
-        document.head.appendChild(s);
+            console && console.error && console.error('[OhMyLive2D] fallback CDN failed', { reason: fallbackReason, timeout: scriptTimeoutMs });
+          });
+        });
       }
       function unloadOML() {
         var instance = window.__oml2d_instance;

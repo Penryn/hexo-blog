@@ -179,8 +179,21 @@ OhMyLive2d:
     minDeviceMemory: 2
     minHardwareConcurrency: 2
     userToggleStorageKey: live2d:enabled
+    statusStorageKey: live2d:status
+    scriptTimeoutMs: 8000
   strategy:
     enable: true
+    # 页面类型优先切模（可填模型索引或模型 name），未命中时按时间兜底
+    pageTypeModelMap:
+      home: 0
+      post: 0
+      about: 0
+      links: 0
+      comments: 0
+      archive: 1
+      category: 1
+      tag: 1
+    useTimeFallback: true
     modelRotateIntervalMs: 1800000 # 30 分钟
     clothesRotateIntervalMs: 600000 # 10 分钟（仅 path 为数组时生效）
   option:
