@@ -7,12 +7,10 @@ page.banner_img_height = theme.page404.banner_img_height
 page.banner_mask_alpha = theme.page404.banner_mask_alpha
 %>
 
+<% if (theme.page404.redirect_delay) { %>
 <script>
-  function redirect() {
+  setTimeout(function() {
     location.href = "<%- url_for('/') %>";
-  }
-
-  <% if (theme.page404.redirect_delay) { %>
-    setTimeout(redirect, <%= parseInt(theme.page404.redirect_delay) %>)
-  <% } %>
+  }, <%= parseInt(theme.page404.redirect_delay) %>);
 </script>
+<% } %>

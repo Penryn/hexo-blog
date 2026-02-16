@@ -18,6 +18,13 @@ var homeUrl = url_join(config.url, '/')
 var heroImage = page.banner_img || theme.index.banner_img
 var selectedCommentType = typeof page.comment === 'string' && page.comment !== '' ? page.comment : theme.post.comments.type
 var layoutName = page.layout || ''
+var robotsMeta = page.robots || ''
+if (!robotsMeta && layoutName === '404') {
+  robotsMeta = 'noindex, nofollow'
+}
+if (!robotsMeta && page.sitemap === false) {
+  robotsMeta = 'noindex, follow'
+}
 var commentsEnabledOnCurrentPage = false
 if (layoutName === 'post') {
   commentsEnabledOnCurrentPage = theme.post.comments.enable && page.comments
@@ -78,6 +85,9 @@ if (!is_home()) {
   <meta name="theme-color" content="<%= theme.color.navbar_bg_color %>">
   <meta name="author" content="<%= page.author || config.author %>">
   <meta name="keywords" content="<%= keywords %>">
+  <% if (robotsMeta) { %>
+    <meta name="robots" content="<%= robotsMeta %>">
+  <% } %>
   <!-- Performance: preconnect/dns-prefetch for common CDNs -->
   <link rel="preconnect" href="https://lib.baomitu.com" crossorigin>
   <link rel="dns-prefetch" href="//lib.baomitu.com">

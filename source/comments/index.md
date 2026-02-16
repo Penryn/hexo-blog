@@ -2,6 +2,8 @@
 title: 留言弹幕板
 date: 2024-11-05 19:27:02
 comment: 'waline'
+sitemap: false
+indexing: false
 ---
 
 <style>
