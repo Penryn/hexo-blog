@@ -239,6 +239,7 @@ custom_js:
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/star.min.js # 鼠标跟随小星星
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/containsWord.min.js # 鼠标点击出字
   # - //cdn.jsdelivr.net/gh/EmoryHuang/BlogBeautify@1.1/love.min.js #鼠标点击出爱心
+  - /js/reading-progress.js
   - /js/scrollAnimation.js
   # 弹幕脚本仅在弹幕页按需加载，已由模板注入
 
@@ -246,6 +247,7 @@ custom_js:
 # 指定自定义 .css 文件路径，用法和 custom_js 相同
 # The usage is the same as custom_js
 custom_css:
+  - /css/reading-progress.css
   - /css/shubiao.css # 鼠标指针（本地化）
   - /css/scroll.css # 滚动条颜色（本地化）
   - /css/gradient.css # 头部打字机颜色效果渐变（本地化）
@@ -341,11 +343,11 @@ lazyload:
 
   # 开启后懒加载仅在文章页生效，如果自定义页面需要使用，可以在 Front-matter 里指定 `lazyload: true`
   # If true, only enable lazyload on the post page. For custom pages, you can set 'lazyload: true' in front-matter
-  onlypost: false
+  onlypost: true
 
   # 触发加载的偏移倍数，基数是视窗高度，可根据部署环境的请求速度调节
   # The factor of viewport height that triggers loading
-  offset_factor: 2
+  offset_factor: 1.5
 
 # 图标库，包含了大量社交类图标，主题依赖的不包含在内，因此可自行修改，详见 https://hexo.fluid-dev.com/docs/icon/
 # Icon library, which includes many social icons, does not include those theme dependent, so your can modify link by yourself. See: https://hexo.fluid-dev.com/docs/en/icon/
@@ -430,7 +432,7 @@ search:
 
   # 搜索是否扫描正文
   # If true, search will scan the post content
-  content: true
+  content: false
 
 # 首屏图片的相关配置
 # Config of the big image on the first screen

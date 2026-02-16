@@ -144,16 +144,20 @@ minify:
       - "live2d/**"
   css:
     enable: true
+    options:
+      targets: ">= 0.5%, not dead"
     exclude:
       - "*.min.css"
   image:
     enable: true
     options:
-      avif: true
+      avif: false
       webp: true
-      quality: 65
+      quality: 70
       effort: 2
       replaceSrc: true
+      destroyOldRoute: false
+      enableSubSampling: true
       persistCache: true
     exclude:
       - "live2d/**"
