@@ -253,8 +253,9 @@ OhMyLive2d:
         # 自定义提示语（多分类随机 + 长度过滤 + 来源署名 + 本地缓存）
         message: |
           function(){
-            var cacheKey = 'live2d:hitokoto:cache:v2';
+            var cacheKey = 'live2d:hitokoto:cache:v3';
             var cacheTtlMs = 10 * 60 * 1000;
+            var targetPoolSize = 4;
             var fallbackPool = [
               '今天也要稳扎稳打，慢一点也没关系。',
               '别急，先把手上的一个点做到可验证。',
@@ -289,23 +290,28 @@ OhMyLive2d:
             function randomFallback() {
               return fallbackPool[Math.floor(Math.random() * fallbackPool.length)];
             }
-            try {
-              var raw = localStorage.getItem(cacheKey);
-              if (raw) {
-                var cache = JSON.parse(raw);
-                if (cache && cache.text && cache.ts && (Date.now() - cache.ts) < cacheTtlMs) {
-                  return Promise.resolve(cache.text);
-                }
+            function formatQuote(data) {
+              var quote = (data && data.hitokoto) ? data.hitokoto : randomFallback();
+              var from = data && data.from ? data.from : '';
+              var fromWho = data && data.from_who ? data.from_who : '';
+              var type = data && data.type ? data.type : '';
+              var source = '';
+              if (from) {
+                source = '《' + from + '》';
+                if (fromWho) source += ' / ' + fromWho;
               }
-            } catch (_) {}
-            var selected = randomPick(categories, 2 + Math.floor(Math.random() * 2));
-            var params = new URLSearchParams();
-            for (var i = 0; i < selected.length; i++) {
-              params.append('c', selected[i]);
+              var typeName = typeNameMap[type] || '一言';
+              return source ? (quote + '\n—— ' + source + ' · ' + typeName) : (quote + ' · ' + typeName);
             }
-            params.set('min_length', '8');
-            params.set('max_length', '80');
-            return fetch('https://v1.hitokoto.cn?' + params.toString())
+            function fetchOne() {
+              var selected = randomPick(categories, 2 + Math.floor(Math.random() * 2));
+              var params = new URLSearchParams();
+              for (var i = 0; i < selected.length; i++) {
+                params.append('c', selected[i]);
+              }
+              params.set('min_length', '8');
+              params.set('max_length', '80');
+              return fetch('https://v1.hitokoto.cn?' + params.toString())
               .then(function (response) {
                 if (!response.ok) {
                   throw new Error('hitokoto request failed: ' + response.status);
@@ -313,21 +319,49 @@ OhMyLive2d:
                 return response.json();
               })
               .then(function (data) {
-                var quote = (data && data.hitokoto) ? data.hitokoto : randomFallback();
-                var from = data && data.from ? data.from : '';
-                var fromWho = data && data.from_who ? data.from_who : '';
-                var type = data && data.type ? data.type : '';
-                var source = '';
-                if (from) {
-                  source = '《' + from + '》';
-                  if (fromWho) source += ' / ' + fromWho;
+                return formatQuote(data);
+              });
+            }
+            function readCache() {
+              try {
+                var raw = localStorage.getItem(cacheKey);
+                if (!raw) return null;
+                var cache = JSON.parse(raw);
+                if (!cache || !Array.isArray(cache.pool) || !cache.pool.length) return null;
+                if (!cache.ts || (Date.now() - cache.ts) >= cacheTtlMs) return null;
+                if (typeof cache.idx !== 'number' || !isFinite(cache.idx)) cache.idx = 0;
+                return cache;
+              } catch (_) {
+                return null;
+              }
+            }
+            function writeCache(cache) {
+              try {
+                localStorage.setItem(cacheKey, JSON.stringify(cache));
+              } catch (_) {}
+            }
+            var cached = readCache();
+            if (cached) {
+              var text = cached.pool[cached.idx % cached.pool.length];
+              cached.idx = (cached.idx + 1) % cached.pool.length;
+              writeCache(cached);
+              return Promise.resolve(text);
+            }
+            var tasks = [];
+            for (var n = 0; n < targetPoolSize; n++) {
+              tasks.push(fetchOne().catch(function () { return ''; }));
+            }
+            return Promise.all(tasks)
+              .then(function (response) {
+                var pool = [];
+                for (var i = 0; i < response.length; i++) {
+                  var text = response[i];
+                  if (!text || pool.indexOf(text) !== -1) continue;
+                  pool.push(text);
                 }
-                var typeName = typeNameMap[type] || '一言';
-                var text = source ? (quote + '\n—— ' + source + ' · ' + typeName) : (quote + ' · ' + typeName);
-                try {
-                  localStorage.setItem(cacheKey, JSON.stringify({ text: text, ts: Date.now() }));
-                } catch (_) {}
-                return text;
+                if (!pool.length) return randomFallback();
+                writeCache({ pool: pool, idx: 1, ts: Date.now() });
+                return pool[0];
               })
               .catch(function (error) {
                 console.error('[OhMyLive2D] idleTips request failed', error);
