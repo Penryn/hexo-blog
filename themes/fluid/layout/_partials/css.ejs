@@ -1,5 +1,4 @@
-<link rel="stylesheet" href="<%= url_join(theme.static_prefix.bootstrap, 'css/bootstrap.min.css') %>" media="print" onload="this.onload=null;this.media='all'">
-<noscript><%- css_ex(theme.static_prefix.bootstrap, 'css/bootstrap.min.css') %></noscript>
+<%- css_ex(theme.static_prefix.bootstrap, 'css/bootstrap.min.css') %>
 
 <% var css_snippets = deduplicate(page.css_snippets) %>
 <% for (var idx = 0; idx < css_snippets.length; idx++) { %>
@@ -15,8 +14,7 @@
 <link rel="preload" as="style" href="<%= url_for(theme.static_prefix.iconfont || theme.iconfont) %>" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="<%= url_for(theme.static_prefix.iconfont || theme.iconfont) %>"></noscript>
 
-<link rel="stylesheet" href="<%= url_join(theme.static_prefix.internal_css, 'main.css') %>" media="print" onload="this.onload=null;this.media='all'">
-<noscript><%- css_ex(theme.static_prefix.internal_css, 'main.css') %></noscript>
+<%- css_ex(theme.static_prefix.internal_css, 'main.css') %>
 
 <% if (theme.code.highlight.enable) { %>
   <link id="highlight-css" rel="preload" as="style" href="<%= url_join(theme.static_prefix.internal_css, 'highlight.css') %>" onload="this.onload=null;this.rel='stylesheet'">
