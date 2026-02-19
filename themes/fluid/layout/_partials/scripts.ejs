@@ -1,8 +1,8 @@
 <%- partial('_partials/plugins/nprogress.ejs') %>
-<%- js_ex(theme.static_prefix.jquery, 'jquery.min.js') %>
-<%- js_ex(theme.static_prefix.bootstrap, 'js/bootstrap.min.js') %>
-<%- js_ex(theme.static_prefix.internal_js, 'events.js') %>
-<%- js_ex(theme.static_prefix.internal_js, 'plugins.js') %>
+<%- js_ex(theme.static_prefix.jquery, 'jquery.min.js', 'defer') %>
+<%- js_ex(theme.static_prefix.bootstrap, 'js/bootstrap.min.js', 'defer') %>
+<%- js_ex(theme.static_prefix.internal_js, 'events.js', 'defer') %>
+<%- js_ex(theme.static_prefix.internal_js, 'plugins.js', 'defer') %>
 
 <%- partial('_partials/plugins/typed.ejs') %>
 

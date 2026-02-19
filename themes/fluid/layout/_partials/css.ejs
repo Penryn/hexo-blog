@@ -22,7 +22,11 @@
 <% } %>
 
 <% if (theme.custom_css) { %>
-  <%- css(theme.custom_css) %>
+  <% var customCSS = Array.isArray(theme.custom_css) ? theme.custom_css : [theme.custom_css] %>
+  <% for (var cssPath of customCSS) { %>
+    <link rel="preload" as="style" href="<%= url_for(cssPath) %>" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<%= url_for(cssPath) %>"></noscript>
+  <% } %>
 <% } %>
 
 <% if (page.layout === 'links') { %>

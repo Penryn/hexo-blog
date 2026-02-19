@@ -1,12 +1,28 @@
 <% if (theme.fun_features.progressbar && theme.fun_features.progressbar.enable){ %>
-  <%- js_ex(theme.static_prefix.nprogress, 'nprogress.min.js') %>
-  <%- css_ex(theme.static_prefix.nprogress, 'nprogress.min.css') %>
+  <%- js_ex(theme.static_prefix.nprogress, 'nprogress.min.js', 'defer') %>
+  <link rel="preload" as="style" href="<%= url_join(theme.static_prefix.nprogress, 'nprogress.min.css') %>" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><%- css_ex(theme.static_prefix.nprogress, 'nprogress.min.css') %></noscript>
 
   <script>
-    NProgress.configure(<%- JSON.stringify(theme.fun_features.progressbar.options || '{}') %>)
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
+    (function () {
+      var started = false;
+      function startProgressbar() {
+        if (started || !window.NProgress) {
+          return;
+        }
+        started = true;
+        NProgress.configure(<%- JSON.stringify(theme.fun_features.progressbar.options || '{}') %>);
+        NProgress.start();
+        window.addEventListener('load', function() {
+          NProgress.done();
+        }, { once: true });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startProgressbar, { once: true });
+      } else {
+        startProgressbar();
+      }
+    })();
   </script>
 <% } %>
