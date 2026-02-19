@@ -14,21 +14,27 @@ Fluid.events = {
       return;
     }
     var submenu = jQuery('#navbar .dropdown-menu');
-    if (navbar.offset().top > 0) {
-      navbar.removeClass('navbar-dark');
-      submenu.removeClass('navbar-dark');
-    }
-    Fluid.utils.listenScroll(function() {
-      navbar[navbar.offset().top > 50 ? 'addClass' : 'removeClass']('top-nav-collapse');
-      submenu[navbar.offset().top > 50 ? 'addClass' : 'removeClass']('dropdown-collapse');
-      if (navbar.offset().top > 0) {
-        navbar.removeClass('navbar-dark');
-        submenu.removeClass('navbar-dark');
-      } else {
-        navbar.addClass('navbar-dark');
-        submenu.removeClass('navbar-dark');
+    var lastCollapse = null;
+    var lastNavbarDark = null;
+    submenu.removeClass('navbar-dark');
+
+    var updateNavbarState = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var shouldCollapse = scrollTop > 50;
+      if (shouldCollapse !== lastCollapse) {
+        navbar[shouldCollapse ? 'addClass' : 'removeClass']('top-nav-collapse');
+        submenu[shouldCollapse ? 'addClass' : 'removeClass']('dropdown-collapse');
+        lastCollapse = shouldCollapse;
       }
-    });
+
+      var shouldNavbarDark = scrollTop <= 0;
+      if (shouldNavbarDark !== lastNavbarDark) {
+        navbar[shouldNavbarDark ? 'addClass' : 'removeClass']('navbar-dark');
+        lastNavbarDark = shouldNavbarDark;
+      }
+    };
+
+    Fluid.utils.listenScroll(updateNavbarState);
     jQuery('#navbar-toggler-btn').on('click', function() {
       jQuery('.animated-icon').toggleClass('open');
       jQuery('#navbar').toggleClass('navbar-col-show');
@@ -44,18 +50,22 @@ Fluid.events = {
     if (board.length === 0) {
       return;
     }
+    var offset = parseInt(board.css('margin-top'), 10);
+    if (!Number.isFinite(offset)) {
+      offset = 0;
+    }
+    var max = 96 + offset;
+    var sideCol = jQuery('.side-col');
+
     var parallax = function() {
-      var pxv = jQuery(window).scrollTop() / 5;
-      var offset = parseInt(board.css('margin-top'), 10);
-      var max = 96 + offset;
+      var pxv = (window.pageYOffset || document.documentElement.scrollTop || 0) / 5;
       if (pxv > max) {
         pxv = max;
       }
       ph.css({
         transform: 'translate3d(0,' + pxv + 'px,0)'
       });
-      var sideCol = jQuery('.side-col');
-      if (sideCol) {
+      if (sideCol.length > 0) {
         sideCol.css({
           'padding-top': pxv + 'px'
         });
@@ -110,7 +120,7 @@ Fluid.events = {
     // Display
     var headerHeight = board.offset().top;
     Fluid.utils.listenScroll(function() {
-      var scrollHeight = document.body.scrollTop + document.documentElement.scrollTop;
+      var scrollHeight = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
       scrollDisplay = scrollHeight >= headerHeight;
       topArrow.css({
         'bottom': scrollDisplay ? '20px' : '-60px'
