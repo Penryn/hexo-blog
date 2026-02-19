@@ -180,9 +180,9 @@ OhMyLive2d:
     minHardwareConcurrency: 2
     userToggleStorageKey: live2d:enabled
     statusStorageKey: live2d:status
-    scriptTimeoutMs: 3000
-    # 首屏后延迟加载，避免影响关键渲染路径（单位毫秒）
-    startAfterLoadMs: 12000
+    scriptTimeoutMs: 3500
+    # 首屏后延迟加载（2.5s）：兼顾关键渲染与刷新后可感知速度
+    startAfterLoadMs: 2500
   strategy:
     enable: true
     # 页面类型优先切模（可填模型索引或模型 name），未命中时按时间兜底
