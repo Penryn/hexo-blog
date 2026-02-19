@@ -52,22 +52,11 @@
 <% } %>
 
 <% if (config.OhMyLive2d && config.OhMyLive2d.lazy) { %>
-  <script type="application/json" id="oml2d-runtime-config"><%- JSON.stringify(config.OhMyLive2d || {}) %></script>
+  <script>
+    window.__oml2d_runtime_config = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
+  </script>
   <script>
     (function () {
-      function readRuntimeConfig() {
-        var configNode = document.getElementById('oml2d-runtime-config');
-        if (!configNode) {
-          return {};
-        }
-        try {
-          return JSON.parse(configNode.textContent || '{}');
-        } catch (_) {
-          return {};
-        }
-      }
-
-      window.__oml2d_runtime_config = readRuntimeConfig();
       var cfg = (window.__oml2d_runtime_config && typeof window.__oml2d_runtime_config === 'object')
         ? window.__oml2d_runtime_config
         : {};
