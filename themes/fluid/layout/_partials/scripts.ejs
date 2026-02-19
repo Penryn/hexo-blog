@@ -52,8 +52,14 @@
 <% } %>
 
 <% if (config.OhMyLive2d && config.OhMyLive2d.lazy) { %>
+  <% var oml2dRuntimeConfigJson = JSON.stringify(config.OhMyLive2d || {})
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/</g, '\\u003C')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029'); %>
   <script>
-    window.__oml2d_runtime_config = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
+    window.__oml2d_runtime_config = JSON.parse('<%- oml2dRuntimeConfigJson %>');
   </script>
   <script>
     (function () {
