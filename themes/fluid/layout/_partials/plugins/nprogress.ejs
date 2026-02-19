@@ -1,10 +1,53 @@
-<% if (theme.fun_features.progressbar && theme.fun_features.progressbar.enable){ %>
+<%
+var progressbar = theme.fun_features.progressbar || {};
+var disableOnMobile = progressbar.disable_on_mobile !== false;
+var disableOnReducedMotion = progressbar.disable_on_reduced_motion !== false;
+var disableOnSaveData = progressbar.disable_on_save_data !== false;
+var mobileMaxWidth = parseInt(progressbar.mobile_max_width, 10);
+if (isNaN(mobileMaxWidth) || mobileMaxWidth <= 0) {
+  mobileMaxWidth = 767;
+}
+%>
+<% if (progressbar.enable){ %>
   <%- js_ex(theme.static_prefix.nprogress, 'nprogress.min.js', 'defer') %>
   <link rel="preload" as="style" href="<%= url_join(theme.static_prefix.nprogress, 'nprogress.min.css') %>" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><%- css_ex(theme.static_prefix.nprogress, 'nprogress.min.css') %></noscript>
 
   <script>
     (function () {
+      function shouldDisableProgressbar() {
+        if (<%= disableOnMobile %>) {
+          try {
+            if (window.matchMedia && window.matchMedia('(max-width: <%= mobileMaxWidth %>px)').matches) {
+              return true;
+            }
+          } catch (e) {}
+        }
+
+        if (<%= disableOnReducedMotion %>) {
+          try {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+              return true;
+            }
+          } catch (e) {}
+        }
+
+        if (<%= disableOnSaveData %>) {
+          try {
+            var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn && conn.saveData) {
+              return true;
+            }
+          } catch (e) {}
+        }
+
+        return false;
+      }
+
+      if (shouldDisableProgressbar()) {
+        return;
+      }
+
       var started = false;
       function startProgressbar() {
         if (started || !window.NProgress) {

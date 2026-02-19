@@ -8,16 +8,20 @@
 
 <!-- 主题依赖的图标库，不要自行修改 -->
 <!-- Do not modify the link that theme dependent icons -->
-<%- css('/css/iconfont-local-1749284.css') %>
+<link rel="preload" as="style" href="<%= url_for('/css/iconfont-local-1749284.css') %>" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="<%= url_for('/css/iconfont-local-1749284.css') %>"></noscript>
 
-<%- css(theme.static_prefix.iconfont || theme.iconfont) %>
+<link rel="preload" as="style" href="<%= url_for(theme.static_prefix.iconfont || theme.iconfont) %>" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="<%= url_for(theme.static_prefix.iconfont || theme.iconfont) %>"></noscript>
 
 <%- css_ex(theme.static_prefix.internal_css, 'main.css') %>
 
 <% if (theme.code.highlight.enable) { %>
-  <%- css_ex(theme.static_prefix.internal_css, 'highlight.css', 'id="highlight-css"') %>
+  <link id="highlight-css" rel="preload" as="style" href="<%= url_join(theme.static_prefix.internal_css, 'highlight.css') %>" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><%- css_ex(theme.static_prefix.internal_css, 'highlight.css', 'id="highlight-css"') %></noscript>
   <% if (theme.dark_mode.enable) { %>
-    <%- css_ex(theme.static_prefix.internal_css, 'highlight-dark.css', 'id="highlight-css-dark"') %>
+    <link id="highlight-css-dark" rel="preload" as="style" href="<%= url_join(theme.static_prefix.internal_css, 'highlight-dark.css') %>" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><%- css_ex(theme.static_prefix.internal_css, 'highlight-dark.css', 'id="highlight-css-dark"') %></noscript>
   <% } %>
 <% } %>
 

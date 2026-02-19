@@ -52,7 +52,9 @@
 <% } %>
 
 <% if (config.OhMyLive2d && config.OhMyLive2d.lazy) { %>
-  <script src="<%- url_for('/live2d-config.js') %>"></script>
+  <script>
+    window.__oml2d_runtime_config = <%- JSON.stringify(config.OhMyLive2d || {}) %>;
+  </script>
   <script>
     (function () {
       var cfg = (window.__oml2d_runtime_config && typeof window.__oml2d_runtime_config === 'object')

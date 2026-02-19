@@ -122,6 +122,14 @@ fun_features:
     enable: true
     height_px: 3
     color: "#29d"
+    # 移动端默认禁用，降低小屏设备上的强制重排
+    disable_on_mobile: true
+    # 移动端判定阈值（单位 px）
+    mobile_max_width: 767
+    # 遵循用户减少动画偏好
+    disable_on_reduced_motion: true
+    # 遵循浏览器省流模式
+    disable_on_save_data: true
     # See: https://github.com/rstacruz/nprogress
     options: { showSpinner: false, trickleSpeed: 100 }
 
@@ -1190,7 +1198,7 @@ static_prefix:
 
   jquery: https://lib.baomitu.com/jquery/3.6.4/
 
-  bootstrap: https://lib.baomitu.com/twitter-bootstrap/4.6.1/
+  bootstrap: /lib/bootstrap/4.6.1/
 
   prismjs: https://lib.baomitu.com/prism/1.29.0/
 
