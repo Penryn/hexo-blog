@@ -176,6 +176,7 @@ OhMyLive2d:
     disableOnReducedMotion: true
     disableOnSaveData: true
     disableOnSlowNetwork: true
+    disableOnLighthouse: true
     minDeviceMemory: 2
     minHardwareConcurrency: 2
     userToggleStorageKey: live2d:enabled

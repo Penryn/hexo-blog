@@ -1,0 +1,621 @@
+(function () {
+  'use strict';
+  var cfg = (window.__oml2d_runtime_config && typeof window.__oml2d_runtime_config === 'object')
+    ? window.__oml2d_runtime_config
+    : {};
+  if (!cfg.option || !Array.isArray(cfg.option.models) || !cfg.option.models.length) {
+    console && console.warn && console.warn('[OhMyLive2D] runtime config missing models, skip init');
+    return;
+  }
+  var degradeCfg = cfg.degrade || {};
+  window.__oml2d_strategy = cfg.strategy || {};
+  var userToggleKey = typeof degradeCfg.userToggleStorageKey === 'string' && degradeCfg.userToggleStorageKey.trim()
+    ? degradeCfg.userToggleStorageKey.trim()
+    : 'live2d:enabled';
+  window.__oml2d_toggle_key = userToggleKey;
+  var statusStorageKey = typeof degradeCfg.statusStorageKey === 'string' && degradeCfg.statusStorageKey.trim()
+    ? degradeCfg.statusStorageKey.trim()
+    : 'live2d:status';
+  window.__oml2d_status_key = statusStorageKey;
+  var scriptTimeoutMs = typeof degradeCfg.scriptTimeoutMs === 'number' && degradeCfg.scriptTimeoutMs > 0
+    ? degradeCfg.scriptTimeoutMs
+    : 8000;
+  var startAfterLoadMs = typeof degradeCfg.startAfterLoadMs === 'number' && degradeCfg.startAfterLoadMs >= 0
+    ? degradeCfg.startAfterLoadMs
+    : 12000;
+  var loadSessionSeq = (typeof window.__oml2d_load_session === 'number' && isFinite(window.__oml2d_load_session))
+    ? window.__oml2d_load_session
+    : 0;
+  window.__oml2d_load_session = loadSessionSeq;
+  var startState = {
+    queued: false,
+    idleCancel: null,
+    fallbackTimer: 0,
+    hiddenTimer: 0,
+    hiddenListener: null
+  };
+  function invalidateLoadSession() {
+    loadSessionSeq += 1;
+    window.__oml2d_load_session = loadSessionSeq;
+    return loadSessionSeq;
+  }
+  function isLoadSessionActive(sessionId) {
+    return sessionId === window.__oml2d_load_session && readUserEnabled();
+  }
+  function clearStartSchedule() {
+    if (typeof startState.idleCancel === 'function') {
+      try { startState.idleCancel(); } catch (_) {}
+    }
+    startState.idleCancel = null;
+    if (startState.fallbackTimer) {
+      window.clearTimeout(startState.fallbackTimer);
+      startState.fallbackTimer = 0;
+    }
+    if (startState.hiddenTimer) {
+      window.clearTimeout(startState.hiddenTimer);
+      startState.hiddenTimer = 0;
+    }
+    if (startState.hiddenListener) {
+      document.removeEventListener('visibilitychange', startState.hiddenListener);
+      startState.hiddenListener = null;
+    }
+  }
+  function readUserEnabled() {
+    try {
+      var value = window.localStorage.getItem(userToggleKey);
+      if (value === null || value === undefined || value === '') return true;
+      return !/^(0|false|off)$/i.test(String(value).trim());
+    } catch (_) {
+      return true;
+    }
+  }
+  function writeUserEnabled(enabled) {
+    try {
+      window.localStorage.setItem(userToggleKey, enabled ? '1' : '0');
+    } catch (_) {}
+  }
+  function readStoredStatus() {
+    try {
+      var value = window.localStorage.getItem(statusStorageKey);
+      return (value === 'sleep' || value === 'active') ? value : '';
+    } catch (_) {
+      return '';
+    }
+  }
+  function hasOml2dDom() {
+    return !!(
+      document.getElementById('oml2d-stage') ||
+      document.getElementById('oml2d-statusBar') ||
+      document.getElementById('oml2d-tips') ||
+      document.getElementById('oml2d-menus')
+    );
+  }
+  function removeOml2dDom() {
+    var selectors = [
+      '#oml2d-stage',
+      '#oml2d-statusBar',
+      '#oml2d-tips',
+      '#oml2d-menus',
+      '#oml2d-global-style',
+      '#oml2d-local-fix-style',
+      '#oml2d-icon-svg'
+    ];
+    for (var i = 0; i < selectors.length; i++) {
+      var nodes = document.querySelectorAll(selectors[i]);
+      for (var j = 0; j < nodes.length; j++) nodes[j].remove();
+    }
+  }
+  function resolveParentElement(val) {
+    if (!val) return document.body;
+    if (typeof val === 'string') {
+      if (val === 'document.body') return document.body;
+      try {
+        var el = document.querySelector(val);
+        return el || document.body;
+      } catch (_) { return document.body; }
+    }
+    return document.body;
+  }
+  function resolveHook(ref) {
+    if (typeof ref === 'function') return ref;
+    if (typeof ref !== 'string') return null;
+    var path = ref.trim();
+    if (!path) return null;
+    try {
+      var parts = path.split('.');
+      var ctx = window;
+      for (var i = 0; i < parts.length; i++) {
+        if (!ctx) return null;
+        ctx = ctx[parts[i]];
+      }
+      return typeof ctx === 'function' ? ctx : null;
+    } catch (_) {
+      return null;
+    }
+  }
+  function isDiagnosticsAgent() {
+    if (degradeCfg.disableOnLighthouse === false) return false;
+    var ua = String((navigator && navigator.userAgent) || '').toLowerCase();
+    if (ua.indexOf('chrome-lighthouse') !== -1) return true;
+    if (ua.indexOf('lighthouse') !== -1) return true;
+    if (ua.indexOf('pagespeed') !== -1) return true;
+    return false;
+  }
+  function shouldLoad() {
+    if (!readUserEnabled()) {
+      console && console.log && console.log('[OhMyLive2D] skip by user preference');
+      return false;
+    }
+    if (isDiagnosticsAgent()) {
+      console && console.log && console.log('[OhMyLive2D] skip in diagnostics agent');
+      return false;
+    }
+    var option = cfg.option || {};
+    var mobileDisplay = typeof option.mobileDisplay === 'boolean' ? option.mobileDisplay : false;
+    var isNarrow = window.matchMedia ? window.matchMedia('(max-width: 767px)').matches : (window.innerWidth < 768);
+    if (!mobileDisplay && isNarrow) {
+      console && console.log && console.log('[OhMyLive2D] skip by width: mobileDisplay=false', { width: window.innerWidth });
+      return false;
+    }
+
+    var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (degradeCfg.disableOnReducedMotion !== false && reducedMotion) {
+      console && console.log && console.log('[OhMyLive2D] skip by reduced-motion preference');
+      return false;
+    }
+
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn) {
+      if (degradeCfg.disableOnSaveData !== false && conn.saveData) {
+        console && console.log && console.log('[OhMyLive2D] skip by save-data mode');
+        return false;
+      }
+      var effectiveType = String(conn.effectiveType || '').toLowerCase();
+      if (degradeCfg.disableOnSlowNetwork !== false && /(^|-)2g$/.test(effectiveType)) {
+        console && console.log && console.log('[OhMyLive2D] skip by slow network', { effectiveType: effectiveType });
+        return false;
+      }
+    }
+
+    var minDeviceMemory = typeof degradeCfg.minDeviceMemory === 'number' ? degradeCfg.minDeviceMemory : 2;
+    if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < minDeviceMemory) {
+      console && console.log && console.log('[OhMyLive2D] skip by low memory', { deviceMemory: navigator.deviceMemory });
+      return false;
+    }
+
+    var minHardwareConcurrency = typeof degradeCfg.minHardwareConcurrency === 'number' ? degradeCfg.minHardwareConcurrency : 2;
+    if (typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency < minHardwareConcurrency) {
+      console && console.log && console.log('[OhMyLive2D] skip by low cpu cores', { hardwareConcurrency: navigator.hardwareConcurrency });
+      return false;
+    }
+
+    return true;
+  }
+  function scheduleLoad(callback) {
+    if ('requestIdleCallback' in window) {
+      var idleId = window.requestIdleCallback(function () { callback(); }, { timeout: 300 });
+      return function cancelIdleTask() {
+        if (typeof window.cancelIdleCallback === 'function') {
+          window.cancelIdleCallback(idleId);
+        }
+      };
+    }
+    var timeoutId = window.setTimeout(callback, 300);
+    return function cancelTimeoutTask() {
+      window.clearTimeout(timeoutId);
+    };
+  }
+  function loadOML() {
+    if (!shouldLoad()) return;
+    if (window.__oml2d_loading || window.__oml2d_loaded) { return; }
+    var sessionId = invalidateLoadSession();
+    if (hasOml2dDom()) {
+      if (window.__oml2d_instance) {
+        window.__oml2d_loaded = true;
+        return;
+      }
+      // 清理残留节点，避免历史实例导致“只关掉最新实例”
+      removeOml2dDom();
+    }
+    window.__oml2d_loading = true;
+    console && console.log && console.log('[OhMyLive2D] start loading');
+    var primary = cfg.CDN || 'https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js';
+    var fallback = 'https://unpkg.com/oh-my-live2d@0.19.3/dist/index.min.js';
+    function onScriptLoaded() {
+      if (!isLoadSessionActive(sessionId) || !shouldLoad()) {
+        window.__oml2d_loading = false;
+        console && console.log && console.log('[OhMyLive2D] abort init: session expired or disabled');
+        return;
+      }
+      window.__oml2d_sdk_loaded = true;
+      // oh-my-live2d exposes either `OML2D.loadOml2d` (modern) or `OhMyLive2D.load` (legacy/packaged)
+      var api = null;
+      var apiType = '';
+      if (window.OML2D && typeof window.OML2D.loadOml2d === 'function') { api = window.OML2D.loadOml2d; apiType = 'OML2D'; }
+      else if (window.OhMyLive2D && typeof window.OhMyLive2D.load === 'function') { api = window.OhMyLive2D.load; apiType = 'OhMyLive2D'; }
+      if (!api) {
+        console && console.warn && console.warn('[OhMyLive2D] global API not found');
+        window.__oml2d_loading = false;
+        return;
+      }
+      var opt = cfg.option || {};
+      // merge helper for tips styles
+      function mergeTips(base, extra) {
+        var out = {};
+        base = base || {};
+        for (var k in base) if (Object.prototype.hasOwnProperty.call(base, k)) out[k] = base[k];
+        for (var k2 in extra) if (Object.prototype.hasOwnProperty.call(extra, k2)) out[k2] = extra[k2];
+        return out;
+      }
+      function looksLikeFunctionSource(source) {
+        if (typeof source !== 'string') return false;
+        var code = source.trim();
+        if (!code) return false;
+        if (/^(?:async\s+)?function(?:\s+[A-Za-z_$][\w$]*)?\s*\(/.test(code)) return true;
+        if (/^(?:async\s+)?\([^\)]*\)\s*=>/.test(code)) return true;
+        if (/^(?:async\s+)?[A-Za-z_$][\w$]*\s*=>/.test(code)) return true;
+        return false;
+      }
+      function reviveFunctionFromString(source, label) {
+        if (!looksLikeFunctionSource(source)) return source;
+        try {
+          var fn = (new Function('return (' + source + ');'))();
+          return typeof fn === 'function' ? fn : source;
+        } catch (err) {
+          console && console.warn && console.warn('[OhMyLive2D] failed to parse function source for ' + label, err);
+          return source;
+        }
+      }
+      function normalizeOptionFunctions(option) {
+        if (!option || typeof option !== 'object') return option;
+        if (option.tips && option.tips.idleTips) {
+          option.tips.idleTips.message = reviveFunctionFromString(option.tips.idleTips.message, 'tips.idleTips.message');
+          option.tips.idleTips.wordTheDay = reviveFunctionFromString(option.tips.idleTips.wordTheDay, 'tips.idleTips.wordTheDay');
+        }
+        return option;
+      }
+      opt = normalizeOptionFunctions(opt);
+      var manualQuoteInFlight = false;
+      function pickFromArray(arr) {
+        if (!Array.isArray(arr) || !arr.length) return '';
+        var idx = Math.floor(Math.random() * arr.length);
+        var val = arr[idx];
+        return typeof val === 'string' ? val : '';
+      }
+      function extractIdleMessageSource(oml2d) {
+        try {
+          var tips = oml2d && oml2d.options && oml2d.options.tips;
+          var idleTips = tips && tips.idleTips;
+          return idleTips ? idleTips.message : null;
+        } catch (_) {
+          return null;
+        }
+      }
+      function createNextQuoteMenuItem() {
+        return {
+          id: 'NextQuote',
+          icon: 'icon-about',
+          title: '下一条文案',
+          onClick: function (oml2d) {
+            if (!oml2d || typeof oml2d.tipsMessage !== 'function') return;
+            if (manualQuoteInFlight) {
+              oml2d.tipsMessage('文案获取中，请稍候…', 1800, 9);
+              return;
+            }
+            var messageSource = extractIdleMessageSource(oml2d);
+            function showText(text) {
+              var content = (typeof text === 'string' && text.trim()) ? text : '暂时没有新文案，稍后再试。';
+              oml2d.tipsMessage(content, 6500, 9);
+            }
+            if (typeof messageSource === 'function') {
+              manualQuoteInFlight = true;
+              Promise.resolve()
+                .then(function () { return messageSource(); })
+                .then(function (text) { showText(text); })
+                .catch(function (error) {
+                  console && console.warn && console.warn('[OhMyLive2D] manual next quote failed', error);
+                  showText('');
+                })
+                .finally(function () {
+                  manualQuoteInFlight = false;
+                });
+              return;
+            }
+            if (Array.isArray(messageSource)) {
+              showText(pickFromArray(messageSource));
+              return;
+            }
+            showText('');
+          }
+        };
+      }
+      function isOfficialAboutMenuItem(item) {
+        if (!item || typeof item !== 'object') return false;
+        if (item.id === 'About') return true;
+        if (typeof item.title === 'string' && item.title.trim() === '关于') return true;
+        return false;
+      }
+      function removeOfficialAboutMenuItem(items) {
+        var list = Array.isArray(items) ? items : [];
+        var out = [];
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i];
+          if (isOfficialAboutMenuItem(item)) continue;
+          out.push(item);
+        }
+        return out;
+      }
+      function appendNextQuoteMenuItem(items) {
+        var list = removeOfficialAboutMenuItem(items);
+        var exists = false;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i] && list[i].id === 'NextQuote') {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) list.push(createNextQuoteMenuItem());
+        return list;
+      }
+      function normalizeMenusItems(items) {
+        if (Array.isArray(items)) return appendNextQuoteMenuItem(items);
+        if (typeof items === 'function') {
+          return function (defaultItems) {
+            var resolved = defaultItems;
+            try {
+              resolved = items(defaultItems);
+            } catch (error) {
+              console && console.warn && console.warn('[OhMyLive2D] resolve menus.items failed, fallback defaults', error);
+            }
+            return appendNextQuoteMenuItem(resolved);
+          };
+        }
+        return function (defaultItems) {
+          return appendNextQuoteMenuItem(defaultItems);
+        };
+      }
+      function ensureOml2dLocalFixStyle() {
+        var styleId = 'oml2d-local-fix-style';
+        var css = [
+          '@keyframes oml2d-hidden-tips {',
+          '  0% { opacity: 0; visibility: hidden; }',
+          '  100% { opacity: 0; visibility: hidden; }',
+          '}',
+          '#oml2d-tips {',
+          '  filter: none !important;',
+          '}'
+        ].join('\n');
+        var styleEl = document.getElementById(styleId);
+        if (!styleEl) {
+          styleEl = document.createElement('style');
+          styleEl.id = styleId;
+          document.head.appendChild(styleEl);
+        }
+        if (styleEl.textContent !== css) styleEl.textContent = css;
+      }
+
+      var options = {
+        mobileDisplay: !!opt.mobileDisplay,
+        models: Array.isArray(opt.models) ? opt.models : [],
+        parentElement: resolveParentElement(opt.parentElement),
+        primaryColor: opt.primaryColor,
+        sayHello: !!opt.sayHello,
+        initialStatus: (function() {
+          var storedStatus = readStoredStatus();
+          if (storedStatus) return storedStatus;
+          return (opt.initialStatus === 'sleep' || opt.initialStatus === 'active') ? opt.initialStatus : 'active';
+        })(),
+        // place stage on the right by default
+        dockedPosition: 'right',
+        libraryUrls: opt.libraryUrls || undefined,
+        // Ensure stage is visible even if defaults keep it translated or size 0
+        stageStyle: Object.assign({
+          position: 'fixed',
+          right: '32px',
+          bottom: '0px',
+          width: '280px',
+          height: '280px',
+          zIndex: '2147483646',
+          left: 'auto'
+        }, opt.stageStyle || {}),
+        // Fix tips (speech bubble) position: anchor to stage right-top area
+        tips: (function(){
+          var t = opt.tips || {};
+          // keep bubble above stage and leave viewport right spacing.
+          // Note: tips animation rewrites `transform`, so horizontal offset should come from `left`.
+          var style = mergeTips(t.style, {
+            right: 'auto',
+            left: '44%',
+            top: 'auto',
+            bottom: 'calc(100% + 8px)',
+            transform: 'translateX(-50%)',
+            // avoid initial white flash/shadow on refresh
+            animationName: (t.style && t.style.animationName) || 'none, oml2d-shake-tips',
+            filter: (t.style && t.style.filter) || 'none',
+            width: (t.style && t.style.width) || '240px'
+          });
+          var mstyle = mergeTips(t.mobileStyle, {
+            right: 'auto',
+            left: '34%',
+            top: 'auto',
+            bottom: 'calc(100% + 8px)',
+            transform: 'translateX(-50%)',
+            animationName: (t.mobileStyle && t.mobileStyle.animationName) || 'none, oml2d-shake-tips',
+            filter: (t.mobileStyle && t.mobileStyle.filter) || 'none',
+            width: (t.mobileStyle && t.mobileStyle.width) || '180px'
+          });
+          return Object.assign({}, t, { style: style, mobileStyle: mstyle });
+        })(),
+        // Move vertical menus a bit further left
+        menus: (function(){
+          var m = opt.menus || {};
+          var style = mergeTips(m.style, {
+            left: (m.style && m.style.left) || '-28px'
+          });
+          var mstyle = mergeTips(m.mobileStyle, {
+            left: (m.mobileStyle && m.mobileStyle.left) || '-24px'
+          });
+          return Object.assign({}, m, {
+            style: style,
+            mobileStyle: mstyle,
+            items: normalizeMenusItems(m.items)
+          });
+        })()
+      };
+      try {
+        if (!isLoadSessionActive(sessionId) || !shouldLoad()) {
+          window.__oml2d_loading = false;
+          return;
+        }
+        if (hasOml2dDom()) {
+          window.__oml2d_loaded = true;
+          window.__oml2d_loading = false;
+          console && console.log && console.log('[OhMyLive2D] stage exists, skip init');
+          return;
+        }
+        var oml2d = api(options);
+        ensureOml2dLocalFixStyle();
+        window.__oml2d_instance = oml2d;
+        // Let library control stage animation; avoid forcing double slide-in
+        // 安全地解析回调函数名，避免使用 eval
+        (function(){
+          var hookRef = cfg.then || '';
+          try {
+            var fn = resolveHook(hookRef);
+            if (fn) { fn(oml2d); }
+            else if (hookRef) { console && console.warn && console.warn('[OhMyLive2D] hook not found:', hookRef); }
+          } catch(_) { /* ignore hook error */ }
+        })();
+        window.__oml2d_loaded = true;
+        window.__oml2d_loading = false;
+        console && console.log && console.log('[OhMyLive2D] loaded via', apiType);
+      } catch (e) {
+        window.__oml2d_loading = false;
+        console && console.error && console.error('[OhMyLive2D] load error', e);
+      }
+    }
+    var sdkInitDone = false;
+    function runSdkInitOnce() {
+      if (sdkInitDone) return;
+      if (!isLoadSessionActive(sessionId) || !shouldLoad()) {
+        window.__oml2d_loading = false;
+        return;
+      }
+      sdkInitDone = true;
+      onScriptLoaded();
+    }
+    function loadScriptWithTimeout(src, label, onSuccess, onFail) {
+      var script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      var done = false;
+      function finish(success, reason) {
+        if (done) return;
+        done = true;
+        script.onload = null;
+        script.onerror = null;
+        if (timer) window.clearTimeout(timer);
+        if (!success) {
+          try { script.remove(); } catch (_) {}
+          if (typeof onFail === 'function') onFail(reason || 'error');
+          return;
+        }
+        if (typeof onSuccess === 'function') onSuccess();
+      }
+      var timer = window.setTimeout(function () {
+        finish(false, 'timeout');
+      }, scriptTimeoutMs);
+      script.onload = function () { finish(true); };
+      script.onerror = function () { finish(false, 'error'); };
+      document.head.appendChild(script);
+    }
+    loadScriptWithTimeout(primary, 'primary', runSdkInitOnce, function (reason) {
+      if (!isLoadSessionActive(sessionId)) {
+        window.__oml2d_loading = false;
+        return;
+      }
+      console && console.warn && console.warn('[OhMyLive2D] primary CDN failed, retry fallback', { reason: reason, timeout: scriptTimeoutMs });
+      loadScriptWithTimeout(fallback, 'fallback', runSdkInitOnce, function (fallbackReason) {
+        window.__oml2d_loading = false;
+        console && console.error && console.error('[OhMyLive2D] fallback CDN failed', { reason: fallbackReason, timeout: scriptTimeoutMs });
+      });
+    });
+  }
+  function unloadOML() {
+    startState.queued = false;
+    clearStartSchedule();
+    invalidateLoadSession();
+    var instance = window.__oml2d_instance;
+    try {
+      if (instance && typeof instance.clearTips === 'function') instance.clearTips();
+    } catch (_) {}
+    try {
+      if (instance && typeof instance.stopTipsIdle === 'function') instance.stopTipsIdle();
+    } catch (_) {}
+    try {
+      if (instance && typeof instance.stageSlideOut === 'function') instance.stageSlideOut();
+    } catch (_) {}
+    removeOml2dDom();
+    window.setTimeout(removeOml2dDom, 350);
+    window.__oml2d_instance = null;
+    window.__oml2d_loaded = false;
+    window.__oml2d_loading = false;
+  }
+  function requestStart() {
+    if (window.__oml2d_loaded || window.__oml2d_loading) return;
+    if (startState.queued) return;
+    startState.queued = true;
+    function runOnce() {
+      if (!startState.queued) return;
+      startState.queued = false;
+      clearStartSchedule();
+      try { loadOML(); } catch (_) {}
+    }
+    function runWithFallback() {
+      if (!startState.queued) return;
+      startState.idleCancel = scheduleLoad(runOnce);
+      startState.fallbackTimer = window.setTimeout(runOnce, 800);
+    }
+    if (document.visibilityState === 'hidden') {
+      startState.hiddenListener = function () {
+        if (document.visibilityState !== 'visible') return;
+        if (startState.hiddenListener) {
+          document.removeEventListener('visibilitychange', startState.hiddenListener);
+          startState.hiddenListener = null;
+        }
+        if (startState.hiddenTimer) {
+          window.clearTimeout(startState.hiddenTimer);
+          startState.hiddenTimer = 0;
+        }
+        runWithFallback();
+      };
+      document.addEventListener('visibilitychange', startState.hiddenListener);
+      startState.hiddenTimer = window.setTimeout(runWithFallback, 12000);
+      return;
+    }
+    runWithFallback();
+  }
+  window.__loadOhMyLive2D = function () {
+    writeUserEnabled(true);
+    requestStart();
+  };
+  window.__unloadOhMyLive2D = function () {
+    writeUserEnabled(false);
+    unloadOML();
+  };
+  window.__setOhMyLive2DEnabled = function (enabled) {
+    if (enabled) window.__loadOhMyLive2D();
+    else window.__unloadOhMyLive2D();
+  };
+  function scheduleAutoStart() {
+    if (!readUserEnabled()) return;
+    window.setTimeout(function () {
+      requestStart();
+    }, startAfterLoadMs);
+  }
+  if (document.readyState === 'complete') {
+    scheduleAutoStart();
+  } else {
+    window.addEventListener('load', scheduleAutoStart, { once: true });
+  }
+})();
