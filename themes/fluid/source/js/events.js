@@ -114,31 +114,45 @@ Fluid.events = {
 
     var posDisplay = false;
     var scrollDisplay = false;
+    var mobileMaxWidth = 767;
+    var isNarrowScreen = window.matchMedia
+      ? window.matchMedia('(max-width: ' + mobileMaxWidth + 'px)').matches
+      : ((window.innerWidth || document.documentElement.clientWidth || 0) <= mobileMaxWidth);
     // Position
-    var setTopArrowPos = function() {
-      var rect = board.getClientRects()[0];
-      if (!rect) return;
-      var boardRight = rect.right;
-      var bodyWidth = document.body.offsetWidth;
-      var right = bodyWidth - boardRight;
-      posDisplay = right >= 50;
+    if (isNarrowScreen) {
       setStyle(topArrow, {
-        bottom   : scrollDisplay ? '20px' : '-60px',
-        right    : posDisplay ? (right - 64) + 'px' : '8px',
-        minWidth : posDisplay ? '40px' : '28px',
-        minHeight: posDisplay ? '40px' : '28px'
+        right    : '8px',
+        minWidth : '28px',
+        minHeight: '28px'
       });
       setStyle(arrowUpIcon, {
-        fontSize: posDisplay ? '32px' : '20px'
+        fontSize: '20px'
       });
-    };
+    } else {
+      var setTopArrowPos = function() {
+        var rect = board.getBoundingClientRect();
+        var boardRight = rect.right;
+        var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+        var right = Math.max(0, viewportWidth - boardRight);
+        posDisplay = right >= 50;
+        setStyle(topArrow, {
+          bottom   : scrollDisplay ? '20px' : '-60px',
+          right    : posDisplay ? (right - 64) + 'px' : '8px',
+          minWidth : posDisplay ? '40px' : '28px',
+          minHeight: posDisplay ? '40px' : '28px'
+        });
+        setStyle(arrowUpIcon, {
+          fontSize: posDisplay ? '32px' : '20px'
+        });
+      };
 
-    setTopArrowPos();
-    window.addEventListener('resize', setTopArrowPos);
+      setTopArrowPos();
+      window.addEventListener('resize', setTopArrowPos);
+    }
     // Display
     var headerHeight = board.getBoundingClientRect().top + window.pageYOffset;
     Fluid.utils.listenScroll(function() {
-      var scrollHeight = document.body.scrollTop + document.documentElement.scrollTop;
+      var scrollHeight = window.pageYOffset || document.documentElement.scrollTop || 0;
       scrollDisplay = scrollHeight >= headerHeight;
       setStyle(topArrow, {
         bottom: scrollDisplay ? '20px' : '-60px'
