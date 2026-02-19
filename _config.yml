@@ -177,6 +177,10 @@ OhMyLive2d:
     disableOnSaveData: true
     disableOnSlowNetwork: true
     disableOnLighthouse: true
+    # 交互后再启动：减少无交互会话的未使用 JS 与主线程占用
+    startOnInteraction: true
+    # 长时间无交互时兜底启动（毫秒）
+    interactionFallbackMs: 30000
     minDeviceMemory: 2
     minHardwareConcurrency: 2
     userToggleStorageKey: live2d:enabled

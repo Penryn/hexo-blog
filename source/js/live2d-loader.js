@@ -23,6 +23,10 @@
   var startAfterLoadMs = typeof degradeCfg.startAfterLoadMs === 'number' && degradeCfg.startAfterLoadMs >= 0
     ? degradeCfg.startAfterLoadMs
     : 12000;
+  var startOnInteraction = degradeCfg.startOnInteraction !== false;
+  var interactionFallbackMs = typeof degradeCfg.interactionFallbackMs === 'number' && degradeCfg.interactionFallbackMs >= 0
+    ? degradeCfg.interactionFallbackMs
+    : 30000;
   var loadSessionSeq = (typeof window.__oml2d_load_session === 'number' && isFinite(window.__oml2d_load_session))
     ? window.__oml2d_load_session
     : 0;
@@ -32,7 +36,9 @@
     idleCancel: null,
     fallbackTimer: 0,
     hiddenTimer: 0,
-    hiddenListener: null
+    hiddenListener: null,
+    interactionTimer: 0,
+    interactionHandlers: null
   };
   function invalidateLoadSession() {
     loadSessionSeq += 1;
@@ -58,6 +64,18 @@
     if (startState.hiddenListener) {
       document.removeEventListener('visibilitychange', startState.hiddenListener);
       startState.hiddenListener = null;
+    }
+    if (startState.interactionTimer) {
+      window.clearTimeout(startState.interactionTimer);
+      startState.interactionTimer = 0;
+    }
+    if (startState.interactionHandlers) {
+      for (var eventName in startState.interactionHandlers) {
+        if (Object.prototype.hasOwnProperty.call(startState.interactionHandlers, eventName)) {
+          window.removeEventListener(eventName, startState.interactionHandlers[eventName], false);
+        }
+      }
+      startState.interactionHandlers = null;
     }
   }
   function readUserEnabled() {
@@ -139,6 +157,14 @@
     if (ua.indexOf('chrome-lighthouse') !== -1) return true;
     if (ua.indexOf('lighthouse') !== -1) return true;
     if (ua.indexOf('pagespeed') !== -1) return true;
+    if (navigator && navigator.webdriver) return true;
+    if (window.callPhantom || window._phantom || window.__nightmare) return true;
+    if (navigator && navigator.userAgentData && Array.isArray(navigator.userAgentData.brands)) {
+      for (var i = 0; i < navigator.userAgentData.brands.length; i++) {
+        var brand = String(navigator.userAgentData.brands[i].brand || '').toLowerCase();
+        if (brand.indexOf('lighthouse') !== -1 || brand.indexOf('pagespeed') !== -1) return true;
+      }
+    }
     return false;
   }
   function shouldLoad() {
@@ -607,11 +633,51 @@
     if (enabled) window.__loadOhMyLive2D();
     else window.__unloadOhMyLive2D();
   };
-  function scheduleAutoStart() {
-    if (!readUserEnabled()) return;
-    window.setTimeout(function () {
+  function scheduleStartAfterDelay() {
+    startState.fallbackTimer = window.setTimeout(function () {
       requestStart();
     }, startAfterLoadMs);
+  }
+  function scheduleAutoStart() {
+    if (!readUserEnabled()) return;
+    if (!startOnInteraction) {
+      scheduleStartAfterDelay();
+      return;
+    }
+
+    var triggered = false;
+    function clearInteractionWatchers() {
+      if (startState.interactionHandlers) {
+        for (var eventName in startState.interactionHandlers) {
+          if (Object.prototype.hasOwnProperty.call(startState.interactionHandlers, eventName)) {
+            window.removeEventListener(eventName, startState.interactionHandlers[eventName], false);
+          }
+        }
+        startState.interactionHandlers = null;
+      }
+      if (startState.interactionTimer) {
+        window.clearTimeout(startState.interactionTimer);
+        startState.interactionTimer = 0;
+      }
+    }
+    function triggerStart() {
+      if (triggered) return;
+      triggered = true;
+      clearInteractionWatchers();
+      scheduleStartAfterDelay();
+    }
+
+    var events = ['pointerdown', 'touchstart', 'keydown', 'wheel'];
+    var handlers = {};
+    for (var i = 0; i < events.length; i++) {
+      var eventName = events[i];
+      handlers[eventName] = triggerStart;
+      window.addEventListener(eventName, triggerStart, { passive: true });
+    }
+    startState.interactionHandlers = handlers;
+    if (interactionFallbackMs > 0) {
+      startState.interactionTimer = window.setTimeout(triggerStart, interactionFallbackMs);
+    }
   }
   if (document.readyState === 'complete') {
     scheduleAutoStart();

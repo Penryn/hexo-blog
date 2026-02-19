@@ -68,21 +68,37 @@ Fluid.events = {
     if (!board) {
       return;
     }
+    var sideCols = document.querySelectorAll('.side-col');
+    var maxParallaxOffset = 96;
+    var lastOffset = null;
+
+    var refreshParallaxLimit = function() {
+      var offset = parseInt(window.getComputedStyle(board).marginTop, 10) || 0;
+      maxParallaxOffset = 96 + offset;
+    };
+
     var parallax = function() {
       var pxv = (window.pageYOffset || document.documentElement.scrollTop || 0) / 5;
-      var offset = parseInt(window.getComputedStyle(board).marginTop, 10) || 0;
-      var max = 96 + offset;
-      if (pxv > max) {
-        pxv = max;
+      if (pxv > maxParallaxOffset) {
+        pxv = maxParallaxOffset;
       }
+      if (pxv === lastOffset) {
+        return;
+      }
+      lastOffset = pxv;
       ph.style.transform = 'translate3d(0,' + pxv + 'px,0)';
-      var sideCol = document.querySelectorAll('.side-col');
-      if (sideCol.length > 0) {
-        for (const col of sideCol) {
-          col.style.paddingTop = pxv + 'px';
+      if (sideCols.length > 0) {
+        var paddingTop = pxv + 'px';
+        for (const col of sideCols) {
+          if (col.style.paddingTop !== paddingTop) {
+            col.style.paddingTop = paddingTop;
+          }
         }
       }
     };
+
+    refreshParallaxLimit();
+    window.addEventListener('resize', refreshParallaxLimit);
     Fluid.utils.listenScroll(parallax);
   },
 
