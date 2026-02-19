@@ -152,10 +152,20 @@ if (!is_home()) {
   <% } %>
   <title><%= title %></title>
 
+  <script>
+    (function () {
+      try {
+        var schema = localStorage.getItem('Fluid_Color_Scheme');
+        if (schema === 'dark' || schema === 'light') {
+          document.documentElement.setAttribute('data-user-color-scheme', schema);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <%- partial('_partials/css.ejs') %>
   <%- export_config() %>
-  <%- js_ex(theme.static_prefix.internal_js, 'utils.js') %>
-  <%- js_ex(theme.static_prefix.internal_js, 'color-schema.js') %>
+  <%- js_ex(theme.static_prefix.internal_js, 'utils.js', 'defer') %>
+  <%- js_ex(theme.static_prefix.internal_js, 'color-schema.js', 'defer') %>
   <%- partial('_partials/plugins/analytics.ejs') %>
 
   <%- inject_point('head') %>

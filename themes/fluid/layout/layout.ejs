@@ -71,7 +71,23 @@ var colorSchema = theme.dark_mode && theme.dark_mode.enable && theme.dark_mode.d
   <%- inject_point('bodyEnd') %>
 
   <!-- Vercel Speed Insights -->
-  <script type="module" src="/scripts/speed-insights.js"></script>
+  <script>
+    (function () {
+      function loadSpeedInsights() {
+        var s = document.createElement('script');
+        s.type = 'module';
+        s.src = '/scripts/speed-insights.js';
+        document.body.appendChild(s);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadSpeedInsights, { timeout: 2000 });
+      } else {
+        window.addEventListener('load', function () {
+          setTimeout(loadSpeedInsights, 0);
+        }, { once: true });
+      }
+    })();
+  </script>
 
   <noscript>
     <div class="noscript-warning"><%- __('noscript_warning') %></div>

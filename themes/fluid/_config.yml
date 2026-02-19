@@ -249,13 +249,7 @@ custom_js:
 # 指定自定义 .css 文件路径，用法和 custom_js 相同
 # The usage is the same as custom_js
 custom_css:
-  - /css/reading-progress.css
-  - /css/shubiao.css # 鼠标指针（本地化）
-  - /css/scroll.css # 滚动条颜色（本地化）
-  - /css/gradient.css # 头部打字机颜色效果渐变（本地化）
-  - /css/scrollAnimation.css
-  - /css/code.css
-  - /css/danmaku.css
+  - /css/custom-effects.css
 
 
 # 网页访问统计
@@ -354,7 +348,7 @@ lazyload:
 
 # 图标库，包含了大量社交类图标，主题依赖的不包含在内，因此可自行修改，详见 https://hexo.fluid-dev.com/docs/icon/
 # Icon library, which includes many social icons, does not include those theme dependent, so your can modify link by yourself. See: https://hexo.fluid-dev.com/docs/en/icon/
-iconfont: //at.alicdn.com/t/c/font_1736178_k526ubmyhba.css
+iconfont: /css/iconfont-local-1736178.css
 
 
 #---------------------------
