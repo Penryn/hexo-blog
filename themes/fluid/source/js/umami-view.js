@@ -1,99 +1,83 @@
-// 从配置文件中获取 umami 的配置
-const website_id = CONFIG.web_analytics.umami.website_id;
-// 拼接请求地址
-const request_url = `${CONFIG.web_analytics.umami.api_server}/websites/${website_id}/stats`;
+(function () {
+  var umamiCfg = (((window.CONFIG || {}).web_analytics || {}).umami) || {};
+  var websiteId = String(umamiCfg.website_id || "").trim();
+  var apiServer = String(umamiCfg.api_server || "").trim().replace(/\/+$/, "");
+  var startAt = new Date(umamiCfg.start_time).getTime();
+  var endAt = Date.now();
+  var token = String(umamiCfg.token || "").trim();
 
-const start_time = new Date(CONFIG.web_analytics.umami.start_time).getTime();
-const end_time = new Date().getTime();
-const token = CONFIG.web_analytics.umami.token;
-
-// 检查配置是否为空
-if (!website_id) {
-  throw new Error("Umami website_id is empty");
-}
-if (!request_url) {
-  throw new Error("Umami request_url is empty");
-}
-if (!start_time) {
-  throw new Error("Umami start_time is empty");
-}
-if (!token) {
-  throw new Error("Umami token is empty");
-}
-
-// 构造请求参数
-const params = new URLSearchParams({
-  startAt: start_time,
-  endAt: end_time,
-});
-// 构造请求头
-const request_header = {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    "x-umami-api-key": "oZKCH3msvqt10VlXKwoJvHclmaS4bVx0",
-  },
-};
-
-// 获取站点统计数据
-async function siteStats() {
-  try {
-    const response = await fetch(`${request_url}?${params}`, request_header);
-    const data = await response.json();
-    const uniqueVisitors = data.uniques.value; // 获取独立访客数
-    const pageViews = data.pageviews.value; // 获取页面浏览量
-
-    let pvCtn = document.querySelector("#umami-site-pv-container");
-    if (pvCtn) {
-      let ele = document.querySelector("#umami-site-pv");
-      if (ele) {
-        ele.textContent = pageViews; // 设置页面浏览量
-        pvCtn.style.display = "inline"; // 将元素显示出来
-      }
+  function hasRequiredConfig() {
+    if (!websiteId || !apiServer || !startAt || !token) {
+      console && console.warn && console.warn("[Umami] Skip stats view: missing required config");
+      return false;
     }
-
-    let uvCtn = document.querySelector("#umami-site-uv-container");
-    if (uvCtn) {
-      let ele = document.querySelector("#umami-site-uv");
-      if (ele) {
-        ele.textContent = uniqueVisitors;
-        uvCtn.style.display = "inline";
-      }
-    }
-  } catch (error) {
-    console.error(error);
-    return "-1";
+    return true;
   }
-}
 
-// 获取页面浏览量
-async function pageStats(path) {
-  try {
-    const response = await fetch(`${request_url}?${params}&url=${path}`, request_header);
-    const data = await response.json();
-    const pageViews = data.pageviews.value;
+  if (!hasRequiredConfig()) return;
 
-    let viewCtn = document.querySelector("#umami-page-views-container");
-    if (viewCtn) {
-      let ele = document.querySelector("#umami-page-views");
-      if (ele) {
-        ele.textContent = pageViews;
-        viewCtn.style.display = "inline";
-      }
+  var requestUrl = apiServer + "/websites/" + websiteId + "/stats";
+  var params = new URLSearchParams({
+    startAt: String(startAt),
+    endAt: String(endAt)
+  });
+  var requestHeader = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
     }
-  } catch (error) {
-    console.error(error);
-    return "-1";
+  };
+
+  function showValue(containerSelector, valueSelector, value) {
+    var container = document.querySelector(containerSelector);
+    if (!container) return;
+
+    var element = document.querySelector(valueSelector);
+    if (!element) return;
+
+    element.textContent = value;
+    container.style.display = "inline";
   }
-}
 
-siteStats();
+  async function fetchStats(path) {
+    var url = requestUrl + "?" + params.toString();
+    if (path) {
+      url += "&url=" + encodeURIComponent(path);
+    }
 
-// 获取页面容器
-let viewCtn = document.querySelector("#umami-page-views-container");
-// 如果页面容器存在，则获取页面浏览量
-if (viewCtn) {
-  let path = window.location.pathname;
-  let target = decodeURI(path.replace(/\/*(index.html)?$/, "/"));
-  pageStats(target);
-}
+    var response = await fetch(url, requestHeader);
+    if (!response.ok) {
+      throw new Error("[Umami] API request failed with status " + response.status);
+    }
+    return response.json();
+  }
+
+  async function siteStats() {
+    try {
+      var data = await fetchStats("");
+      showValue("#umami-site-pv-container", "#umami-site-pv", data.pageviews.value);
+      showValue("#umami-site-uv-container", "#umami-site-uv", data.uniques.value);
+    } catch (error) {
+      console && console.error && console.error(error);
+    }
+  }
+
+  async function pageStats(path) {
+    try {
+      var data = await fetchStats(path);
+      showValue("#umami-page-views-container", "#umami-page-views", data.pageviews.value);
+    } catch (error) {
+      console && console.error && console.error(error);
+    }
+  }
+
+  siteStats();
+
+  var viewContainer = document.querySelector("#umami-page-views-container");
+  if (viewContainer) {
+    var path = window.location.pathname;
+    var target = decodeURI(path.replace(/\/*(index.html)?$/, "/"));
+    pageStats(target);
+  }
+})();
