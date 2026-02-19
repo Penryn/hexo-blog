@@ -75,6 +75,9 @@
       var scriptTimeoutMs = typeof degradeCfg.scriptTimeoutMs === 'number' && degradeCfg.scriptTimeoutMs > 0
         ? degradeCfg.scriptTimeoutMs
         : 8000;
+      var startAfterLoadMs = typeof degradeCfg.startAfterLoadMs === 'number' && degradeCfg.startAfterLoadMs >= 0
+        ? degradeCfg.startAfterLoadMs
+        : 12000;
       var loadSessionSeq = (typeof window.__oml2d_load_session === 'number' && isFinite(window.__oml2d_load_session))
         ? window.__oml2d_load_session
         : 0;
@@ -259,8 +262,8 @@
         }
         window.__oml2d_loading = true;
         console && console.log && console.log('[OhMyLive2D] start loading');
-        var primary = cfg.CDN || 'https://registry.npmmirror.com/oh-my-live2d/0.19.3/files/index.min.js';
-        var fallback = 'https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js';
+        var primary = cfg.CDN || 'https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js';
+        var fallback = 'https://unpkg.com/oh-my-live2d@0.19.3/dist/index.min.js';
         function onScriptLoaded() {
           if (!isLoadSessionActive(sessionId) || !shouldLoad()) {
             window.__oml2d_loading = false;
@@ -647,8 +650,17 @@
         if (enabled) window.__loadOhMyLive2D();
         else window.__unloadOhMyLive2D();
       };
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', requestStart, { once: true });
-      else requestStart();
+      function scheduleAutoStart() {
+        if (!readUserEnabled()) return;
+        window.setTimeout(function () {
+          requestStart();
+        }, startAfterLoadMs);
+      }
+      if (document.readyState === 'complete') {
+        scheduleAutoStart();
+      } else {
+        window.addEventListener('load', scheduleAutoStart, { once: true });
+      }
     })();
   </script>
 <% } %>

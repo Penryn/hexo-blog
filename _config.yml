@@ -170,8 +170,8 @@ minify:
 OhMyLive2d:
   enable: false # disable plugin injection; we lazy-load via theme
   lazy: true
-  # CDN: https://registry.npmmirror.com/oh-my-live2d/0.19.3/files
-  CDN: https://qiuniu.phlin.cn/static/index.min.js
+  # CDN: https://registry.npmmirror.com/oh-my-live2d@0.19.3/dist/index.min.js
+  CDN: https://cdn.jsdelivr.net/npm/oh-my-live2d@0.19.3/dist/index.min.js
   degrade:
     disableOnReducedMotion: true
     disableOnSaveData: true
@@ -181,6 +181,8 @@ OhMyLive2d:
     userToggleStorageKey: live2d:enabled
     statusStorageKey: live2d:status
     scriptTimeoutMs: 3000
+    # 首屏后延迟加载，避免影响关键渲染路径（单位毫秒）
+    startAfterLoadMs: 12000
   strategy:
     enable: true
     # 页面类型优先切模（可填模型索引或模型 name），未命中时按时间兜底
