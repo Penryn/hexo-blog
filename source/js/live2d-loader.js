@@ -151,6 +151,10 @@
       return null;
     }
   }
+  function setOml2dUiReady(ready) {
+    if (!document.body || !document.body.classList) return;
+    document.body.classList[ready ? 'add' : 'remove']('oml2d-ui-ready');
+  }
   function isDiagnosticsAgent() {
     if (degradeCfg.disableOnLighthouse === false) return false;
     var ua = String((navigator && navigator.userAgent) || '').toLowerCase();
@@ -235,9 +239,11 @@
     if (!shouldLoad()) return;
     if (window.__oml2d_loading || window.__oml2d_loaded) { return; }
     var sessionId = invalidateLoadSession();
+    setOml2dUiReady(false);
     if (hasOml2dDom()) {
       if (window.__oml2d_instance) {
         window.__oml2d_loaded = true;
+        setOml2dUiReady(true);
         return;
       }
       // 清理残留节点，避免历史实例导致“只关掉最新实例”
@@ -407,6 +413,21 @@
           '  0% { opacity: 0; visibility: hidden; }',
           '  100% { opacity: 0; visibility: hidden; }',
           '}',
+          'body:not(.oml2d-ui-ready) #oml2d-stage,',
+          'body:not(.oml2d-ui-ready) #oml2d-statusBar,',
+          'body:not(.oml2d-ui-ready) #oml2d-tips {',
+          '  opacity: 0 !important;',
+          '  visibility: hidden !important;',
+          '}',
+          'body.oml2d-ui-ready #oml2d-stage,',
+          'body.oml2d-ui-ready #oml2d-statusBar,',
+          'body.oml2d-ui-ready #oml2d-tips {',
+          '  opacity: 1 !important;',
+          '  visibility: visible !important;',
+          '}',
+          '#oml2d-stage {',
+          '  transition: opacity 180ms ease;',
+          '}',
           '#oml2d-tips {',
           '  filter: none !important;',
           '}'
@@ -493,14 +514,38 @@
           window.__oml2d_loading = false;
           return;
         }
+        ensureOml2dLocalFixStyle();
         if (hasOml2dDom()) {
           window.__oml2d_loaded = true;
           window.__oml2d_loading = false;
+          setOml2dUiReady(true);
           console && console.log && console.log('[OhMyLive2D] stage exists, skip init');
           return;
         }
         var oml2d = api(options);
-        ensureOml2dLocalFixStyle();
+        var uiReady = false;
+        var uiReadyTimer = 0;
+        function revealUiOnce() {
+          if (uiReady) return;
+          uiReady = true;
+          if (uiReadyTimer) {
+            window.clearTimeout(uiReadyTimer);
+            uiReadyTimer = 0;
+          }
+          setOml2dUiReady(true);
+        }
+        uiReadyTimer = window.setTimeout(revealUiOnce, 1200);
+        if (oml2d && typeof oml2d.onLoad === 'function') {
+          oml2d.onLoad(function(status) {
+            if (status === 'success') {
+              revealUiOnce();
+            }
+          });
+        } else if (window.requestAnimationFrame) {
+          window.requestAnimationFrame(revealUiOnce);
+        } else {
+          window.setTimeout(revealUiOnce, 16);
+        }
         window.__oml2d_instance = oml2d;
         // Let library control stage animation; avoid forcing double slide-in
         // 安全地解析回调函数名，避免使用 eval
@@ -571,6 +616,7 @@
     startState.queued = false;
     clearStartSchedule();
     invalidateLoadSession();
+    setOml2dUiReady(false);
     var instance = window.__oml2d_instance;
     try {
       if (instance && typeof instance.clearTips === 'function') instance.clearTips();
