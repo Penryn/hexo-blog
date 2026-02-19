@@ -26,12 +26,16 @@ Fluid.utils = {
   },
 
   scrollToElement: function(target, offset) {
-    var of = jQuery(target).offset();
-    if (of) {
-      jQuery('html,body').animate({
-        scrollTop: of.top + (offset || 0),
-        easing   : 'swing'
+    var element = typeof target === 'string' ? document.querySelector(target) : target;
+    if (!element) return;
+    var top = element.getBoundingClientRect().top + window.pageYOffset + (offset || 0);
+    try {
+      window.scrollTo({
+        top     : top,
+        behavior: 'smooth'
       });
+    } catch (_) {
+      window.scrollTo(0, top);
     }
   },
 

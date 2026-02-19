@@ -1,159 +1,172 @@
 /* global CONFIG */
 
 (function() {
-  // Modified from [hexo-generator-search](https://github.com/wzpan/hexo-generator-search)
-  function localSearchFunc(path, searchSelector, resultSelector) {
-    'use strict';
-    // 0x00. environment initialization
-    var $input = jQuery(searchSelector);
-    var $result = jQuery(resultSelector);
+  'use strict';
 
-    if ($input.length === 0) {
-      // eslint-disable-next-line no-console
-      throw Error('No element selected by the searchSelector');
+  function setInputState(input, state) {
+    input.classList.remove('valid');
+    input.classList.remove('invalid');
+    if (state) {
+      input.classList.add(state);
     }
-    if ($result.length === 0) {
-      // eslint-disable-next-line no-console
-      throw Error('No element selected by the resultSelector');
-    }
+  }
 
-    if ($result.attr('class').indexOf('list-group-item') === -1) {
-      $result.html('<div class="m-auto text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><br/>Loading...</div>');
-    }
-
-    jQuery.ajax({
-      // 0x01. load xml file
-      url     : path,
-      dataType: 'xml',
-      success : function(xmlResponse) {
-        // 0x02. parse xml file
-        var dataList = jQuery('entry', xmlResponse).map(function() {
-          return {
-            title  : jQuery('title', this).text(),
-            content: jQuery('content', this).text(),
-            url    : jQuery('url', this).text()
-          };
-        }).get();
-
-        if ($result.html().indexOf('list-group-item') === -1) {
-          $result.html('');
-        }
-
-        $input.on('input', function() {
-          // 0x03. parse query to keywords list
-          var content = $input.val();
-          var resultHTML = '';
-          var keywords = content.trim().toLowerCase().split(/[\s-]+/);
-          $result.html('');
-          if (content.trim().length <= 0) {
-            return $input.removeClass('invalid').removeClass('valid');
-          }
-          // 0x04. perform local searching
-          dataList.forEach(function(data) {
-            var isMatch = true;
-            if (!data.title || data.title.trim() === '') {
-              data.title = 'Untitled';
-            }
-            var orig_data_title = data.title.trim();
-            var data_title = orig_data_title.toLowerCase();
-            var orig_data_content = data.content.trim().replace(/<[^>]+>/g, '');
-            var data_content = orig_data_content.toLowerCase();
-            var data_url = data.url;
-            var index_title = -1;
-            var index_content = -1;
-            var first_occur = -1;
-            // Skip matching when content is included in search and content is empty
-            if (CONFIG.include_content_in_search && data_content === '') {
-              isMatch = false;
-            } else {
-              keywords.forEach(function (keyword, i) {
-                index_title = data_title.indexOf(keyword);
-                index_content = data_content.indexOf(keyword);
-
-                if (index_title < 0 && index_content < 0) {
-                  isMatch = false;
-                } else {
-                  if (index_content < 0) {
-                    index_content = 0;
-                  }
-                  if (i === 0) {
-                    first_occur = index_content;
-                  }
-                }
-              });
-            }
-            // 0x05. show search results
-            if (isMatch) {
-              resultHTML += '<a href=\'' + data_url + '\' class=\'list-group-item list-group-item-action font-weight-bolder search-list-title\'>' + orig_data_title + '</a>';
-              var content = orig_data_content;
-              if (first_occur >= 0) {
-                // cut out 100 characters
-                var start = first_occur - 20;
-                var end = first_occur + 80;
-
-                if (start < 0) {
-                  start = 0;
-                }
-
-                if (start === 0) {
-                  end = 100;
-                }
-
-                if (end > content.length) {
-                  end = content.length;
-                }
-
-                var match_content = content.substring(start, end);
-
-                // highlight all keywords
-                keywords.forEach(function(keyword) {
-                  var regS = new RegExp(keyword, 'gi');
-                  match_content = match_content.replace(regS, '<span class="search-word">' + keyword + '</span>');
-                });
-
-                resultHTML += '<p class=\'search-list-content\'>' + match_content + '...</p>';
-              }
-            }
-          });
-          if (resultHTML.indexOf('list-group-item') === -1) {
-            return $input.addClass('invalid').removeClass('valid');
-          }
-          $input.addClass('valid').removeClass('invalid');
-          $result.html(resultHTML);
-        });
-      }
+  function parseEntries(xmlText) {
+    var parser = new window.DOMParser();
+    var xml = parser.parseFromString(xmlText, 'text/xml');
+    var entries = xml.querySelectorAll('entry');
+    return Array.prototype.map.call(entries, function(entry) {
+      return {
+        title  : (entry.querySelector('title') || {}).textContent || '',
+        content: (entry.querySelector('content') || {}).textContent || '',
+        url    : (entry.querySelector('url') || {}).textContent || ''
+      };
     });
   }
 
-  function localSearchReset(searchSelector, resultSelector) {
-    'use strict';
-    var $input = jQuery(searchSelector);
-    var $result = jQuery(resultSelector);
-
-    if ($input.length === 0) {
-      // eslint-disable-next-line no-console
-      throw Error('No element selected by the searchSelector');
-    }
-    if ($result.length === 0) {
-      // eslint-disable-next-line no-console
-      throw Error('No element selected by the resultSelector');
-    }
-
-    $input.val('').removeClass('invalid').removeClass('valid');
-    $result.html('');
+  function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  var modal = jQuery('#modalSearch');
-  var searchSelector = '#local-search-input';
-  var resultSelector = '#local-search-result';
-  modal.on('show.bs.modal', function() {
+  function localSearchReset(input, result) {
+    input.value = '';
+    setInputState(input, '');
+    result.innerHTML = '';
+  }
+
+  function bindSearchInput(input, result, dataList) {
+    if (input.dataset.localSearchBound === '1') {
+      return;
+    }
+    input.dataset.localSearchBound = '1';
+
+    input.addEventListener('input', function() {
+      var content = input.value || '';
+      var keywords = content.trim().toLowerCase().split(/[\s-]+/).filter(Boolean);
+
+      result.innerHTML = '';
+      if (keywords.length === 0) {
+        setInputState(input, '');
+        return;
+      }
+
+      var resultHTML = '';
+
+      dataList.forEach(function(data) {
+        var isMatch = true;
+        var dataTitle = (data.title || 'Untitled').trim();
+        var titleLower = dataTitle.toLowerCase();
+        var contentRaw = (data.content || '').trim().replace(/<[^>]+>/g, '');
+        var contentLower = contentRaw.toLowerCase();
+        var dataUrl = data.url;
+        var firstOccur = -1;
+
+        if (CONFIG.include_content_in_search && contentLower === '') {
+          isMatch = false;
+        } else {
+          keywords.forEach(function(keyword, index) {
+            var indexTitle = titleLower.indexOf(keyword);
+            var indexContent = contentLower.indexOf(keyword);
+            if (indexTitle < 0 && indexContent < 0) {
+              isMatch = false;
+            } else {
+              if (indexContent < 0) {
+                indexContent = 0;
+              }
+              if (index === 0) {
+                firstOccur = indexContent;
+              }
+            }
+          });
+        }
+
+        if (!isMatch) {
+          return;
+        }
+
+        resultHTML += '<a href="' + dataUrl + '" class="list-group-item list-group-item-action font-weight-bolder search-list-title">' + dataTitle + '</a>';
+
+        if (firstOccur >= 0) {
+          var start = firstOccur - 20;
+          var end = firstOccur + 80;
+          if (start < 0) {
+            start = 0;
+          }
+          if (start === 0) {
+            end = 100;
+          }
+          if (end > contentRaw.length) {
+            end = contentRaw.length;
+          }
+
+          var matchContent = contentRaw.substring(start, end);
+          keywords.forEach(function(keyword) {
+            var pattern = new RegExp(escapeRegExp(keyword), 'gi');
+            matchContent = matchContent.replace(pattern, '<span class="search-word">' + keyword + '</span>');
+          });
+
+          resultHTML += '<p class="search-list-content">' + matchContent + '...</p>';
+        }
+      });
+
+      if (resultHTML.indexOf('list-group-item') === -1) {
+        setInputState(input, 'invalid');
+        return;
+      }
+
+      setInputState(input, 'valid');
+      result.innerHTML = resultHTML;
+    });
+  }
+
+  function setupLocalSearch(path, input, result) {
+    if (result.className.indexOf('list-group-item') === -1) {
+      result.innerHTML = '<div class="m-auto text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><br/>Loading...</div>';
+    }
+
+    return fetch(path, { method: 'GET', credentials: 'same-origin' })
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Search data request failed: ' + response.status);
+        }
+        return response.text();
+      })
+      .then(function(xmlText) {
+        var dataList = parseEntries(xmlText);
+        if (result.innerHTML.indexOf('list-group-item') === -1) {
+          result.innerHTML = '';
+        }
+        bindSearchInput(input, result, dataList);
+      })
+      .catch(function(error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        result.innerHTML = '';
+        throw error;
+      });
+  }
+
+  var modal = document.getElementById('modalSearch');
+  var input = document.getElementById('local-search-input');
+  var result = document.getElementById('local-search-result');
+  if (!modal || !input || !result) {
+    return;
+  }
+
+  var loadPromise = null;
+  modal.addEventListener('show.bs.modal', function() {
+    if (loadPromise) return;
     var path = CONFIG.search_path || '/local-search.xml';
-    localSearchFunc(path, searchSelector, resultSelector);
+    loadPromise = setupLocalSearch(path, input, result).catch(function() {
+      loadPromise = null;
+    });
   });
-  modal.on('shown.bs.modal', function() {
-    jQuery('#local-search-input').focus();
+
+  modal.addEventListener('shown.bs.modal', function() {
+    input.focus();
   });
-  modal.on('hidden.bs.modal', function() {
-    localSearchReset(searchSelector, resultSelector);
+
+  modal.addEventListener('hidden.bs.modal', function() {
+    localSearchReset(input, result);
   });
 })();

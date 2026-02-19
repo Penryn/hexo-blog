@@ -10,10 +10,10 @@
 import_script(`
 <script>
   Fluid.utils.createScript('${url_join(theme.static_prefix.tocbot, 'tocbot.min.js')}', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
+    var toc = document.getElementById('toc');
+    if (!toc || !window.tocbot) { return; }
+    var boardCtn = document.getElementById('board-ctn');
+    var boardTop = boardCtn ? (boardCtn.getBoundingClientRect().top + window.pageYOffset) : 0;
 
     window.tocbot.init(Object.assign({
       tocSelector     : '#toc-body',
@@ -27,19 +27,19 @@ import_script(`
       includeTitleTags: true,
       headingsOffset  : -boardTop,
     }, CONFIG.toc));
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
+    if (toc.querySelector('.toc-list-item')) {
+      toc.style.visibility = 'visible';
     }
 
     Fluid.events.registerRefreshCallback(function() {
       if ('tocbot' in window) {
         tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
+        var toc = document.getElementById('toc');
+        if (!toc || !tocbot) {
           return;
         }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
+        if (toc.querySelector('.toc-list-item')) {
+          toc.style.visibility = 'visible';
         }
       }
     });

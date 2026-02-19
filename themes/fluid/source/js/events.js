@@ -1,127 +1,161 @@
 /* global Fluid */
 
-HTMLElement.prototype.wrap = function(wrapper) {
-  this.parentNode.insertBefore(wrapper, this);
-  this.parentNode.removeChild(this);
-  wrapper.appendChild(this);
-};
+if (!HTMLElement.prototype.wrap) {
+  HTMLElement.prototype.wrap = function(wrapper) {
+    this.parentNode.insertBefore(wrapper, this);
+    this.parentNode.removeChild(this);
+    wrapper.appendChild(this);
+  };
+}
+
+function setStyle(element, styles) {
+  if (!element) return;
+  for (var key in styles) {
+    if (Object.prototype.hasOwnProperty.call(styles, key)) {
+      element.style[key] = styles[key];
+    }
+  }
+}
 
 Fluid.events = {
 
   registerNavbarEvent: function() {
-    var navbar = jQuery('#navbar');
-    if (navbar.length === 0) {
+    var navbar = document.getElementById('navbar');
+    if (!navbar) {
       return;
     }
-    var submenu = jQuery('#navbar .dropdown-menu');
-    if (navbar.offset().top > 0) {
-      navbar.removeClass('navbar-dark');
-      submenu.removeClass('navbar-dark');
-    }
+    var submenu = document.querySelectorAll('#navbar .dropdown-menu');
+
     Fluid.utils.listenScroll(function() {
-      navbar[navbar.offset().top > 50 ? 'addClass' : 'removeClass']('top-nav-collapse');
-      submenu[navbar.offset().top > 50 ? 'addClass' : 'removeClass']('dropdown-collapse');
-      if (navbar.offset().top > 0) {
-        navbar.removeClass('navbar-dark');
-        submenu.removeClass('navbar-dark');
+      var top = window.pageYOffset || document.documentElement.scrollTop || 0;
+      navbar.classList[top > 50 ? 'add' : 'remove']('top-nav-collapse');
+      for (const item of submenu) {
+        item.classList[top > 50 ? 'add' : 'remove']('dropdown-collapse');
+      }
+      if (top > 0) {
+        navbar.classList.remove('navbar-dark');
+        for (const item of submenu) item.classList.remove('navbar-dark');
       } else {
-        navbar.addClass('navbar-dark');
-        submenu.removeClass('navbar-dark');
+        navbar.classList.add('navbar-dark');
+        for (const item of submenu) item.classList.remove('navbar-dark');
       }
     });
-    jQuery('#navbar-toggler-btn').on('click', function() {
-      jQuery('.animated-icon').toggleClass('open');
-      jQuery('#navbar').toggleClass('navbar-col-show');
+
+    var navToggler = document.getElementById('navbar-toggler-btn');
+    if (navToggler) {
+      navToggler.addEventListener('click', function() {
+        for (const icon of document.querySelectorAll('.animated-icon')) {
+          icon.classList.toggle('open');
+        }
+        navbar.classList.toggle('navbar-col-show');
+      });
+    }
+
+    document.addEventListener('hidden.bs.modal', function() {
+      navbar.classList.remove('navbar-col-show');
+      for (const icon of document.querySelectorAll('.animated-icon')) {
+        icon.classList.remove('open');
+      }
     });
   },
 
   registerParallaxEvent: function() {
-    var ph = jQuery('#banner[parallax="true"]');
-    if (ph.length === 0) {
+    var ph = document.querySelector('#banner[parallax="true"]');
+    if (!ph) {
       return;
     }
-    var board = jQuery('#board');
-    if (board.length === 0) {
+    var board = document.getElementById('board');
+    if (!board) {
       return;
     }
     var parallax = function() {
-      var pxv = jQuery(window).scrollTop() / 5;
-      var offset = parseInt(board.css('margin-top'), 10);
+      var pxv = (window.pageYOffset || document.documentElement.scrollTop || 0) / 5;
+      var offset = parseInt(window.getComputedStyle(board).marginTop, 10) || 0;
       var max = 96 + offset;
       if (pxv > max) {
         pxv = max;
       }
-      ph.css({
-        transform: 'translate3d(0,' + pxv + 'px,0)'
-      });
-      var sideCol = jQuery('.side-col');
-      if (sideCol) {
-        sideCol.css({
-          'padding-top': pxv + 'px'
-        });
+      ph.style.transform = 'translate3d(0,' + pxv + 'px,0)';
+      var sideCol = document.querySelectorAll('.side-col');
+      if (sideCol.length > 0) {
+        for (const col of sideCol) {
+          col.style.paddingTop = pxv + 'px';
+        }
       }
     };
     Fluid.utils.listenScroll(parallax);
   },
 
   registerScrollDownArrowEvent: function() {
-    var scrollbar = jQuery('.scroll-down-bar');
-    if (scrollbar.length === 0) {
+    var scrollbar = document.querySelector('.scroll-down-bar');
+    if (!scrollbar) {
       return;
     }
-    scrollbar.on('click', function() {
-      Fluid.utils.scrollToElement('#board', -jQuery('#navbar').height());
+    scrollbar.addEventListener('click', function(event) {
+      event.preventDefault();
+      var navbar = document.getElementById('navbar');
+      Fluid.utils.scrollToElement('#board', -(navbar ? navbar.offsetHeight : 0));
     });
   },
 
   registerScrollTopArrowEvent: function() {
-    var topArrow = jQuery('#scroll-top-button');
-    if (topArrow.length === 0) {
+    var topArrow = document.getElementById('scroll-top-button');
+    if (!topArrow) {
       return;
     }
-    var board = jQuery('#board');
-    if (board.length === 0) {
+    var board = document.getElementById('board');
+    if (!board) {
       return;
     }
-    var arrowUpIcon = jQuery('#scroll-top-button i');
-    if(arrowUpIcon.length === 0){
+    var arrowUpIcon = topArrow.querySelector('i');
+    if (!arrowUpIcon) {
       return;
-    } 
+    }
+
     var posDisplay = false;
     var scrollDisplay = false;
     // Position
     var setTopArrowPos = function() {
-      var boardRight = board[0].getClientRects()[0].right;
+      var rect = board.getClientRects()[0];
+      if (!rect) return;
+      var boardRight = rect.right;
       var bodyWidth = document.body.offsetWidth;
       var right = bodyWidth - boardRight;
       posDisplay = right >= 50;
-      topArrow.css({
-        'bottom': scrollDisplay ? '20px' : '-60px',
-        'right' : posDisplay ? right - 64 : 8 + 'px',
-        'min-width' : posDisplay ? 40 : 28 + 'px',
-        'min-height' : posDisplay ? 40 : 28 + 'px'
+      setStyle(topArrow, {
+        bottom   : scrollDisplay ? '20px' : '-60px',
+        right    : posDisplay ? (right - 64) + 'px' : '8px',
+        minWidth : posDisplay ? '40px' : '28px',
+        minHeight: posDisplay ? '40px' : '28px'
       });
-      arrowUpIcon.css({
-        'font-size' : posDisplay ? 32 : 20 + 'px'
+      setStyle(arrowUpIcon, {
+        fontSize: posDisplay ? '32px' : '20px'
       });
     };
+
     setTopArrowPos();
-    jQuery(window).resize(setTopArrowPos);
+    window.addEventListener('resize', setTopArrowPos);
     // Display
-    var headerHeight = board.offset().top;
+    var headerHeight = board.getBoundingClientRect().top + window.pageYOffset;
     Fluid.utils.listenScroll(function() {
       var scrollHeight = document.body.scrollTop + document.documentElement.scrollTop;
       scrollDisplay = scrollHeight >= headerHeight;
-      topArrow.css({
-        'bottom': scrollDisplay ? '20px' : '-60px'
+      setStyle(topArrow, {
+        bottom: scrollDisplay ? '20px' : '-60px'
       });
     });
+
     // Click
-    topArrow.on('click', function() {
-      jQuery('body,html').animate({
-        scrollTop: 0,
-        easing   : 'swing'
-      });
+    topArrow.addEventListener('click', function(event) {
+      event.preventDefault();
+      try {
+        window.scrollTo({
+          top     : 0,
+          behavior: 'smooth'
+        });
+      } catch (_) {
+        window.scrollTo(0, 0);
+      }
     });
   },
 
@@ -140,7 +174,7 @@ Fluid.events = {
       if (img.complete) { img.onload(); }
     }
 
-    var notLazyImages = jQuery('main img:not([lazyload])');
+    var notLazyImages = document.querySelectorAll('main img:not([lazyload])');
     var total = notLazyImages.length;
     for (const img of notLazyImages) {
       const old = img.onload;

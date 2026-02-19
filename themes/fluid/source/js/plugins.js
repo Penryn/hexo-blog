@@ -1,10 +1,12 @@
 /* global Fluid, CONFIG */
 
-HTMLElement.prototype.wrap = function(wrapper) {
-  this.parentNode.insertBefore(wrapper, this);
-  this.parentNode.removeChild(this);
-  wrapper.appendChild(this);
-};
+if (!HTMLElement.prototype.wrap) {
+  HTMLElement.prototype.wrap = function(wrapper) {
+    this.parentNode.insertBefore(wrapper, this);
+    this.parentNode.removeChild(this);
+    wrapper.appendChild(this);
+  };
+}
 
 Fluid.plugins = {
 
@@ -25,16 +27,21 @@ Fluid.plugins = {
     if (subtitle) {
       subtitle.innerText = '';
     }
-    jQuery(document).ready(function() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        typed.start();
+      }, { once: true });
+    } else {
       typed.start();
-    });
+    }
   },
 
   fancyBox: function(selector) {
-    if (!CONFIG.image_zoom.enable || !('fancybox' in jQuery)) { return; }
+    var jq = window.jQuery;
+    if (!CONFIG.image_zoom.enable || !jq || !jq.fancybox) { return; }
 
-    jQuery(selector || '.markdown-body :not(a) > img, .markdown-body > img').each(function() {
-      var $image = jQuery(this);
+    jq(selector || '.markdown-body :not(a) > img, .markdown-body > img').each(function() {
+      var $image = jq(this);
       var imageUrl = $image.attr('data-src') || $image.attr('src') || '';
       if (CONFIG.image_zoom.img_url_replace) {
         var rep = CONFIG.image_zoom.img_url_replace;
@@ -68,8 +75,8 @@ Fluid.plugins = {
       }
     });
 
-    jQuery.fancybox.defaults.hash = false;
-    jQuery('.fancybox').fancybox({
+    jq.fancybox.defaults.hash = false;
+    jq('.fancybox').fancybox({
       loop   : true,
       helpers: {
         overlay: {
@@ -82,19 +89,38 @@ Fluid.plugins = {
   imageCaption: function(selector) {
     if (!CONFIG.image_caption.enable) { return; }
 
-    jQuery(selector || `.markdown-body > p > img, .markdown-body > figure > img,
-      .markdown-body > p > a.fancybox, .markdown-body > figure > a.fancybox`).each(function() {
-      var $target = jQuery(this);
-      var $figcaption = $target.next('figcaption');
-      if ($figcaption.length !== 0) {
-        $figcaption.addClass('image-caption');
-      } else {
-        var imageTitle = $target.attr('title') || $target.attr('alt');
-        if (imageTitle) {
-          $target.after(`<figcaption aria-hidden="true" class="image-caption">${imageTitle}</figcaption>`);
-        }
+    var imageSelector = selector || `.markdown-body > p > img, .markdown-body > figure > img,
+      .markdown-body > p > a.fancybox, .markdown-body > figure > a.fancybox`;
+    var targets = document.querySelectorAll(imageSelector);
+
+    for (const target of targets) {
+      var figcaption = target.nextElementSibling;
+      if (figcaption && figcaption.tagName === 'FIGCAPTION') {
+        figcaption.classList.add('image-caption');
+        continue;
       }
-    });
+
+      var imageTitle = '';
+      if (target.tagName === 'A') {
+        imageTitle = target.getAttribute('title') || target.getAttribute('data-caption') || '';
+        if (!imageTitle) {
+          var childImg = target.querySelector('img');
+          if (childImg) {
+            imageTitle = childImg.getAttribute('title') || childImg.getAttribute('alt') || '';
+          }
+        }
+      } else {
+        imageTitle = target.getAttribute('title') || target.getAttribute('alt') || '';
+      }
+
+      if (imageTitle && target.parentNode) {
+        var caption = document.createElement('figcaption');
+        caption.setAttribute('aria-hidden', 'true');
+        caption.className = 'image-caption';
+        caption.textContent = imageTitle;
+        target.parentNode.insertBefore(caption, target.nextSibling);
+      }
+    }
   },
 
   codeWidget() {
@@ -108,16 +134,14 @@ Fluid.plugins = {
       return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
     }
 
-    var copyTmpl = '';
-    copyTmpl += '<div class="code-widget">';
-    copyTmpl += 'LANG';
-    copyTmpl += '</div>';
-    jQuery('.markdown-body pre').each(function() {
-      var $pre = jQuery(this);
-      if ($pre.find('code.mermaid').length > 0) {
+    document.querySelectorAll('.markdown-body pre').forEach(function(pre) {
+      if (pre.querySelector('code.mermaid')) {
         return;
       }
-      if ($pre.find('span.line').length > 0) {
+      if (pre.querySelector('span.line')) {
+        return;
+      }
+      if (pre.querySelector('.code-widget')) {
         return;
       }
 
@@ -125,40 +149,58 @@ Fluid.plugins = {
 
       if (enableLang) {
         lang = CONFIG.code_language.default;
-        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
-          lang = $pre[0].children[0].classList[1];
-        } else if ($pre[0].getAttribute('data-language')) {
-          lang = $pre[0].getAttribute('data-language');
-        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
-          lang = $pre[0].children[0].classList[1];
-          $pre.parent().addClass('code-wrapper');
-        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
-          $pre.wrap('<div class="code-wrapper"></div>');
+        var firstChild = pre.children.length > 0 ? pre.children[0] : null;
+        if (firstChild && firstChild.classList.length >= 2 && firstChild.classList.contains('hljs')) {
+          lang = firstChild.classList[1];
+        } else if (pre.getAttribute('data-language')) {
+          lang = pre.getAttribute('data-language');
+        } else if (pre.parentElement && pre.parentElement.classList.contains('sourceCode') && firstChild && firstChild.classList.length >= 2) {
+          lang = firstChild.classList[1];
+          pre.parentElement.classList.add('code-wrapper');
+        } else if (pre.parentElement && pre.parentElement.classList.contains('markdown-body') && pre.classList.length === 0) {
+          var wrapper = document.createElement('div');
+          wrapper.className = 'code-wrapper';
+          pre.wrap(wrapper);
         }
         lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
       }
-      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
-        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      var widget = document.createElement('div');
+      widget.className = getBgClass(pre) + (enableCopy ? ' code-widget copy-btn' : ' code-widget');
 
       if (enableCopy) {
-        var clipboard = new ClipboardJS('.copy-btn', {
-          target: function(trigger) {
-            var nodes = trigger.parentNode.childNodes;
-            for (var i = 0; i < nodes.length; i++) {
-              if (nodes[i].tagName === 'CODE') {
-                return nodes[i];
-              }
+        widget.setAttribute('data-clipboard-snippet', '');
+        var icon = document.createElement('i');
+        icon.className = 'iconfont icon-copy';
+        widget.appendChild(icon);
+      }
+
+      widget.appendChild(document.createTextNode(lang));
+      pre.appendChild(widget);
+    });
+
+    if (enableCopy && !Fluid.plugins._clipboard) {
+      Fluid.plugins._clipboard = new ClipboardJS('.copy-btn', {
+        target: function(trigger) {
+          var nodes = trigger.parentNode ? trigger.parentNode.childNodes : [];
+          for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].tagName === 'CODE') {
+              return nodes[i];
             }
           }
-        });
-        clipboard.on('success', function(e) {
-          e.clearSelection();
-          e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
-          setTimeout(function() {
-            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
-          }, 2000);
-        });
-      }
-    });
+        }
+      });
+      Fluid.plugins._clipboard.on('success', function(e) {
+        e.clearSelection();
+        var icon = e.trigger.querySelector('i.iconfont');
+        if (!icon) return;
+        icon.classList.remove('icon-copy');
+        icon.classList.add('icon-success');
+        setTimeout(function() {
+          icon.classList.remove('icon-success');
+          icon.classList.add('icon-copy');
+        }, 2000);
+      });
+    }
   }
 };
