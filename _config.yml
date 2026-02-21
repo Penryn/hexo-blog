@@ -111,8 +111,8 @@ theme: fluid
 # Override Fluid theme config from root
 theme_config:
   static_prefix:
-    # lib.baomitu tocbot 4.20.1 currently returns 404, which hides post TOC sidebar.
-    tocbot: https://cdn.jsdelivr.net/npm/tocbot@4.36.4/dist/
+    # Use local tocbot to avoid CDN/network failures that keep TOC hidden.
+    tocbot: /lib/tocbot/4.36.4/
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
