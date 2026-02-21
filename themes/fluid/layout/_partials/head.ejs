@@ -164,7 +164,7 @@ if (!is_home()) {
   </script>
   <%- partial('_partials/css.ejs') %>
   <%- export_config() %>
-  <%- js_ex(theme.static_prefix.internal_js, 'utils.js', 'defer') %>
+  <%- js_ex(theme.static_prefix.internal_js, 'utils.js') %>
   <%- js_ex(theme.static_prefix.internal_js, 'color-schema.js', 'defer') %>
   <%- partial('_partials/plugins/analytics.ejs') %>
 
