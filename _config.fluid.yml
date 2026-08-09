@@ -1,0 +1,7 @@
+# Fluid theme overrides.
+post:
+  mermaid:
+    enable: true
+    specific: false
+    options:
+      theme: default
