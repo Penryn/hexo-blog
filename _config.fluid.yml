@@ -1,4 +1,9 @@
 # Fluid theme overrides.
+fun_features:
+  typing:
+    scope:
+      - home
+
 post:
   mermaid:
     enable: true
