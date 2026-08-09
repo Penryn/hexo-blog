@@ -14,12 +14,12 @@ Fluid.plugins = {
     if (!('Typed' in window)) { return; }
 
     var typed = new window.Typed('#subtitle', {
-      strings: [
-        '  ',
-        text
-      ],
+      strings   : [text],
       cursorChar: CONFIG.typing.cursorChar,
+      startDelay: CONFIG.typing.startDelay,
       typeSpeed : CONFIG.typing.typeSpeed,
+      backDelay : CONFIG.typing.backDelay,
+      backSpeed : CONFIG.typing.backSpeed,
       loop      : CONFIG.typing.loop
     });
     typed.stop();

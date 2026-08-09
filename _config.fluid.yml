@@ -1,6 +1,12 @@
 # Fluid theme overrides.
 fun_features:
   typing:
+    startDelay: 500
+    typeSpeed: 85
+    backDelay: 3000
+    backSpeed: 50
+    cursorChar: "_"
+    loop: true
     scope:
       - home
 
