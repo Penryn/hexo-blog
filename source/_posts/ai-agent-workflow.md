@@ -1,5 +1,5 @@
 ---
-title: 我不想再在 Agent 之间复制 Prompt 了
+title: AI Agent 研发工作流的设计与实现
 date: 2026-08-09 16:25:09
 keywords:
   - "AI"
