@@ -48,8 +48,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       hexo-robots:
-        specifier: ^1.0.1
-        version: 1.0.1(hexo@8.1.1(chokidar@3.6.0))
+        specifier: ^1.0.2
+        version: 1.0.2(hexo@8.1.1(chokidar@3.6.0))
       hexo-server:
         specifier: ^3.0.0
         version: 3.0.0
@@ -859,11 +859,11 @@ packages:
     resolution: {integrity: sha512-cFm8ZwShBBeFcQwOXc8EK7lIZnSYVD6OJykdL4GBw99hxc4eD5Hlsi32nRzE8sgKv00jhX1s9Da3GVVFMPAVQg==}
     engines: {node: '>=14'}
 
-  hexo-robots@1.0.1:
-    resolution: {integrity: sha512-efxv+h8zQSHtM3dCjyciop2kgq4FcSQQjtrN6qvtiD6nlydVGXf9wRSYg2n7X3Cggci1Udqqyhcv6Af2VBYdXQ==}
-    engines: {node: '>16'}
+  hexo-robots@1.0.2:
+    resolution: {integrity: sha512-EdwcGVjWlIWAhDhGJsqW4/fPxU/Usg99v+44dj9WasnHLwc7UH+iyPF29gS8cq81vPiJ5E82cc2wR3Z15AU5wQ==}
+    engines: {node: '>=16'}
     peerDependencies:
-      hexo: ^7
+      hexo: ^7.0.0 || ^8.0.0
 
   hexo-server@3.0.0:
     resolution: {integrity: sha512-u4s0ty9Aew6jV+a9oMrXBwhrRpUQ0U8PWM/88a5aHgDru58VY81mVrxOFxs788NAsWQ8OvsJtF5m7mnXoRnSIA==}
@@ -2243,7 +2243,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  hexo-robots@1.0.1(hexo@8.1.1(chokidar@3.6.0)):
+  hexo-robots@1.0.2(hexo@8.1.1(chokidar@3.6.0)):
     dependencies:
       hexo: 8.1.1(chokidar@3.6.0)
 
