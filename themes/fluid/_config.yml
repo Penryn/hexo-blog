@@ -1075,8 +1075,8 @@ links:
   # Member item of page
   items:
     - {
-      title: "派大星",
-      intro: "派大星的博客",
+      title: "精弘网络",
+      intro: "精弘网络的博客",
       link: "https://zjutjh.github.io/",
       avatar: "https://qiuniu.phlin.cn/bucket/20260213232625704.png"
     }
@@ -1147,10 +1147,16 @@ links:
       avatar: "https://blog.sugarmgp.cn/img/icon.png"
     }
     - {
-      title: "前端萌中萌",
-      intro: "前端萌中萌的博客",
+      title: "麻衣",
+      intro: "麻衣的博客",
       link: "https://imjh.xyz",
       avatar: "https://www.imjh.xyz/img/my_avator.jpg"
+    }
+    - {
+      title: "十且八",
+      intro: "十且八的博客",
+      link: "https://sqbtt.cn",
+      avatar: "https://sqbtt.cn/_astro/profile.DWbciNSs_ZhRHOu.webp"
     }
 
 
