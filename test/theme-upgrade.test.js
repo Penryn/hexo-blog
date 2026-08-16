@@ -7,6 +7,29 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
+const assertNoOpenKounterIntegration = html => {
+  const resourceUrls = [...html.matchAll(
+    /<(?:script|link)\b[^>]*\b(?:src|href)=["']([^"']+)["'][^>]*>/gi
+  )].map(match => match[1]);
+  const inlineScripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]
+    .map(match => match[1])
+    .join('\n');
+
+  assert.equal(
+    resourceUrls.some(url => /openkounter/i.test(url)),
+    false,
+    `unexpected OpenKounter script/link resource: ${resourceUrls.join(', ')}`
+  );
+  assert.doesNotMatch(
+    inlineScripts,
+    /(?:["']openkounter["']\s*:|CONFIG\.web_analytics\.openkounter)/i
+  );
+  assert.doesNotMatch(
+    html,
+    /\b(?:id|class)=["'][^"']*\bopenkounter-(?:site|page)-/i
+  );
+};
+
 const yamlScalarAtPath = (source, wantedPath) => {
   const stack = [];
 
@@ -111,11 +134,19 @@ test('generated pages contain no OpenKounter configuration or runtime', () => {
   const config = read('themes/fluid/_config.yml');
   const home = read('public/index.html');
   const post = read('public/2026/08/09/ai-agent-workflow/index.html');
+  const articleMention = `
+    <article>
+      <h1>Why this site retired OpenKounter</h1>
+      <p>OpenKounter used to provide visitor statistics.</p>
+      <a href="https://example.test/articles/retiring-openkounter">Read the migration notes</a>
+    </article>
+  `;
 
   assert.equal(yamlScalarAtPath(config, ['web_analytics', 'openkounter']), undefined);
   assert.equal(fs.existsSync(path.join(root, 'themes/fluid/source/js/openkounter.js')), false);
-  assert.doesNotMatch(home, /openkounter/i);
-  assert.doesNotMatch(post, /openkounter/i);
+  assertNoOpenKounterIntegration(home);
+  assertNoOpenKounterIntegration(post);
+  assertNoOpenKounterIntegration(articleMention);
 });
 
 test('generated Waline comments use the upstream ESM client and retained server', () => {
