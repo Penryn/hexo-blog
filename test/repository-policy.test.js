@@ -122,15 +122,16 @@ test('continuous verification runs the complete read-only build gate', () => {
     'pnpm test',
     'pnpm build',
     'git diff --exit-code -- source/_posts',
+    'node tools/check-posts-unchanged.js',
     'pnpm audit:prod'
   ]);
 });
 
-test('Dependabot checks pnpm dependencies weekly with a low pull request limit', () => {
+test('Dependabot uses the npm ecosystem for the pnpm lockfile with low weekly noise', () => {
   const dependabot = parseYaml(fs.readFileSync(path.join(root, '.github/dependabot.yml'), 'utf8'));
   const update = dependabot.updates[0];
 
-  assert.equal(update['package-ecosystem'], 'pnpm');
+  assert.equal(update['package-ecosystem'], 'npm');
   assert.equal(update.directory, '/');
   assert.equal(update.schedule.interval, 'weekly');
   assert.equal(update['open-pull-requests-limit'], '5');

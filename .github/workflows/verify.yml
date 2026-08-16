@@ -27,4 +27,5 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: git diff --exit-code -- source/_posts
+      - run: node tools/check-posts-unchanged.js
       - run: pnpm audit:prod
