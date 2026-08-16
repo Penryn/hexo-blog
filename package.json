@@ -19,8 +19,10 @@
     "seo:frontmatter": "node tools/backfill-frontmatter.js",
     "seo:frontmatter:check": "node tools/backfill-frontmatter.js --check",
     "test": "pnpm build && node --test",
-    "verify": "pnpm test"
+    "verify": "pnpm test",
+    "audit:prod": "node tools/check-production-audit.js"
   },
+  "auditAllowlist": [],
   "hexo": {
     "version": "8.1.2"
   },
