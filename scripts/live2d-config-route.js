@@ -31,19 +31,28 @@ function assertDataOnly(value, valuePath, ancestors) {
   if (valueType !== 'object') {
     throw new TypeError('data-only Live2D config rejects ' + valueType + ' at ' + valuePath);
   }
-  if (Object.prototype.toString.call(value) !== '[object Object]' && !Array.isArray(value)) {
-    throw new TypeError('data-only Live2D config rejects non-data object at ' + valuePath);
+  const isArray = Array.isArray(value);
+  const prototype = Object.getPrototypeOf(value);
+  if (isArray) {
+    if (prototype !== Array.prototype) {
+      throw new TypeError('data-only Live2D config rejects custom array prototype at ' + valuePath);
+    }
+  } else if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError('data-only Live2D config rejects non-plain object at ' + valuePath);
+  }
+  if ('toJSON' in value) {
+    throw new TypeError('data-only Live2D config rejects custom serialization at ' + valuePath);
   }
   if (ancestors.indexOf(value) !== -1) {
     throw new TypeError('data-only Live2D config rejects circular value at ' + valuePath);
   }
   ancestors.push(value);
-  if (Array.isArray(value)) {
+  if (isArray) {
     for (let i = 0; i < value.length; i += 1) {
       assertDataOnly(value[i], valuePath + '[' + i + ']', ancestors);
     }
   } else {
-    for (const key of Object.keys(value)) {
+    for (const key of Object.getOwnPropertyNames(value)) {
       assertDataOnly(value[key], valuePath + '.' + key, ancestors);
     }
   }

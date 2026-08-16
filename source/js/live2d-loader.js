@@ -270,7 +270,22 @@
         window.__oml2d_loading = false;
         return;
       }
-      var opt = cfg.option || {};
+      function cloneData(value) {
+        if (Array.isArray(value)) {
+          var arrayCopy = [];
+          for (var i = 0; i < value.length; i++) arrayCopy.push(cloneData(value[i]));
+          return arrayCopy;
+        }
+        if (value && typeof value === 'object') {
+          var objectCopy = {};
+          for (var key in value) {
+            if (Object.prototype.hasOwnProperty.call(value, key)) objectCopy[key] = cloneData(value[key]);
+          }
+          return objectCopy;
+        }
+        return value;
+      }
+      var opt = cloneData(cfg.option || {});
       // merge helper for tips styles
       function mergeTips(base, extra) {
         var out = {};
@@ -289,7 +304,7 @@
             ? resolveOptionHook.call(registry, idleTips.messageHook)
             : null;
           idleTips.message = messageHook || (Array.isArray(idleTips.fallbackMessages)
-            ? idleTips.fallbackMessages
+            ? idleTips.fallbackMessages.slice()
             : []);
           delete idleTips.messageHook;
         }

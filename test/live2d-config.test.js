@@ -33,7 +33,13 @@ function loadRouteGenerator() {
       }
     }
   };
-  vm.runInNewContext(read('scripts/live2d-config-route.js'), { hexo });
+  vm.runInNewContext(read('scripts/live2d-config-route.js'), {
+    Array,
+    Number,
+    Object,
+    TypeError,
+    hexo
+  });
   return {
     generate(config) {
       hexo.config = { OhMyLive2d: config };
@@ -118,5 +124,74 @@ test('the Live2D config route accepts ordinary user messages', () => {
   assert.deepEqual(
     Array.from(context.window.__oml2d_runtime_config.option.tips.idleTips.fallbackMessages),
     ordinaryMessages
+  );
+});
+
+test('the Live2D config route rejects class instances and custom prototypes', () => {
+  const route = loadRouteGenerator();
+  class CustomConfig {
+    constructor() {
+      this.message = 'safe-looking value';
+    }
+  }
+  const customPrototype = Object.create({ inherited: 'not plain data' });
+  customPrototype.message = 'safe-looking value';
+
+  for (const value of [new CustomConfig(), customPrototype]) {
+    assert.throws(
+      () => route.generate({ option: { custom: value } }),
+      /data-only Live2D config/
+    );
+  }
+});
+
+test('the Live2D config route rejects own and inherited custom serializers', () => {
+  const route = loadRouteGenerator();
+  const ownSerializer = { message: 'safe-looking value' };
+  Object.defineProperty(ownSerializer, 'toJSON', {
+    configurable: true,
+    enumerable: false,
+    value() { return 'function () { return "unchecked"; }'; }
+  });
+  assert.throws(
+    () => route.generate({ option: { custom: ownSerializer } }),
+    /data-only Live2D config/
+  );
+
+  const original = Object.getOwnPropertyDescriptor(Object.prototype, 'toJSON');
+  Object.defineProperty(Object.prototype, 'toJSON', {
+    configurable: true,
+    enumerable: false,
+    value() { return '() => "unchecked"'; }
+  });
+  try {
+    assert.throws(
+      () => route.generate({ option: { message: 'safe-looking value' } }),
+      /data-only Live2D config/
+    );
+  } finally {
+    if (original) Object.defineProperty(Object.prototype, 'toJSON', original);
+    else delete Object.prototype.toJSON;
+  }
+});
+
+test('the Live2D config route accepts null-prototype data maps', () => {
+  const route = loadRouteGenerator();
+  const idleTips = Object.assign(Object.create(null), {
+    fallbackMessages: ['plain data'],
+    messageHook: 'hitokoto'
+  });
+  const tips = Object.assign(Object.create(null), { idleTips });
+  const option = Object.assign(Object.create(null), { tips });
+  const config = Object.assign(Object.create(null), { option });
+
+  const output = route.generate(config);
+  const context = { window: {} };
+  vm.runInNewContext(output.data, context);
+
+  assert.equal(context.window.__oml2d_runtime_config.option.tips.idleTips.messageHook, 'hitokoto');
+  assert.deepEqual(
+    Array.from(context.window.__oml2d_runtime_config.option.tips.idleTips.fallbackMessages),
+    ['plain data']
   );
 });

@@ -85,7 +85,7 @@ function createLoaderHarness({ hookName = 'hitokoto', hook, reducedMotion = fals
       remove(name) { bodyClasses.delete(name); }
     }
   };
-  let capturedOptions = null;
+  const capturedOptions = [];
   const shownMessages = [];
   const document = {
     body,
@@ -152,7 +152,7 @@ function createLoaderHarness({ hookName = 'hitokoto', hook, reducedMotion = fals
   vm.runInNewContext(read('source/js/live2d-hook-registry.js'), context);
   window.OML2D = {
     loadOml2d(options) {
-      capturedOptions = options;
+      capturedOptions.push(options);
       return {
         options,
         onLoad(callback) { callback('success'); },
@@ -163,8 +163,14 @@ function createLoaderHarness({ hookName = 'hitokoto', hook, reducedMotion = fals
   vm.runInNewContext(read('source/js/live2d-loader.js'), context);
   window.__loadOhMyLive2D();
   return {
-    get options() { return capturedOptions; },
+    get options() { return capturedOptions.at(-1) || null; },
+    get optionsHistory() { return capturedOptions.slice(); },
     get instance() { return window.__oml2d_instance; },
+    get runtimeIdleTips() { return window.__oml2d_runtime_config.option.tips.idleTips; },
+    reload() {
+      window.__unloadOhMyLive2D();
+      window.__loadOhMyLive2D();
+    },
     shownMessages,
     window
   };
@@ -172,11 +178,20 @@ function createLoaderHarness({ hookName = 'hitokoto', hook, reducedMotion = fals
 
 test('the fixed registry resolves only the literal Hitokoto hook', () => {
   const hitokoto = () => Promise.resolve('quote');
-  const window = { live2dHooks: { hitokoto } };
+  const inheritedKeyHook = () => Promise.resolve('inherited-key quote');
+  const live2dHooks = Object.create(null);
+  live2dHooks.hitokoto = hitokoto;
+  live2dHooks[Object.prototype.toString] = inheritedKeyHook;
+  live2dHooks[Object] = inheritedKeyHook;
+  live2dHooks[Object.prototype] = inheritedKeyHook;
+  const window = { live2dHooks };
   vm.runInNewContext(read('source/js/live2d-hook-registry.js'), { window });
   const registry = window.Live2DHookRegistry;
 
   assert.equal(registry.resolveOptionHook('hitokoto'), hitokoto);
+  assert.equal(registry.resolveOptionHook('toString'), null);
+  assert.equal(registry.resolveOptionHook('constructor'), null);
+  assert.equal(registry.resolveOptionHook('__proto__'), null);
   assert.equal(registry.resolveOptionHook('window.alert'), null);
   assert.equal(registry.resolveOptionHook('constructor.constructor'), null);
   assert.equal(registry.resolveOptionHook('missing'), null);
@@ -244,6 +259,42 @@ test('the loader falls back to static messages for unknown or missing hook names
     assert.deepEqual(Array.from(harness.options.tips.idleTips.message), fallbackMessages);
     assert.equal(Object.hasOwn(harness.options.tips.idleTips, 'messageHook'), false);
   }
+});
+
+test('the loader resolves the named Hitokoto hook again after unload and reload', () => {
+  const hook = () => Promise.resolve('Reloaded named hook quote');
+  const harness = createLoaderHarness({ hook });
+  const firstOptions = harness.options;
+
+  harness.reload();
+  const secondOptions = harness.options;
+
+  assert.equal(harness.optionsHistory.length, 2);
+  assert.notEqual(firstOptions, secondOptions);
+  assert.equal(firstOptions.tips.idleTips.message, hook);
+  assert.equal(secondOptions.tips.idleTips.message, hook);
+  assert.equal(harness.runtimeIdleTips.messageHook, 'hitokoto');
+  assert.equal(Object.hasOwn(harness.runtimeIdleTips, 'message'), false);
+});
+
+test('the loader isolates fallback arrays from SDK mutation across reloads', () => {
+  const harness = createLoaderHarness({ hookName: 'missing' });
+  const firstIdleTips = harness.options.tips.idleTips;
+
+  assert.notEqual(firstIdleTips.message, firstIdleTips.fallbackMessages);
+  firstIdleTips.message.push('SDK message mutation');
+  assert.deepEqual(Array.from(firstIdleTips.fallbackMessages), fallbackMessages);
+  firstIdleTips.fallbackMessages.push('SDK fallback mutation');
+  assert.deepEqual(Array.from(harness.runtimeIdleTips.fallbackMessages), fallbackMessages);
+
+  harness.reload();
+  const secondIdleTips = harness.options.tips.idleTips;
+
+  assert.equal(harness.optionsHistory.length, 2);
+  assert.deepEqual(Array.from(secondIdleTips.message), fallbackMessages);
+  assert.deepEqual(Array.from(secondIdleTips.fallbackMessages), fallbackMessages);
+  assert.notEqual(secondIdleTips.message, secondIdleTips.fallbackMessages);
+  assert.notEqual(secondIdleTips.fallbackMessages, firstIdleTips.fallbackMessages);
 });
 
 test('the loader keeps reduced-motion and save-data degradation', () => {
