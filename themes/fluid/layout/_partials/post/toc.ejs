@@ -20,54 +20,68 @@ import_script(`
     }
     function expandAllToc() {
       if (!isExpandAllEnabled()) { return; }
-      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+      document.querySelectorAll('#toc-body .tocbot-is-collapsed').forEach(function(list) {
+        list.classList.remove('tocbot-is-collapsed');
+      });
     }
-    function updateTocToggle($li, $childList) {
-      var $toggle = $li.children('.toc-toggle');
-      if ($toggle.length === 0) { return; }
-      var collapsed = $childList.hasClass('tocbot-is-collapsed');
-      $toggle
-        .toggleClass('toc-toggle-collapsed', collapsed)
-        .toggleClass('toc-toggle-expanded', !collapsed);
+    function directChild(element, selector) {
+      return Array.prototype.find.call(element.children, function(child) {
+        return child.matches(selector);
+      }) || null;
+    }
+    function updateTocToggle(li, childList) {
+      var toggle = directChild(li, '.toc-toggle');
+      if (!toggle) { return; }
+      var collapsed = childList.classList.contains('tocbot-is-collapsed');
+      toggle.classList.toggle('toc-toggle-collapsed', collapsed);
+      toggle.classList.toggle('toc-toggle-expanded', !collapsed);
     }
     function bindTocToggle() {
       if (!isExpandAllEnabled()) { return; }
-      jQuery('#toc-body .toc-list-item').each(function() {
-        var $li = jQuery(this);
-        var $childList = $li.children('ol');
-        if ($childList.length === 0) {
-          if ($li.children('.toc-toggle').length === 0) {
-            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+      var tocBody = document.getElementById('toc-body');
+      if (!tocBody) { return; }
+      tocBody.querySelectorAll('.toc-list-item').forEach(function(li) {
+        var childList = directChild(li, 'ol');
+        if (!childList) {
+          if (!directChild(li, '.toc-toggle')) {
+            li.insertAdjacentHTML('afterbegin', '<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
           }
           return;
         }
 
-        if ($li.children('.toc-toggle').length === 0) {
-          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        if (!directChild(li, '.toc-toggle')) {
+          li.insertAdjacentHTML('afterbegin', '<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
         }
-        updateTocToggle($li, $childList);
+        updateTocToggle(li, childList);
       });
-      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var $li = jQuery(this).parent('.toc-list-item');
-        var $childList = $li.children('ol');
-        if ($childList.length === 0) { return; }
-        $childList.toggleClass('tocbot-is-collapsed');
-        updateTocToggle($li, $childList);
-      });
+      if (!tocBody.__tocToggleHandler) {
+        tocBody.__tocToggleHandler = function(e) {
+          var toggle = e.target.closest('.toc-toggle');
+          if (!toggle || !tocBody.contains(toggle)) { return; }
+          e.preventDefault();
+          e.stopPropagation();
+          var li = toggle.closest('.toc-list-item');
+          var childList = li && directChild(li, 'ol');
+          if (!li || !childList) { return; }
+          childList.classList.toggle('tocbot-is-collapsed');
+          updateTocToggle(li, childList);
+        };
+        tocBody.addEventListener('click', tocBody.__tocToggleHandler);
+      }
       if (!window.__tocToggleObserver) {
         window.__tocToggleObserver = new MutationObserver(function(mutations) {
           mutations.forEach(function(mutation) {
             if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
-            var $list = jQuery(mutation.target);
-            var $li = $list.parent('.toc-list-item');
-            if ($li.length === 0) { return; }
-            updateTocToggle($li, $list);
+            var list = mutation.target;
+            var li = list.parentElement;
+            if (!li || !li.classList.contains('toc-list-item')) { return; }
+            updateTocToggle(li, list);
           });
         });
-        jQuery('#toc-body ol').each(function() {
-          window.__tocToggleObserver.observe(this, { attributes: true });
+        window.__tocToggleObserver.observe(tocBody, {
+          attributes: true,
+          attributeFilter: ['class'],
+          subtree: true
         });
       }
     }

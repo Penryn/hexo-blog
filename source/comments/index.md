@@ -1,6 +1,7 @@
 ---
 title: 留言弹幕板
 date: 2024-11-05 19:27:02
+description: 欢迎在这里留言交流，也可以发送会在页面上滚动展示的弹幕。
 comment: 'waline'
 sitemap: false
 indexing: false

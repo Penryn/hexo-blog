@@ -23,6 +23,11 @@ function scriptSources(html) {
   return literalSources.concat(dynamicSources);
 }
 
+function metaDescription(html) {
+  const match = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
+  return match ? match[1] : '';
+}
+
 test('generated pages load page-specific scripts and expose one primary heading', () => {
   const home = generatedPage('index.html');
   const ordinaryPost = generatedPage('2024/05/02/go_testing/index.html');
@@ -51,4 +56,19 @@ test('generated pages load page-specific scripts and expose one primary heading'
   assert.equal(scriptSources(home).some(src => /mermaid(?:\.min)?\.js/.test(src)), false);
   assert.equal(scriptSources(ordinaryPost).some(src => /mermaid(?:\.min)?\.js/.test(src)), false);
   assert.equal(scriptSources(mermaidPost).some(src => /mermaid(?:\.min)?\.js/.test(src)), true);
+});
+
+test('comments page exposes a human-readable description instead of embedded CSS', () => {
+  const comments = generatedPage('comments/index.html');
+
+  assert.equal(
+    metaDescription(comments),
+    '欢迎在这里留言交流，也可以发送会在页面上滚动展示的弹幕。'
+  );
+});
+
+test('generated post TOC initializes without an asynchronously loaded jQuery global', () => {
+  const ordinaryPost = generatedPage('2024/05/02/go_testing/index.html');
+
+  assert.doesNotMatch(ordinaryPost, /\bjQuery\('#toc-body/);
 });
