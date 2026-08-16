@@ -30,15 +30,21 @@ test('generated pages load page-specific scripts and expose one primary heading'
   const about = generatedPage('about/index.html');
   const archives = generatedPage('archives/index.html');
   const categories = generatedPage('categories/index.html');
+  const categoryDetail = generatedPage('categories/开发/index.html');
   const tags = generatedPage('tags/index.html');
+  const tagDetail = generatedPage('tags/golang/index.html');
 
   assert.equal(h1Count(home), 1);
   assert.equal(h1Count(ordinaryPost), 1);
   assert.equal(h1Count(about), 1);
   assert.equal(h1Count(archives), 1);
   assert.equal(h1Count(categories), 1);
+  assert.equal(h1Count(categoryDetail), 1);
   assert.equal(h1Count(tags), 1);
+  assert.equal(h1Count(tagDetail), 1);
   assert.match(about, /<h1 class="about-name">关于<\/h1>/);
+  assert.match(categoryDetail, /<h1 class="sr-only">分类 - 开发<\/h1>/);
+  assert.match(tagDetail, /<h1 class="sr-only">标签 - golang<\/h1>/);
 
   assert.equal(scriptSources(home).some(src => src.includes('reading-progress.js')), false);
   assert.equal(scriptSources(ordinaryPost).some(src => src.includes('reading-progress.js')), true);
