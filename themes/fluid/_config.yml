@@ -250,7 +250,6 @@ custom_js:
   - /js/live2d-hitokoto.js
   - /js/live2d-hook-registry.js
   - /js/live2d-hooks.js
-  - /js/reading-progress.js
   - /js/scrollAnimation.js
   - /js/duration.js
   # 弹幕脚本仅在弹幕页按需加载，已由模板注入

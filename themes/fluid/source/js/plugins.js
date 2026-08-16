@@ -12,6 +12,7 @@ Fluid.plugins = {
 
   typing: function(text) {
     if (!('Typed' in window)) { return; }
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
 
     var typed = new window.Typed('#subtitle', {
       strings   : [text],

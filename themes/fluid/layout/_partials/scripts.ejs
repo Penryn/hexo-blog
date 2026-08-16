@@ -28,6 +28,10 @@
   <% } %>
 <% } %>
 
+<% if (is_post()) { %>
+  <script defer src="<%= url_for('/js/reading-progress.js') %>"></script>
+<% } %>
+
 <% 
   var danmakuEnabled = theme.danmaku && (theme.danmaku.enabled === true || theme.danmaku.enable === true);
   var danmakuPage = (theme.danmaku && theme.danmaku.page ? theme.danmaku.page : '/comments/').replace(/^\//, '');

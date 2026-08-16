@@ -13,6 +13,6 @@ fun_features:
 post:
   mermaid:
     enable: true
-    specific: false
+    specific: true
     options:
       theme: default

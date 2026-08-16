@@ -8,6 +8,9 @@
         if (!subtitle || !typing || !window.Typed) {
           return;
         }
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          return;
+        }
         var text = subtitle.getAttribute('data-typed-text');
         <% if (is_home() && theme.index.slogan.api && theme.index.slogan.api.enable) { %>
           fetch('<%- theme.index.slogan.api.url %>', {
