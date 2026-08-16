@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.29.3",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
-    "prebuild": "pnpm seo:obsidian:fix && pnpm seo:frontmatter && pnpm seo:links",
-    "build": "hexo generate",
+    "prebuild": "pnpm seo:obsidian:check && pnpm seo:frontmatter:check && pnpm seo:links:check",
+    "build": "hexo clean && hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
     "server": "hexo server",
@@ -14,14 +17,21 @@
     "seo:links": "node tools/ensure-internal-links.js",
     "seo:links:check": "node tools/ensure-internal-links.js --check",
     "seo:frontmatter": "node tools/backfill-frontmatter.js",
-    "seo:frontmatter:check": "node tools/backfill-frontmatter.js --check"
+    "seo:frontmatter:check": "node tools/backfill-frontmatter.js --check",
+    "test": "pnpm build && node --test",
+    "verify": "pnpm test"
   },
   "hexo": {
-    "version": "8.1.1"
+    "version": "8.1.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "hexo-lightning-minify>sharp": "^0.35.0"
+    }
   },
   "dependencies": {
-    "@adobe/css-tools": "^4.4.4",
-    "hexo": "^8.1.1",
+    "@adobe/css-tools": "^4.5.0",
+    "hexo": "^8.1.2",
     "hexo-generator-archive": "^2.0.0",
     "hexo-generator-category": "^2.0.0",
     "hexo-generator-feed": "^4.0.0",
@@ -33,10 +43,10 @@
     "hexo-renderer-ejs": "^2.0.0",
     "hexo-renderer-marked": "^7.0.1",
     "hexo-renderer-stylus": "^3.0.1",
-    "hexo-robots": "^1.0.1",
+    "hexo-robots": "^1.0.4",
     "hexo-server": "^3.0.0",
     "hexo-util": "^4.0.0",
-    "highlight.js": "^11.11.1",
+    "highlight.js": "^11.12.0",
     "moment": "^2.30.1",
     "nunjucks": "^3.2.4"
   }
