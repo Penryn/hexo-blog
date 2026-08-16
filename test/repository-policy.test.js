@@ -25,3 +25,22 @@ test('direct dependency upgrade floor is retained', () => {
   assert.equal(pkg.dependencies['@adobe/css-tools'], '^4.5.0');
   assert.equal(pkg.dependencies['highlight.js'], '^11.12.0');
 });
+
+test('production transitive dependency floors exclude audited high advisories', () => {
+  assert.deepEqual(pkg.pnpm.overrides, {
+    'hexo-lightning-minify>sharp': '^0.35.0',
+    'filelist>minimatch': '^5.1.8',
+    'glob>minimatch': '^3.1.4',
+    'minimatch@5>brace-expansion': '^2.1.4',
+    'minimatch@3>brace-expansion': '^1.1.18',
+    'feedsmith>fast-xml-parser': '^5.5.6',
+    'cheerio>undici': '^6.27.0',
+    'anymatch>picomatch': '^2.3.2',
+    'readdirp>picomatch': '^2.3.2',
+    'micromatch>picomatch': '^2.3.2',
+    'jsdom>form-data': '^4.0.6',
+    'jsdom>ws': '^8.21.0',
+    'hexo-front-matter>js-yaml': '^4.3.1',
+    'hexo>js-yaml': '^4.3.1'
+  });
+});
