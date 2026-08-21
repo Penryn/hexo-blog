@@ -84,7 +84,11 @@ test('renders the friend-link application as one accessible, focused card', asyn
     assert.equal(card.find('#friend-link-apply-title').text().trim(), '交换友链');
     assert.match(card.find('.friend-link-apply__lead').text(), /先在你的站点添加本站/);
     assert.equal(card.find('.friend-link-apply__details dt').length, 4);
-    assert.equal(card.find('.friend-link-apply__action-icon').text().trim(), 'PR');
+    const actionIcon = card.find('.friend-link-apply__action-icon svg');
+    assert.equal(actionIcon.length, 1);
+    assert.equal(actionIcon.attr('aria-hidden'), 'true');
+    assert.equal(actionIcon.find('path').length, 2);
+    assert.equal(card.find('.friend-link-apply__action-icon').text().trim(), '');
     assert.equal(
       card.find('.friend-link-apply__site-link').attr('href'),
       'https://blog.phlin.cn'

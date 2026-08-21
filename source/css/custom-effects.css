@@ -418,9 +418,16 @@ figure.highlight > table {
   background: var(--board-bg-color);
   border: 1px solid var(--line-color);
   border-radius: 50%;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+}
+
+.friend-link-apply__action-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 
 .friend-link-apply__action p {
