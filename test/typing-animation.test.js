@@ -5,18 +5,26 @@ const path = require('node:path');
 const test = require('node:test');
 const vm = require('node:vm');
 
-test('typing animation uses one visible string and a readable loop cadence', () => {
+test('typing animation starts one timer chain after clearing the static fallback', () => {
   let captured;
+  const subtitle = { innerText: '望舒的尘歌壶' };
 
   class TypedStub {
     constructor(selector, options) {
-      captured = { selector, options, started: false };
+      captured = {
+        initialText: subtitle.innerText,
+        manualStarts: 0,
+        selector,
+        timerChains: 1,
+        options
+      };
     }
 
     stop() {}
 
     start() {
-      captured.started = true;
+      captured.manualStarts += 1;
+      captured.timerChains += 1;
     }
   }
 
@@ -36,7 +44,7 @@ test('typing animation uses one visible string and a readable loop cadence', () 
     Fluid: {},
     HTMLElement: HTMLElementStub,
     document: {
-      getElementById: () => ({ innerText: '望舒的尘歌壶' }),
+      getElementById: () => subtitle,
       readyState: 'complete'
     },
     window: { Typed: TypedStub }
@@ -62,7 +70,9 @@ test('typing animation uses one visible string and a readable loop cadence', () 
   assert.equal(captured.options.backSpeed, 50);
   assert.equal(captured.options.cursorChar, '_');
   assert.equal(captured.options.loop, true);
-  assert.equal(captured.started, true);
+  assert.equal(captured.initialText, '');
+  assert.equal(captured.manualStarts, 0);
+  assert.equal(captured.timerChains, 1);
 });
 
 test('typing animation leaves the subtitle readable when reduced motion is preferred', () => {
