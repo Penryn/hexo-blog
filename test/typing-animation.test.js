@@ -5,6 +5,38 @@ const path = require('node:path');
 const test = require('node:test');
 const vm = require('node:vm');
 
+test('generated subtitle banners enable typing beyond the home page', () => {
+  const pages = [
+    'index.html',
+    'archives/index.html',
+    'categories/index.html',
+    'tags/index.html',
+    'about/index.html',
+    'links/index.html',
+    '2026/08/09/ai-agent-workflow/index.html'
+  ];
+
+  for (const page of pages) {
+    const html = fs.readFileSync(path.join(__dirname, '..', 'public', page), 'utf8');
+    assert.match(html, /<span id="subtitle" data-typed-text="[^"]+">[^<]+<\/span>/, page);
+    assert.match(html, /typed\.min\.js/, page);
+    assert.match(html, /function initTyping\(\)/, page);
+  }
+});
+
+test('generated home gives the typing plugin a deploy-specific cache key', () => {
+  const home = fs.readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf8');
+  const scriptUrls = [...home.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
+    .map(match => match[1]);
+  const pluginUrl = scriptUrls.find(url => /\/js\/plugins\.js(?:\?|$)/.test(url));
+
+  assert.ok(pluginUrl, 'expected the generated typing plugin script');
+  assert.ok(
+    new URL(pluginUrl, 'https://blog.phlin.cn/').searchParams.get('v'),
+    `expected a cache-busting version in ${pluginUrl}`
+  );
+});
+
 test('typing animation starts one timer chain after clearing the static fallback', () => {
   let captured;
   const subtitle = { innerText: '望舒的尘歌壶' };

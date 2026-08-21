@@ -7,8 +7,6 @@ fun_features:
     backSpeed: 50
     cursorChar: "_"
     loop: true
-    scope:
-      - home
 
 post:
   mermaid:
