@@ -1,11 +1,6 @@
 const cards = document.querySelectorAll('.index-card');
 
 if (cards.length) {
-  const row = document.querySelector('.row');
-  if (row) {
-    row.style.overflow = 'hidden';
-  }
-
   const prefersReducedMotion =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

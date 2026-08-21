@@ -125,7 +125,7 @@
 /* themes/fluid/source/css/scrollAnimation.css */
 .index-card {
   transition: transform 0.5s, opacity 0.5s;
-  transform: scale(calc(1.5 - 0.5 * var(--state)));
+  transform: scale(calc(0.98 + 0.02 * var(--state)));
   opacity: var(--state);
   margin-bottom: 2rem;
 }
