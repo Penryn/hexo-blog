@@ -45,3 +45,10 @@ tags:
 31. 你会更倾向做sre（运维）还是开发
 32. 你在做测试和qa上有什么经验
 33. 你有哪些想问的
+
+<!-- auto-internal-links -->
+## 延伸阅读
+- [文章归档](/archives/)
+- [分类导航](/categories/)
+- [标签导航](/tags/)
+- [同分类更多内容](/categories/%E9%9D%A2%E8%AF%95%E5%9B%9E%E9%A1%BE/)
