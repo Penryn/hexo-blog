@@ -1,0 +1,54 @@
+name: 申请友链
+description: 提交站点信息，自动生成一个等待审核的友链 PR
+title: "[友链申请] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢交换友链。提交前请先在你的站点添加本站，并确认下面的信息可以公开展示。
+
+        提交后，机器人会校验内容并创建一个 PR；最终是否收录仍需人工审核。
+
+  - type: input
+    id: title
+    attributes:
+      label: 站点名称
+      description: 显示在友链页面上的名称，最多 80 个字符。
+      placeholder: 例如：荒野菲林
+    validations:
+      required: true
+
+  - type: input
+    id: intro
+    attributes:
+      label: 站点简介
+      description: 用一句话介绍你的站点，最多 160 个字符。
+      placeholder: 例如：记录技术、摄影与生活
+    validations:
+      required: true
+
+  - type: input
+    id: link
+    attributes:
+      label: 站点地址
+      description: 站点主页地址，仅支持 http 或 https。
+      placeholder: https://example.com
+    validations:
+      required: true
+
+  - type: input
+    id: avatar
+    attributes:
+      label: 头像地址
+      description: 头像或 Logo 的公开图片地址，仅支持 http 或 https。
+      placeholder: https://example.com/avatar.png
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: 申请确认
+      options:
+        - label: 我已在自己的站点添加本站友链，并确认以上信息真实有效
+          required: true

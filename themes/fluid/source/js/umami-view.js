@@ -16,7 +16,7 @@
 
   if (!hasRequiredConfig()) return;
 
-  var requestUrl = apiServer + "/websites/" + websiteId + "/stats";
+  var requestUrl = apiServer + "/api/websites/" + websiteId + "/stats";
   var params = new URLSearchParams({
     startAt: String(startAt),
     endAt: String(endAt)
@@ -57,7 +57,7 @@
     try {
       var data = await fetchStats("");
       showValue("#umami-site-pv-container", "#umami-site-pv", data.pageviews.value);
-      showValue("#umami-site-uv-container", "#umami-site-uv", data.uniques.value);
+      showValue("#umami-site-uv-container", "#umami-site-uv", data.visitors.value);
     } catch (error) {
       console && console.error && console.error(error);
     }
@@ -77,7 +77,9 @@
   var viewContainer = document.querySelector("#umami-page-views-container");
   if (viewContainer) {
     var path = window.location.pathname;
-    var target = decodeURI(path.replace(/\/*(index.html)?$/, "/"));
+    var target = path
+      .replace(/(\/[^/]+\.html)\/$/, "$1")
+      .replace(/\/index\.html$/, "/");
     pageStats(target);
   }
 })();

@@ -15,7 +15,77 @@ import_script(`
     var boardCtn = document.getElementById('board-ctn');
     var boardTop = boardCtn ? (boardCtn.getBoundingClientRect().top + window.pageYOffset) : 0;
 
-    window.tocbot.init(Object.assign({
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      document.querySelectorAll('#toc-body .tocbot-is-collapsed').forEach(function(list) {
+        list.classList.remove('tocbot-is-collapsed');
+      });
+    }
+    function directChild(element, selector) {
+      return Array.prototype.find.call(element.children, function(child) {
+        return child.matches(selector);
+      }) || null;
+    }
+    function updateTocToggle(li, childList) {
+      var toggle = directChild(li, '.toc-toggle');
+      if (!toggle) { return; }
+      var collapsed = childList.classList.contains('tocbot-is-collapsed');
+      toggle.classList.toggle('toc-toggle-collapsed', collapsed);
+      toggle.classList.toggle('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      var tocBody = document.getElementById('toc-body');
+      if (!tocBody) { return; }
+      tocBody.querySelectorAll('.toc-list-item').forEach(function(li) {
+        var childList = directChild(li, 'ol');
+        if (!childList) {
+          if (!directChild(li, '.toc-toggle')) {
+            li.insertAdjacentHTML('afterbegin', '<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if (!directChild(li, '.toc-toggle')) {
+          li.insertAdjacentHTML('afterbegin', '<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle(li, childList);
+      });
+      if (!tocBody.__tocToggleHandler) {
+        tocBody.__tocToggleHandler = function(e) {
+          var toggle = e.target.closest('.toc-toggle');
+          if (!toggle || !tocBody.contains(toggle)) { return; }
+          e.preventDefault();
+          e.stopPropagation();
+          var li = toggle.closest('.toc-list-item');
+          var childList = li && directChild(li, 'ol');
+          if (!li || !childList) { return; }
+          childList.classList.toggle('tocbot-is-collapsed');
+          updateTocToggle(li, childList);
+        };
+        tocBody.addEventListener('click', tocBody.__tocToggleHandler);
+      }
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var list = mutation.target;
+            var li = list.parentElement;
+            if (!li || !li.classList.contains('toc-list-item')) { return; }
+            updateTocToggle(li, list);
+          });
+        });
+        window.__tocToggleObserver.observe(tocBody, {
+          attributes: true,
+          attributeFilter: ['class'],
+          subtree: true
+        });
+      }
+    }
+    var tocConfig = Object.assign({
       tocSelector     : '#toc-body',
       contentSelector : '.markdown-body',
       linkClass       : 'tocbot-link',
@@ -26,10 +96,16 @@ import_script(`
       scrollSmooth    : true,
       includeTitleTags: true,
       headingsOffset  : -boardTop,
-    }, CONFIG.toc));
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
     if (toc.querySelector('.toc-list-item')) {
       toc.style.visibility = 'visible';
     }
+    expandAllToc();
+    bindTocToggle();
 
     Fluid.events.registerRefreshCallback(function() {
       if ('tocbot' in window) {
@@ -41,6 +117,8 @@ import_script(`
         if (toc.querySelector('.toc-list-item')) {
           toc.style.visibility = 'visible';
         }
+        expandAllToc();
+        bindTocToggle();
       }
     });
   });

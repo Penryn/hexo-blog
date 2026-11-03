@@ -12,28 +12,21 @@ Fluid.plugins = {
 
   typing: function(text) {
     if (!('Typed' in window)) { return; }
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
 
-    var typed = new window.Typed('#subtitle', {
-      strings: [
-        '  ',
-        text
-      ],
+    var subtitle = document.getElementById('subtitle');
+    if (!subtitle) { return; }
+    subtitle.innerText = '';
+
+    new window.Typed('#subtitle', {
+      strings   : [text],
       cursorChar: CONFIG.typing.cursorChar,
+      startDelay: CONFIG.typing.startDelay,
       typeSpeed : CONFIG.typing.typeSpeed,
+      backDelay : CONFIG.typing.backDelay,
+      backSpeed : CONFIG.typing.backSpeed,
       loop      : CONFIG.typing.loop
     });
-    typed.stop();
-    var subtitle = document.getElementById('subtitle');
-    if (subtitle) {
-      subtitle.innerText = '';
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
-        typed.start();
-      }, { once: true });
-    } else {
-      typed.start();
-    }
   },
 
   fancyBox: function(selector) {
