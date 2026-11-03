@@ -41,13 +41,63 @@ Fluid.events = {
       }
     });
 
+    var mobileGridMenu = document.getElementById('mobile-grid-menu');
     var navToggler = document.getElementById('navbar-toggler-btn');
     if (navToggler) {
       navToggler.addEventListener('click', function() {
+        if (navToggler.dataset.animating === 'true') {
+          return;
+        }
+        navToggler.dataset.animating = 'true';
         for (const icon of document.querySelectorAll('.animated-icon')) {
           icon.classList.toggle('open');
         }
-        navbar.classList.toggle('navbar-col-show');
+
+        if (window.innerWidth < 992 && mobileGridMenu) {
+          navbar.classList.add('top-nav-collapse');
+          mobileGridMenu.classList.toggle('show');
+          if (mobileGridMenu.classList.contains('show')) {
+            var cells = mobileGridMenu.querySelectorAll('.mobile-grid-cell, .mobile-grid-group-header');
+            cells.forEach(function(cell, index) {
+              cell.style.animationDelay = (index * 20) + 'ms';
+            });
+          }
+          document.body.classList.toggle('mobile-menu-open', mobileGridMenu.classList.contains('show'));
+        } else {
+          navbar.classList.toggle('navbar-col-show');
+        }
+
+        setTimeout(function() {
+          navToggler.dataset.animating = 'false';
+        }, 300);
+      });
+    }
+
+    if (mobileGridMenu) {
+      mobileGridMenu.addEventListener('click', function(event) {
+        var link = event.target.closest('a[href]');
+        if (!link || link.getAttribute('href') === 'javascript:;') {
+          return;
+        }
+        mobileGridMenu.classList.remove('show');
+        for (const icon of document.querySelectorAll('.animated-icon')) {
+          icon.classList.remove('open');
+        }
+        document.body.classList.remove('mobile-menu-open');
+        navbar.classList.remove('top-nav-collapse');
+        if (navToggler) {
+          navToggler.dataset.animating = 'false';
+        }
+      });
+
+      window.addEventListener('resize', function() {
+        if (window.innerWidth >= 992 && mobileGridMenu.classList.contains('show')) {
+          mobileGridMenu.classList.remove('show');
+          for (const icon of document.querySelectorAll('.animated-icon')) {
+            icon.classList.remove('open');
+          }
+          document.body.classList.remove('mobile-menu-open');
+        }
       });
     }
 
