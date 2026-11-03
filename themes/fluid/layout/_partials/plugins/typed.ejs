@@ -8,6 +8,9 @@
         if (!subtitle || !typing || !window.Typed) {
           return;
         }
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          return;
+        }
         var text = subtitle.getAttribute('data-typed-text');
         <% if (is_home() && theme.index.slogan.api && theme.index.slogan.api.enable) { %>
           fetch('<%- theme.index.slogan.api.url %>', {
@@ -45,6 +48,10 @@
               }
               typing(text);
             });
+        <% } else if (is_home() && Array.isArray(theme.index.slogan.text) && theme.index.slogan.text.length > 0) { %>
+          var texts = <%- JSON.stringify(theme.index.slogan.text) %>;
+          var idx = Math.floor(Math.random() * texts.length);
+          typing(texts[idx]);
         <% } else { %>
           typing(text);
         <% } %>

@@ -9,6 +9,7 @@ var orderBy = theme.category.order_by || 'name'
 var curCats = site.categories.find({ parent: { $exists: false } }).sort(orderBy).filter(cat => cat.length)
 %>
 
+<h1 class="sr-only"><%= page.title %></h1>
 <%- partial('_partials/category-list', {
   curCats: curCats,
   params: {

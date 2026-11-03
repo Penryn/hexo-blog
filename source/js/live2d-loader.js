@@ -270,7 +270,22 @@
         window.__oml2d_loading = false;
         return;
       }
-      var opt = cfg.option || {};
+      function cloneData(value) {
+        if (Array.isArray(value)) {
+          var arrayCopy = [];
+          for (var i = 0; i < value.length; i++) arrayCopy.push(cloneData(value[i]));
+          return arrayCopy;
+        }
+        if (value && typeof value === 'object') {
+          var objectCopy = {};
+          for (var key in value) {
+            if (Object.prototype.hasOwnProperty.call(value, key)) objectCopy[key] = cloneData(value[key]);
+          }
+          return objectCopy;
+        }
+        return value;
+      }
+      var opt = cloneData(cfg.option || {});
       // merge helper for tips styles
       function mergeTips(base, extra) {
         var out = {};
@@ -279,34 +294,23 @@
         for (var k2 in extra) if (Object.prototype.hasOwnProperty.call(extra, k2)) out[k2] = extra[k2];
         return out;
       }
-      function looksLikeFunctionSource(source) {
-        if (typeof source !== 'string') return false;
-        var code = source.trim();
-        if (!code) return false;
-        if (/^(?:async\s+)?function(?:\s+[A-Za-z_$][\w$]*)?\s*\(/.test(code)) return true;
-        if (/^(?:async\s+)?\([^\)]*\)\s*=>/.test(code)) return true;
-        if (/^(?:async\s+)?[A-Za-z_$][\w$]*\s*=>/.test(code)) return true;
-        return false;
-      }
-      function reviveFunctionFromString(source, label) {
-        if (!looksLikeFunctionSource(source)) return source;
-        try {
-          var fn = (new Function('return (' + source + ');'))();
-          return typeof fn === 'function' ? fn : source;
-        } catch (err) {
-          console && console.warn && console.warn('[OhMyLive2D] failed to parse function source for ' + label, err);
-          return source;
-        }
-      }
-      function normalizeOptionFunctions(option) {
+      function normalizeOptionHooks(option) {
         if (!option || typeof option !== 'object') return option;
         if (option.tips && option.tips.idleTips) {
-          option.tips.idleTips.message = reviveFunctionFromString(option.tips.idleTips.message, 'tips.idleTips.message');
-          option.tips.idleTips.wordTheDay = reviveFunctionFromString(option.tips.idleTips.wordTheDay, 'tips.idleTips.wordTheDay');
+          var idleTips = option.tips.idleTips;
+          var registry = window.Live2DHookRegistry;
+          var resolveOptionHook = registry && registry.resolveOptionHook;
+          var messageHook = typeof resolveOptionHook === 'function'
+            ? resolveOptionHook.call(registry, idleTips.messageHook)
+            : null;
+          idleTips.message = messageHook || (Array.isArray(idleTips.fallbackMessages)
+            ? idleTips.fallbackMessages.slice()
+            : []);
+          delete idleTips.messageHook;
         }
         return option;
       }
-      opt = normalizeOptionFunctions(opt);
+      opt = normalizeOptionHooks(opt);
       var manualQuoteInFlight = false;
       function pickFromArray(arr) {
         if (!Array.isArray(arr) || !arr.length) return '';
