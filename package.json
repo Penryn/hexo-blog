@@ -8,7 +8,7 @@
   },
   "scripts": {
     "prebuild": "pnpm seo:obsidian:check && pnpm seo:frontmatter:check && pnpm seo:links:check",
-    "build": "hexo clean && hexo generate",
+    "build": "TZ=Asia/Shanghai hexo clean && TZ=Asia/Shanghai hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
     "server": "hexo server",

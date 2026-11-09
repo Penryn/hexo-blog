@@ -1,5 +1,32 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/2024/08/02/cross-origin/",
+      "destination": "/2024/08/03/cross-origin/",
+      "permanent": true
+    },
+    {
+      "source": "/2024/08/27/session-cookie/",
+      "destination": "/2024/08/28/session-cookie/",
+      "permanent": true
+    },
+    {
+      "source": "/2024/09/04/nginx-upstream-check-module-using/",
+      "destination": "/2024/09/05/nginx-upstream-check-module-using/",
+      "permanent": true
+    },
+    {
+      "source": "/2024/10/17/2023-2024/",
+      "destination": "/2024/10/18/2023-2024/",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

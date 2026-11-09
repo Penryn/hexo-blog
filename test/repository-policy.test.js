@@ -67,7 +67,8 @@ test('runtime and package manager are pinned for reproducible builds', () => {
 test('production build is clean and prebuild is read-only', () => {
   assert.equal(pkg.scripts.prebuild,
     'pnpm seo:obsidian:check && pnpm seo:frontmatter:check && pnpm seo:links:check');
-  assert.equal(pkg.scripts.build, 'hexo clean && hexo generate');
+  assert.equal(pkg.scripts.build,
+    'TZ=Asia/Shanghai hexo clean && TZ=Asia/Shanghai hexo generate');
   assert.equal(pkg.scripts.test, 'pnpm build && node --test');
 });
 
