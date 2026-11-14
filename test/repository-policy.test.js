@@ -94,7 +94,11 @@ test('production transitive dependency floors exclude audited high advisories', 
     'jsdom>form-data': '^4.0.6',
     'jsdom>ws': '^8.21.0',
     'hexo-front-matter>js-yaml': '^4.3.1',
-    'hexo>js-yaml': '^4.3.1'
+    'hexo>js-yaml': '^4.3.1',
+    nanoid: '^3.3.20',
+    browserslist: '^4.29.5',
+    compression: '^1.8.2',
+    dompurify: '^3.4.17'
   });
 });
 

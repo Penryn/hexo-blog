@@ -141,6 +141,7 @@ robots:
     - /
   disallow:
     - /live2d/
+    - /cdn-cgi/l/email-protection
   sitemaps:
     - https://blog.phlin.cn/sitemap.xml
 
