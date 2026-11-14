@@ -38,6 +38,22 @@ test('Vercel applies the required global security headers without changing cache
   assert.deepEqual(cacheValues, cacheControlValues);
 });
 
+test('Vercel redirects duplicate and timezone-shifted production URLs', () => {
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
+  const redirects = Object.fromEntries(
+    vercel.redirects.map(redirect => [redirect.source, redirect.destination])
+  );
+
+  assert.deepEqual(redirects, {
+    '/index.html': '/',
+    '/2024/08/02/cross-origin/': '/2024/08/03/cross-origin/',
+    '/2024/08/27/session-cookie/': '/2024/08/28/session-cookie/',
+    '/2024/09/04/nginx-upstream-check-module-using/': '/2024/09/05/nginx-upstream-check-module-using/',
+    '/2024/10/17/2023-2024/': '/2024/10/18/2023-2024/'
+  });
+  assert.ok(vercel.redirects.every(redirect => redirect.permanent === true));
+});
+
 test('a clean build omits dead Live2D output and unsafe crash script while using HTTPS MIIT filing', () => {
   assert.equal(fs.existsSync(path.join(publicDir, 'live2d')), false);
 

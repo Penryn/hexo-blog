@@ -67,14 +67,15 @@ test('runtime and package manager are pinned for reproducible builds', () => {
 test('production build is clean and prebuild is read-only', () => {
   assert.equal(pkg.scripts.prebuild,
     'pnpm seo:obsidian:check && pnpm seo:frontmatter:check && pnpm seo:links:check');
-  assert.equal(pkg.scripts.build, 'hexo clean && hexo generate');
+  assert.equal(pkg.scripts.build,
+    'TZ=Asia/Shanghai hexo clean && TZ=Asia/Shanghai hexo generate');
   assert.equal(pkg.scripts.test, 'pnpm build && node --test');
 });
 
 test('direct dependency upgrade floor is retained', () => {
   assert.equal(pkg.dependencies.hexo, '^8.1.2');
   assert.equal(pkg.dependencies['hexo-robots'], '^1.0.4');
-  assert.equal(pkg.dependencies['@adobe/css-tools'], '^4.5.0');
+  assert.equal(pkg.dependencies['@adobe/css-tools'], '^5.0.0');
   assert.equal(pkg.dependencies['highlight.js'], '^11.12.0');
 });
 
@@ -95,6 +96,10 @@ test('production transitive dependency floors exclude audited high advisories', 
     'jsdom>ws': '^8.21.0',
     'hexo-front-matter>js-yaml': '^4.3.2',
     'hexo>js-yaml': '^4.3.2',
+    nanoid: '^3.3.20',
+    browserslist: '^4.29.5',
+    compression: '^1.8.2',
+    dompurify: '^3.4.17',
     'hexo-server>compression': '^1.8.2',
     'hexo-renderer-marked>dompurify': '^3.4.17'
   });

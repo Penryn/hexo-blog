@@ -13,7 +13,7 @@ var ogImage = page.og_img || page.index_img
 var ogImageUrl = ogImage ? (String(ogImage).match(/^https?:\/\//) ? ogImage : url_join(config.url, url_for(ogImage))) : null
 var ogConfig = Object.assign({ image: ogImage && url_for(ogImage) }, theme.open_graph)
 var canonicalPath = (page.canonical_path || page.path || '').replace('index.html', '')
-var canonicalUrl = url_join(config.url, canonicalPath)
+var canonicalUrl = url_join(config.url, canonicalPath || '/')
 var homeUrl = url_join(config.url, '/')
 var heroImage = page.banner_img || theme.index.banner_img
 var selectedCommentType = typeof page.comment === 'string' && page.comment !== '' ? page.comment : theme.post.comments.type
