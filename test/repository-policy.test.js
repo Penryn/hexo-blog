@@ -75,7 +75,7 @@ test('production build is clean and prebuild is read-only', () => {
 test('direct dependency upgrade floor is retained', () => {
   assert.equal(pkg.dependencies.hexo, '^8.1.2');
   assert.equal(pkg.dependencies['hexo-robots'], '^1.0.4');
-  assert.equal(pkg.dependencies['@adobe/css-tools'], '^4.5.0');
+  assert.equal(pkg.dependencies['@adobe/css-tools'], '^5.0.0');
   assert.equal(pkg.dependencies['highlight.js'], '^11.12.0');
 });
 
